@@ -65,8 +65,7 @@
 [data-theme="dark"] .studio-canvas-wrap .canvas-bg,[data-theme="dark"] #studio-canvas{background:linear-gradient(150deg,#1E2B23 0%,#1A2520 50%,#1C2822 100%)}
 [data-theme="dark"] .auth-left{background:var(--pearl)}
 [data-theme="dark"] #workspace::before{opacity:0.15}
-[data-theme="dark"] #workspace{position:fixed;left:0;right:0;top:40px;bottom:0;background:var(--pearl);transition:left 0.2s}
-body.sidebar-open #workspace{left:56px}
+[data-theme="dark"] #workspace{position:fixed;left:0;right:0;top:40px;bottom:0;background:var(--pearl)}
 [data-theme="dark"] #module-panels .mod-panel{background:var(--pearl)}
 [data-theme="dark"] .gtb-logo:hover,.gbtn:hover,.gadd:hover{background:var(--sage-tint)}
 [data-theme="dark"] .modal{background:var(--white);border-color:var(--border2)}
@@ -129,22 +128,11 @@ html,body{width:100%;height:100%;font-family:var(--font);background:var(--pearl)
 .li-greet{font-family:var(--serif);font-size:24px;font-weight:400;color:var(--ink);margin-bottom:4px;letter-spacing:-0.01em}
 .li-sub{font-size:12px;color:var(--ink3);margin-bottom:28px}
 .li-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
-.lcard{border:0.5px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;transition:all 0.15s}
-/* Core module cards - prominent */
-.lcard-core{background:var(--pearl);padding:14px}
-.lcard-core:hover{background:var(--sage-tint);border-color:var(--sage);transform:translateY(-2px);box-shadow:0 4px 12px rgba(45,106,79,0.1)}
-.lcard-core:hover .lci-core{background:var(--sage);border-color:var(--sage)}
-.lcard-core:hover .lci-core svg{stroke:#fff}
-/* Integration cards - subtle */
-.lcard-int{background:var(--white);padding:10px 10px 9px;text-align:center}
-.lcard-int:hover{background:var(--pearl);border-color:var(--border2);transform:translateY(-1px)}
-.lcard-int:hover .lci-int{background:var(--pearl);border-color:var(--border2)}
-/* Icon bases */
-.lci-core{width:34px;height:34px;border-radius:9px;background:var(--white);border:0.5px solid var(--border2);display:flex;align-items:center;justify-content:center;margin-bottom:10px;transition:all 0.15s}
-.lci-core svg{width:16px;height:16px;stroke:var(--sage);fill:none;stroke-width:1.4}
-.lci-core.lci-ai svg{stroke:var(--sage)}
-.lci-int{width:26px;height:26px;border-radius:7px;background:var(--pearl);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 7px;transition:all 0.15s}
-.lci-int svg{width:13px;height:13px;stroke:var(--ink4);fill:none;stroke-width:1.4}
+.lcard{background:var(--pearl);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px;cursor:pointer;transition:all 0.15s}
+.lcard:hover{background:var(--sage-tint);border-color:var(--sage);transform:translateY(-1px)}
+.lcard:hover .lci{background:var(--sage);color:#fff;border-color:var(--sage)}
+.lci{width:30px;height:30px;border-radius:7px;background:var(--pearl);border:0.5px solid var(--border2);display:flex;align-items:center;justify-content:center;margin-bottom:9px;transition:all 0.15s}
+.lci svg{width:15px;height:15px;stroke:var(--ink3);fill:none}
 .lcname{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:1px}
 .lcdesc{font-size:10px;color:var(--ink4)}
 .li-foot{margin-top:20px;padding-top:14px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center}
@@ -162,7 +150,6 @@ html,body{width:100%;height:100%;font-family:var(--font);background:var(--pearl)
 .win.snapped-left{left:40px!important;top:48px!important;width:calc(50% - 60px)!important;height:calc(100vh - 96px)!important}
 .win.snapped-right{left:calc(50% + 20px)!important;top:48px!important;width:calc(50% - 60px)!important;height:calc(100vh - 96px)!important}
 .win.maximized{left:4px!important;top:44px!important;width:calc(100% - 8px)!important;height:calc(100vh - 52px)!important;border-radius:var(--radius-lg)!important}
-body.sidebar-open .win.maximized{left:4px!important;width:calc(100% - 8px)!important}
 .wtb{height:38px;padding:0 12px;display:flex;align-items:center;gap:10px;cursor:grab;flex-shrink:0;background:var(--white);border-bottom:0.5px solid var(--border)}
 .wtb:active{cursor:grabbing}
 .wcs{display:flex;gap:5px;flex-shrink:0}
@@ -535,7 +522,6 @@ textarea.inp{height:auto;padding:7px 10px;resize:vertical;line-height:1.5}
 /* Studio animations */
 @keyframes lidar-beam{0%{transform:translateX(-50%) rotate(-35deg);opacity:.3}100%{transform:translateX(-50%) rotate(35deg);opacity:.9}}
 @keyframes ant-glow{0%,100%{box-shadow:0 0 0 0 rgba(45,106,79,.5)}50%{box-shadow:0 0 0 5px rgba(45,106,79,0)}}
-@keyframes lrb-pulse{0%,100%{box-shadow:0 0 0 0 rgba(45,106,79,0.5)}50%{box-shadow:0 0 0 4px rgba(45,106,79,0)}}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
 
@@ -660,52 +646,7 @@ textarea.inp{height:auto;padding:7px 10px;resize:vertical;line-height:1.5}
 .cv-btn:hover{background:var(--sage-tint);border-color:var(--sage);color:var(--sage)}
 .cv-btn.active{background:var(--sage);border-color:var(--sage);color:#fff}
 
-
-/* ═══ MODULE GUIDE BANNER ═══ */
-.mgb{border-bottom:0.5px solid var(--sage-tint2);background:linear-gradient(135deg,var(--sage-tint) 0%,rgba(238,245,242,0.35) 60%,rgba(250,250,248,0) 100%);padding:14px 16px 12px;flex-shrink:0;position:relative;overflow:hidden;transition:all .2s}
-.mgb:hover{background:linear-gradient(135deg,rgba(213,232,220,0.8) 0%,rgba(238,245,242,0.5) 60%,rgba(250,250,248,0) 100%)}
-.mgb::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--sage)}
-.mgb-inner{display:flex;gap:14px;align-items:flex-start}
-.mgb-icon{width:34px;height:34px;border-radius:9px;background:var(--sage);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.mgb-icon svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.mgb-body{flex:1}
-.mgb-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:4px;letter-spacing:-0.02em}
-.mgb-desc{font-size:11px;color:var(--ink3);line-height:1.55;margin-bottom:8px}
-.mgb-steps{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.mgb-step{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--sage3);background:var(--white);border:0.5px solid var(--sage-tint2);border-radius:20px;padding:4px 10px;cursor:pointer;transition:all .15s;white-space:nowrap;font-weight:500}
-.mgb-step:hover{background:var(--sage-tint2);border-color:var(--sage)}
-.mgb-step-num{width:14px;height:14px;border-radius:50%;background:var(--sage);color:#fff;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.mgb-lrb{margin-top:7px;font-size:10px;color:var(--ink4);display:flex;align-items:center;gap:5px}
-.mgb-lrb-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);flex-shrink:0;animation:lrb-pulse 2.4s ease-in-out infinite}
-.mgb-close{position:absolute;top:10px;right:12px;width:20px;height:20px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:var(--ink4);font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .1s}
-.mgb-close:hover{background:var(--sage-tint2);color:var(--ink)}
-.mgb.collapsed{display:none}
-.mgb-reopen{display:none;position:absolute;top:8px;right:12px;z-index:10}
-.mgb-reopen.show{display:flex}
-.mgb-reopen button{height:20px;padding:0 8px;font-size:10px;color:var(--sage);background:transparent;border:0.5px solid var(--sage-tint2);border-radius:10px;cursor:pointer;font-family:var(--font);transition:all .12s}
-.mgb-reopen button:hover{background:var(--sage-tint);border-color:var(--sage)}
-
-
-/* ── Integrations Sidebar ── */
-.isb-item{width:44px;height:auto;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px;cursor:pointer;transition:all .14s;color:var(--ink4);position:relative}
-.isb-item:hover{background:var(--sage-tint);color:var(--sage)}
-.isb-item:hover::after{content:attr(title);position:absolute;left:52px;top:50%;transform:translateY(-50%);background:var(--ink);color:#fff;font-size:11px;font-weight:500;white-space:nowrap;padding:5px 10px;border-radius:7px;pointer-events:none;z-index:9999;font-family:var(--font)}
-.isb-item:hover::before{content:'';position:absolute;left:48px;top:50%;transform:translateY(-50%);border:5px solid transparent;border-right-color:var(--ink);pointer-events:none;z-index:9999}
-.isb-item.active{background:var(--sage-tint);color:var(--sage)}
-.isb-item svg{width:16px;height:16px;stroke:currentColor;flex-shrink:0}
-.isb-item span{font-size:8px;font-weight:500;letter-spacing:0.02em;text-align:center;line-height:1.2}
-/* Divider between sidebar sections */
-.isb-div{width:28px;height:0.5px;background:var(--border);margin:4px 0;flex-shrink:0}
-
-/* ── Core launcher cards ── */
-.lcard-core{background:var(--pearl);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 14px 14px;cursor:pointer;transition:all 0.18s}
-.lcard-core:hover{background:linear-gradient(135deg,var(--sage-tint),rgba(238,245,242,0.6));border-color:var(--sage);transform:translateY(-2px);box-shadow:0 8px 20px rgba(45,106,79,0.12)}
-.lcard-core:hover .lci-core{background:var(--sage);border-color:var(--sage)}
-.lcard-core:hover .lci-core svg{stroke:#fff}
-.lci-core{width:36px;height:36px;border-radius:10px;background:var(--white);border:0.5px solid var(--border2);display:flex;align-items:center;justify-content:center;margin-bottom:11px;transition:all 0.15s}
-.lci-core svg{width:17px;height:17px;stroke:var(--sage3);fill:none}
-
-body.sidebar-open #launcher{padding-left:56px}</style>
+</style>
 </head>
 <body>
 
@@ -718,73 +659,76 @@ body.sidebar-open #launcher{padding-left:56px}</style>
       <span class="auth-logo-name">Vanika</span>
     </div>
     <div class="auth-hero">
-      <div class="auth-badge"><div class="auth-badge-dot"></div>Open beta &nbsp;&middot;&nbsp; v1.0</div>
+      <div class="auth-badge"><div class="auth-badge-dot"></div>Open beta · v1.0</div>
       <h1 class="auth-h1">Build robots<br>with <em>Vanika</em></h1>
-      <p class="auth-p">The end-to-end cloud platform for robotics teams. Design, simulate, code, and deploy your robot &mdash; all kept in sync through one living data model.</p>
-
-      <!-- Robot illustration -->
-      <svg class="auth-robot-illustration" viewBox="0 0 360 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="180" cy="122" rx="60" ry="6" fill="rgba(45,106,79,0.06)"/>
-        <rect x="150" y="68" width="60" height="50" rx="10" fill="white" stroke="#2D6A4F" stroke-width="1.4"/>
-        <line x1="162" y1="84" x2="198" y2="84" stroke="#E8EEE8" stroke-width="0.8"/>
-        <line x1="162" y1="97" x2="198" y2="97" stroke="#E8EEE8" stroke-width="0.8"/>
-        <circle cx="197" cy="73" r="3" fill="#27C93F"/>
-        <rect x="168" y="76" width="22" height="5" rx="1.5" fill="#EEF5EE"/>
-        <ellipse cx="180" cy="58" rx="22" ry="17" fill="white" stroke="#2D6A4F" stroke-width="1.4"/>
-        <circle cx="172" cy="55" r="4.5" fill="#EFF5F2" stroke="#2D6A4F" stroke-width="1"/>
-        <circle cx="188" cy="55" r="4.5" fill="#EFF5F2" stroke="#2D6A4F" stroke-width="1"/>
-        <circle cx="173" cy="55" r="2" fill="#2D6A4F"/><circle cx="189" cy="55" r="2" fill="#2D6A4F"/>
-        <circle cx="173.6" cy="54.3" r="0.8" fill="white"/><circle cx="189.6" cy="54.3" r="0.8" fill="white"/>
-        <path d="M174 63 Q180 67 186 63" stroke="#2D6A4F" stroke-width="1.2" stroke-linecap="round"/>
-        <line x1="180" y1="41" x2="180" y2="32" stroke="#2D6A4F" stroke-width="1.6"/>
-        <circle cx="180" cy="29" r="3.5" fill="#2D6A4F"/>
-        <ellipse cx="150" cy="93" rx="6" ry="14" fill="white" stroke="#2D6A4F" stroke-width="1.2" transform="rotate(-8 150 93)"/>
-        <ellipse cx="210" cy="93" rx="6" ry="14" fill="white" stroke="#2D6A4F" stroke-width="1.2" transform="rotate(8 210 93)"/>
-        <ellipse cx="163" cy="118" rx="10" ry="6" fill="#1A1A1A" stroke="#444" stroke-width="1"/>
-        <ellipse cx="197" cy="118" rx="10" ry="6" fill="#1A1A1A" stroke="#444" stroke-width="1"/>
-        <ellipse cx="163" cy="118" rx="4" ry="2.5" fill="#2D6A4F"/><ellipse cx="197" cy="118" rx="4" ry="2.5" fill="#2D6A4F"/>
-        <line x1="30" y1="85" x2="140" y2="85" stroke="#2D6A4F" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.5"/>
-        <line x1="220" y1="85" x2="310" y2="85" stroke="#2D6A4F" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.5"/>
-        <circle cx="30" cy="85" r="3" fill="#2D6A4F" opacity="0.6"/>
-        <circle cx="310" cy="85" r="3" fill="#2D6A4F" opacity="0.6"/>
-        <text x="16" y="79" font-size="7" fill="#2D6A4F" font-family="monospace" opacity="0.7">Studio</text>
-        <text x="294" y="79" font-size="7" fill="#2D6A4F" font-family="monospace" opacity="0.7">Fleet</text>
+      <p class="auth-p">The end-to-end cloud platform for robotics teams. Design in Studio, simulate in the cloud, deploy to your fleet — all kept in sync through one Live Robot Blueprint.</p>
+      <!-- Robot illustration SVG -->
+      <svg class="auth-robot-illustration" viewBox="0 0 360 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Grid floor -->
+        <line x1="0" y1="155" x2="360" y2="155" stroke="#D8EBE3" stroke-width="0.6"/>
+        <line x1="36" y1="155" x2="50" y2="168" stroke="#D8EBE3" stroke-width="0.5"/>
+        <line x1="80" y1="155" x2="94" y2="168" stroke="#D8EBE3" stroke-width="0.5"/>
+        <line x1="124" y1="155" x2="138" y2="168" stroke="#D8EBE3" stroke-width="0.5"/>
+        <line x1="168" y1="155" x2="182" y2="168" stroke="#D8EBE3" stroke-width="0.5"/>
+        <line x1="212" y1="155" x2="226" y2="168" stroke="#D8EBE3" stroke-width="0.5"/>
+        <line x1="256" y1="155" x2="270" y2="168" stroke="#D8EBE3" stroke-width="0.5"/>
+        <line x1="300" y1="155" x2="314" y2="168" stroke="#D8EBE3" stroke-width="0.5"/>
+        <!-- Robot shadow -->
+        <ellipse cx="180" cy="157" rx="44" ry="5" fill="rgba(45,106,79,0.08)"/>
+        <!-- Body -->
+        <rect x="152" y="95" width="56" height="58" rx="11" fill="white" stroke="#2D6A4F" stroke-width="1.5"/>
+        <line x1="162" y1="113" x2="198" y2="113" stroke="#E8E8E4" stroke-width="0.8"/>
+        <line x1="162" y1="126" x2="198" y2="126" stroke="#E8E8E4" stroke-width="0.8"/>
+        <!-- Status light -->
+        <circle cx="197" cy="99" r="3.5" fill="#27C93F"/>
+        <!-- Head -->
+        <ellipse cx="180" cy="83" rx="24" ry="19" fill="white" stroke="#2D6A4F" stroke-width="1.5"/>
+        <!-- Eyes -->
+        <circle cx="171" cy="80" r="5" fill="#EFF5F2" stroke="#2D6A4F" stroke-width="1"/>
+        <circle cx="189" cy="80" r="5" fill="#EFF5F2" stroke="#2D6A4F" stroke-width="1"/>
+        <circle cx="172" cy="80" r="2.5" fill="#2D6A4F"/>
+        <circle cx="190" cy="80" r="2.5" fill="#2D6A4F"/>
+        <circle cx="172.8" cy="79.2" r="1" fill="white"/>
+        <circle cx="190.8" cy="79.2" r="1" fill="white"/>
+        <!-- Mouth smile -->
+        <path d="M173 88 Q180 92 187 88" fill="none" stroke="#2D6A4F" stroke-width="1.3" stroke-linecap="round"/>
+        <!-- Antenna -->
+        <line x1="180" y1="64" x2="180" y2="52" stroke="#2D6A4F" stroke-width="1.8"/>
+        <circle cx="180" cy="49" r="4" fill="#2D6A4F"/>
+        <circle cx="180" cy="49" r="7" fill="none" stroke="#2D6A4F" stroke-width="0.8" stroke-dasharray="2,2" opacity="0.5"/>
+        <!-- Arms -->
+        <rect x="119" y="99" width="16" height="38" rx="8" fill="white" stroke="#2D6A4F" stroke-width="1.5" transform="rotate(-6 127 118)"/>
+        <circle cx="121" cy="138" r="6" fill="white" stroke="#2D6A4F" stroke-width="1.5"/>
+        <rect x="225" y="99" width="16" height="38" rx="8" fill="white" stroke="#2D6A4F" stroke-width="1.5" transform="rotate(6 233 118)"/>
+        <circle cx="239" cy="138" r="6" fill="white" stroke="#2D6A4F" stroke-width="1.5"/>
+        <!-- Wheels -->
+        <circle cx="163" cy="157" r="10" fill="#1E4D39" stroke="#2D6A4F"/>
+        <circle cx="163" cy="157" r="4" fill="#EFF5F2"/>
+        <circle cx="197" cy="157" r="10" fill="#1E4D39" stroke="#2D6A4F"/>
+        <circle cx="197" cy="157" r="4" fill="#EFF5F2"/>
+        <!-- LiDAR -->
+        <rect x="168" y="58" width="24" height="9" rx="4.5" fill="#1A5276"/>
+        <line x1="180" y1="53" x2="155" y2="42" stroke="rgba(26,82,118,0.35)" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="180" y1="53" x2="205" y2="42" stroke="rgba(26,82,118,0.35)" stroke-width="1" stroke-dasharray="3,2"/>
+        <!-- Module floating badges -->
+        <rect x="8" y="48" width="66" height="20" rx="10" fill="white" stroke="#E8E8E4" stroke-width="0.8"/>
+        <circle cx="20" cy="58" r="4" fill="#EFF5F2" stroke="#2D6A4F" stroke-width="0.8"/>
+        <text x="30" y="62" font-size="9" fill="#2D6A4F" font-family="DM Sans" font-weight="500">Studio</text>
+        <path d="M74 48 Q68 38 100 42" fill="none" stroke="#D8EBE3" stroke-width="0.8"/>
+        <rect x="270" y="28" width="72" height="20" rx="10" fill="white" stroke="#E8E8E4" stroke-width="0.8"/>
+        <text x="284" y="42" font-size="9" fill="#1A5276" font-family="DM Sans" font-weight="500">Simulation</text>
+        <path d="M286 48 Q256 60 230 72" fill="none" stroke="#D8EBE3" stroke-width="0.8"/>
+        <rect x="278" y="110" width="56" height="20" rx="10" fill="white" stroke="#E8E8E4" stroke-width="0.8"/>
+        <text x="290" y="124" font-size="9" fill="#2D6A4F" font-family="DM Sans" font-weight="500">Fleet ●</text>
+        <rect x="4" y="108" width="78" height="20" rx="10" fill="white" stroke="#E8E8E4" stroke-width="0.8"/>
+        <text x="16" y="122" font-size="9" fill="#B7791F" font-family="DM Sans" font-weight="500">Hardware BOM</text>
       </svg>
-
-      <!-- LRB Philosophy block -->
-      <div style="margin-top:24px;background:linear-gradient(135deg,rgba(45,106,79,0.07),rgba(45,106,79,0.02));border:0.5px solid rgba(45,106,79,0.2);border-radius:12px;padding:18px 20px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-          <div style="width:6px;height:6px;border-radius:50%;background:var(--sage);animation:lrb-pulse 2.4s ease-in-out infinite;flex-shrink:0"></div>
-          <span style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage3)">The idea at the heart of Vanika</span>
-        </div>
-        <p style="font-size:12.5px;color:var(--ink);line-height:1.72;margin-bottom:12px;font-family:var(--serif);font-weight:400;letter-spacing:-0.01em">
-          Every module in Vanika shares one live Robot Blueprint &mdash; a living digital record of your robot that every module reads from and writes to. Add a sensor in Studio and Code instantly reflects it. Run a simulation and the results become AI context. Change a mechanical parameter and the parts list updates itself.
-        </p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <div style="background:rgba(255,255,255,0.8);border-radius:8px;padding:10px 12px;border:0.5px solid rgba(45,106,79,0.12)">
-            <div style="font-size:10px;font-weight:600;color:var(--sage3);margin-bottom:4px">One change.</div>
-            <div style="font-size:10px;color:var(--ink3);line-height:1.55">Every module responds. Automatically.</div>
-          </div>
-          <div style="background:rgba(255,255,255,0.8);border-radius:8px;padding:10px 12px;border:0.5px solid rgba(45,106,79,0.12)">
-            <div style="font-size:10px;font-weight:600;color:var(--sage3);margin-bottom:4px">Not integration.</div>
-            <div style="font-size:10px;color:var(--ink3);line-height:1.55">A fundamentally new way to build robots.</div>
-          </div>
-        </div>
+      <div class="auth-pills">
+        <div class="auth-pill"><svg viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" stroke-width="1.2"/><path d="M6 3v3l2 1" stroke-width="1.2" stroke-linecap="round"/></svg>Live Robot Blueprint</div>
+        <div class="auth-pill"><svg viewBox="0 0 12 12"><polygon points="6,1 11,11 1,11" stroke-width="1.2" stroke-linejoin="round"/></svg>Cloud simulation</div>
+        <div class="auth-pill"><svg viewBox="0 0 12 12"><path d="M6 8V2M3 5l3-3 3 3M1 10h10" stroke-width="1.2" stroke-linecap="round"/></svg>OTA fleet deploy</div>
+        <div class="auth-pill"><svg viewBox="0 0 12 12"><path d="M4 6l2 2 4-4" stroke-width="1.5" stroke-linecap="round"/></svg>Vanika AI copilot</div>
       </div>
-
-      <!-- Six modules -->
-      <div style="margin-top:20px">
-        <div style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink4);margin-bottom:10px">Six modules. One platform.</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">
-          <span class="auth-pill"><svg viewBox="0 0 12 12" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="6" cy="6" r="3"/><path d="M6 1v2M6 9v2M1 6h2M9 6h2"/></svg>Studio</span>
-          <span class="auth-pill"><svg viewBox="0 0 12 12" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4l-2 2 2 2M9 4l2 2-2 2M7 2l-2 8"/></svg>Code</span>
-          <span class="auth-pill"><svg viewBox="0 0 12 12" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l5 3-5 3V2zM10 3v6"/></svg>Sim</span>
-          <span class="auth-pill"><svg viewBox="0 0 12 12" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="4" width="10" height="5" rx="1.5"/><path d="M4 4V3M8 4V3M4 9v1M8 9v1"/></svg>Hardware</span>
-          <span class="auth-pill"><svg viewBox="0 0 12 12" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><path d="M6 2v4l2.5 1.5"/></svg>Fleet</span>
-          <span class="auth-pill"><svg viewBox="0 0 12 12" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="4.5" stroke-width="1.3"/><path d="M4 6l1.5 1.5 3-3"/></svg>AI Core</span>
-        </div>
-      </div>
-
     </div>
   </div>
 
@@ -870,116 +814,38 @@ body.sidebar-open #launcher{padding-left:56px}</style>
 <!-- SNAP PREVIEWS -->
 <div id="snap-l"></div><div id="snap-r"></div>
 
-<!-- DESKTOP + SIDEBAR WRAPPER -->
-<div style="position:relative">
-
-  <!-- INTEGRATIONS SIDEBAR -->
-  <aside id="int-sidebar" style="display:none;position:fixed;left:0;top:40px;bottom:0;width:56px;background:var(--white);border-right:0.5px solid var(--border);flex-direction:column;align-items:center;padding:8px 0;gap:2px;z-index:10000">
-
-    <div style="font-size:8px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink4);padding:6px 0 10px;text-align:center;line-height:1.3">Tools</div>
-
-    <div class="isb-item" onclick="openModule('dashboard')" title="Dashboard">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
-      <span>Dash</span>
-    </div>
-
-    <div class="isb-item" onclick="openModule('analytics')" title="Analytics">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M3 15L7 10 10 13 14 7 17 10"/></svg>
-      <span>Analytics</span>
-    </div>
-
-    <div class="isb-item" onclick="openModule('manufacture')" title="Manufacture">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="2" y="6" width="16" height="9" rx="2"/><path d="M6 6V4a2 2 0 014 0v2M10 6v2a2 2 0 004 0V6"/></svg>
-      <span>Mfg</span>
-    </div>
-
-    <div class="isb-item" onclick="openModule('deploy-pipeline')" title="Deploy Pipeline">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M13 6l4 4-4 4"/><circle cx="7" cy="10" r="2"/></svg>
-      <span>Deploy</span>
-    </div>
-
-    <div class="isb-item" onclick="openModule('marketplace')" title="Marketplace">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="7" width="16" height="11" rx="2"/><path d="M6 7V5a4 4 0 018 0v2"/></svg>
-      <span>Market</span>
-    </div>
-
-    <!-- Spacer + bottom items -->
-    <div style="flex:1"></div>
-    <div class="isb-item" onclick="openModule('notifications')" title="Notifications">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 2a5.5 5.5 0 00-5.5 5.5V11L3 13h14l-1.5-2V7.5A5.5 5.5 0 0010 2z"/><path d="M8 15a2 2 0 004 0"/></svg>
-      <span>Alerts</span>
-    </div>
-
-  </aside>
-
-  <!-- DESKTOP WORKSPACE -->
-  <div id="workspace"></div>
+<!-- DESKTOP -->
+<div id="workspace"></div>
 </div>
 
 <!-- LAUNCHER -->
-<div id="launcher" style="display:none;position:fixed;inset:0;z-index:9998;align-items:center;justify-content:center;background:rgba(250,250,248,0.82);backdrop-filter:blur(10px)">
-  <div style="width:540px;background:var(--white);border:0.5px solid var(--border2);border-radius:var(--radius-xl);padding:36px 36px 28px;box-shadow:0 24px 64px rgba(0,0,0,0.10)">
-
-    <div style="margin-bottom:28px">
-      <div style="font-family:var(--serif);font-size:22px;font-weight:400;color:var(--ink);margin-bottom:4px;letter-spacing:-0.01em">Good morning, Kisshhan.</div>
-      <div style="font-size:12px;color:var(--ink3)">Kiran-3 &nbsp;&middot;&nbsp; Last modified 2 hours ago &nbsp;&middot;&nbsp; <span style="color:var(--sage)">LRB v4.1 live</span></div>
+<div id="launcher" style="display:none;position:fixed;inset:0;z-index:9998;align-items:center;justify-content:center;background:rgba(250,250,248,0.75);backdrop-filter:blur(8px)">
+  <div class="li-wrap">
+    <div class="li-greet">Good morning, Kisshhan.</div>
+    <div class="li-sub">Kiran-3 · Last modified 2 hours ago · <span style="color:var(--sage)">LRB v4.1 live</span></div>
+    <div class="li-grid">
+      <div class="lcard" onclick="openModule('dashboard');hideLauncher()"><div class="lci"><svg viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke-width="1.4"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke-width="1.4"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke-width="1.4"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke-width="1.4"/></svg></div><div class="lcname">Dashboard</div><div class="lcdesc">Overview &amp; activity</div></div>
+      <div class="lcard" onclick="openModule('studio');hideLauncher()"><div class="lci"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="4" stroke-width="1.4"/><path d="M10 2v4M10 14v4M2 10h4M14 10h4" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="lcname">Studio</div><div class="lcdesc">3D robot design</div></div>
+      <div class="lcard" onclick="openModule('code');hideLauncher()"><div class="lci"><svg viewBox="0 0 20 20"><path d="M6 7l-4 3 4 3M14 7l4 3-4 3M11 5l-2 10" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="lcname">Code</div><div class="lcdesc">ROS2 IDE &amp; terminal</div></div>
+      <div class="lcard" onclick="openModule('simulation');hideLauncher()"><div class="lci"><svg viewBox="0 0 20 20"><polygon points="10,2 18,18 2,18" stroke-width="1.4" stroke-linejoin="round"/></svg></div><div class="lcname">Simulation</div><div class="lcdesc">Physics &amp; scenarios</div></div>
+      <div class="lcard" onclick="openModule('hardware');hideLauncher()"><div class="lci"><svg viewBox="0 0 20 20"><rect x="3" y="6" width="14" height="8" rx="2" stroke-width="1.4"/><path d="M7 6V4M13 6V4M7 14v2M13 14v2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="lcname">Hardware</div><div class="lcdesc">BOM &amp; components</div></div>
+      <div class="lcard" onclick="openModule('fleet');hideLauncher()"><div class="lci"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.4"/><path d="M10 3v7l4 2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="lcname">Fleet</div><div class="lcdesc">Deploy &amp; monitor</div></div>
+      <div class="lcard" onclick="openModule('ai');hideLauncher()"><div class="lci"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.4"/><path d="M7 10l2 2 4-4" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="lcname">Vanika AI</div><div class="lcdesc">Robot copilot</div></div>
+      <div class="lcard" onclick="openModule('analytics');hideLauncher()"><div class="lci"><svg viewBox="0 0 20 20"><path d="M3 15L7 10L10 13L14 7L17 10" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="lcname">Analytics</div><div class="lcdesc">Sim &amp; fleet data</div></div>
+      <div class="lcard" onclick="openModule('marketplace');hideLauncher()"><div class="lci"><svg viewBox="0 0 20 20"><rect x="2" y="7" width="16" height="11" rx="2" stroke-width="1.4"/><path d="M6 7V5a4 4 0 018 0v2" stroke-width="1.4"/></svg></div><div class="lcname">Marketplace</div><div class="lcdesc">Templates &amp; nodes</div></div>
+      <div class="lcard" onclick="openModule('manufacture');hideLauncher()"><div class="lci"><svg viewBox="0 0 20 20"><rect x="2" y="6" width="16" height="9" rx="2" stroke-width="1.4"/><path d="M6 6V4a2 2 0 014 0v2M10 6v2a2 2 0 004 0V6" stroke-width="1.4" stroke-linecap="round"/><path d="M2 11h16" stroke-width="1" stroke-dasharray="2,2"/></svg></div><div class="lcname">Manufacture</div><div class="lcdesc">Fabrication &amp; quotes</div></div>
+      <div class="lcard" onclick="openModule('deploy-pipeline');hideLauncher()"><div class="lci"><svg viewBox="0 0 20 20"><path d="M4 10h12M13 6l4 4-4 4" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="10" r="2" stroke-width="1.4"/></svg></div><div class="lcname">Deploy</div><div class="lcdesc">Build &amp; push to robot</div></div>
     </div>
-
-    <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink4);margin-bottom:12px">Vanika Modules</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:26px">
-
-      <div class="lcard-core" onclick="openModule('studio');hideLauncher()">
-        <div class="lci-core"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="10" cy="10" r="4"/><path d="M10 2v3M10 15v3M2 10h3M15 10h3"/></svg></div>
-        <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px">Vanika Studio</div>
-        <div style="font-size:10px;color:var(--ink4)">3D design &amp; URDF</div>
-      </div>
-
-      <div class="lcard-core" onclick="openModule('code');hideLauncher()">
-        <div class="lci-core"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7l-4 3 4 3M14 7l4 3-4 3M11 5l-2 10"/></svg></div>
-        <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px">Vanika Code</div>
-        <div style="font-size:10px;color:var(--ink4)">ROS2 IDE &amp; copilot</div>
-      </div>
-
-      <div class="lcard-core" onclick="openModule('simulation');hideLauncher()">
-        <div class="lci-core"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l7 4-7 4V4zM15 6v8"/></svg></div>
-        <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px">Vanika Sim</div>
-        <div style="font-size:10px;color:var(--ink4)">Physics &amp; scenarios</div>
-      </div>
-
-      <div class="lcard-core" onclick="openModule('hardware');hideLauncher()">
-        <div class="lci-core"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="3" y="6" width="14" height="8" rx="2"/><path d="M7 6V4M13 6V4M7 14v2M13 14v2"/></svg></div>
-        <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px">Vanika Hardware</div>
-        <div style="font-size:10px;color:var(--ink4)">BOM &amp; components</div>
-      </div>
-
-      <div class="lcard-core" onclick="openModule('fleet');hideLauncher()">
-        <div class="lci-core"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M10 3v7l3.5 2"/></svg></div>
-        <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px">Vanika Fleet</div>
-        <div style="font-size:10px;color:var(--ink4)">OTA &amp; telemetry</div>
-      </div>
-
-      <div class="lcard-core" onclick="openModule('ai');hideLauncher()">
-        <div class="lci-core lci-ai"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7" stroke-width="1.3"/><path d="M7 10l2 2 4-4" stroke-width="1.5"/></svg></div>
-        <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px">Vanika AI Core</div>
-        <div style="font-size:10px;color:var(--ink4)">LRB-aware copilot</div>
-      </div>
-
-    </div>
-
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:0.5px solid var(--border)">
-      <div style="display:flex;align-items:center;gap:6px">
-        <div class="sdot"></div>
-        <span style="font-size:11px;color:var(--ink3)">Active: <strong style="color:var(--ink);font-weight:600">Kiran-3</strong></span>
-      </div>
-      <div style="display:flex;gap:16px">
-        <span style="font-size:11px;color:var(--ink4);cursor:pointer" onclick="openModule('projects');hideLauncher()">All projects</span>
-        <span style="font-size:11px;color:var(--ink4);cursor:pointer" onclick="openModule('settings');hideLauncher()">Settings</span>
-        <span style="font-size:11px;color:var(--ink4);cursor:pointer" onclick="openModule('profile');hideLauncher()">Profile</span>
+    <div class="li-foot">
+      <div class="li-proj"><div class="sdot"></div>Active: <strong>Kiran-3</strong></div>
+      <div class="li-links">
+        <span class="li-link" onclick="openModule('projects');hideLauncher()">All projects</span>
+        <span class="li-link" onclick="openModule('settings');hideLauncher()">Settings</span>
+        <span class="li-link" onclick="openModule('profile');hideLauncher()">Profile</span>
       </div>
     </div>
   </div>
 </div>
-
 
 <!-- FAB STACK -->
 <div class="fabstack" id="fab-stack" style="display:none">
@@ -1055,15 +921,7 @@ body.sidebar-open #launcher{padding-left:56px}</style>
 
 <script>
 let wins={},zTop=10,activeWin=null,ctxTarget=null,drag=null,rsz=null;
-var desktop=null,gtbTabs=null;
-(function initDesktop(){
-  var el=document.getElementById('workspace');
-  if(el){desktop=el;gtbTabs=document.getElementById('gtb-tabs');}
-  else document.addEventListener('DOMContentLoaded',function(){
-    desktop=document.getElementById('workspace');
-    gtbTabs=document.getElementById('gtb-tabs');
-  });
-})();
+const desktop=document.getElementById('workspace'),gtbTabs=document.getElementById('gtb-tabs');
 
 const MODS={
   dashboard:{title:'Dashboard · Kiran-3',w:700,h:520},
@@ -1120,51 +978,35 @@ const MODS={
 
 function openModule(id){
   if(!id||id==='newrobot')return;
-  // Ensure desktop reference is live
-  if(!desktop) desktop=document.getElementById('workspace');
-  if(!desktop) return;
   var mod=PAGE_TO_MODULE[id]||'studio';
+  // Switch visible module
   switchToModule(mod);
-  // If already open, bring to front
+  // If already open, just bring to front
   if(wins[id]){
     var w=wins[id];
-    if(w.el&&w.el.classList.contains('minimized')) w.el.classList.remove('minimized');
+    if(w.el.classList.contains('minimized'))w.el.classList.remove('minimized');
     bringFront(id);updateTabs();return;
   }
-  // Create new window
-  var def=MODS[id]||{title:id,w:680,h:480};
+  // Create the window tagged with this module
+  var def=MODS[id]||{title:id,w:660,h:460};
   var modWins=Object.keys(wins).filter(function(k){return wins[k]&&wins[k].el&&wins[k].mod===mod&&!wins[k].el.classList.contains('minimized');});
   var n=modWins.length;
   var ox=Math.min(n*26,180),oy=Math.min(n*26,100);
   var el=document.createElement('div');
-  el.className='win';
-  el.id='win-'+id;
+  el.className='win';el.id='win-'+id;
   el.setAttribute('data-module',mod);
-  var _sbL=document.body.classList.contains('sidebar-open')?56:0;
-  el.style.cssText='left:'+(_sbL+58+ox)+'px;top:'+(44+oy)+'px;width:'+def.w+'px;height:'+def.h+'px;z-index:'+(++zTop);
-  try{
-    var pageHTML=(id==='studio')?buildStudio3DPage():getPage(id);
-    el.innerHTML=buildTB(id,def.title)+'<div class="wbody">'+pageHTML+'</div><div class="wrsz"></div>';
-  }catch(e){
-    el.innerHTML=buildTB(id,def.title)+'<div class="wbody"><div class="mod"><p style="padding:20px;color:var(--ink3)">Loading...</p></div></div><div class="wrsz"></div>';
-  }
-  var rsz=el.querySelector('.wrsz');
-  if(rsz) rsz.addEventListener('mousedown',function(e){startRsz(e,id);});
+  el.style.cssText='left:'+(58+ox)+'px;top:'+(44+oy)+'px;width:'+def.w+'px;height:'+def.h+'px;z-index:'+(++zTop);
+  var pageHTML=(id==='studio')?buildStudio3DPage():getPage(id);
+  el.innerHTML=buildTB(id,def.title)+'<div class="wbody">'+pageHTML+'</div><div class="wrsz"></div>';
+  el.querySelector('.wrsz').addEventListener('mousedown',function(e){startRsz(e,id);});
   desktop.appendChild(el);
   wins[id]={el:el,title:def.title,mod:mod};
   bringFront(id);updateTabs();
   makeDraggable(el,id);
-  if(id==='studio') setTimeout(function(){initStudio3D('win-studio');},50);
-  // Fade-in: set transition first, then change opacity so browser animates it
-  el.style.opacity='0';
-  el.style.transform='scale(0.97)';
-  el.style.transition='none';
-  // Force reflow so opacity:0 is committed before we set transition+opacity:1
-  void el.offsetHeight;
-  el.style.transition='opacity 0.16s ease,transform 0.16s ease';
-  el.style.opacity='1';
-  el.style.transform='scale(1)';
-  setTimeout(function(){el.style.transition='box-shadow 0.15s';},200);
+  if(id==='studio')setTimeout(function(){initStudio3D('win-studio');},50);
+  el.style.opacity='0';el.style.transform='scale(0.96)';el.style.transition='opacity .17s,transform .17s';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){el.style.opacity='1';el.style.transform='scale(1)';});});
+  setTimeout(function(){el.style.transition='box-shadow .15s';},220);
 }
 
 // Module system: PAGE → module mapping
@@ -1250,21 +1092,8 @@ function minWin(id){wins[id]?.el.classList.add('minimized');updateTabs();}
 function maxWin(id){const el=wins[id]?.el;if(!el)return;el.classList.toggle('maximized');el.classList.remove('snapped-left','snapped-right');}
 
 
-function updateSidebarActive(){
-  var sbItems = document.querySelectorAll('.isb-item');
-  var sidebarModules = ['dashboard','analytics','manufacture','deploy-pipeline','marketplace','notifications'];
-  sbItems.forEach(function(item){
-    var onclick = item.getAttribute('onclick')||'';
-    var active = sidebarModules.some(function(m){
-      return onclick.includes("'"+m+"'") && wins[m] && wins[m].el;
-    });
-    item.classList.toggle('active', active);
-  });
-}
 function updateTabs(){
-  if(!gtbTabs){gtbTabs=document.getElementById('gtb-tabs');}
-  if(!gtbTabs)return;
-  gtbTabs.innerHTML='';updateSidebarActive();
+  gtbTabs.innerHTML='';
   Object.keys(wins).forEach(function(wid){
     var w=wins[wid];
     if(!w||!w.el)return;
@@ -1297,7 +1126,7 @@ document.addEventListener('mousemove',e=>{
   if(drag){
     const{id,sx,sy,ox,oy}=drag,el=wins[id]?.el;if(!el)return;
     el.classList.remove('maximized','snapped-left','snapped-right');
-    var _sbD=document.body.classList.contains('sidebar-open')?56:0;el.style.left=Math.max(_sbD,ox+(e.clientX-sx))+'px';
+    el.style.left=Math.max(0,ox+(e.clientX-sx))+'px';
     el.style.top=Math.max(40,oy+(e.clientY-sy))+'px';
     const sl=document.getElementById('snap-l'),sr=document.getElementById('snap-r');
     sl.style.opacity=e.clientX<80?'1':'0';
@@ -1376,51 +1205,6 @@ function clearChat(){const a=document.querySelector('#win-ai .chatarea');if(a)a.
 function initMsg(){return`<div class="chatmsg"><div class="cavatar ai">V</div><div><div style="font-size:10px;color:var(--ink4);margin-bottom:2px">Vanika AI · Kiran-3 LRB v4.1 loaded</div><div class="bubble">Hi Kisshhan! I have your full Kiran-3 blueprint loaded. I noticed the IMU MPU-9250 is backordered — want me to find alternatives?</div></div></div>`;}
 
 
-
-// ═══ MODULE GUIDE BANNERS ═══
-function mgb(id, icon, title, desc, steps, lrb){
-  var dismissed = false;
-  try{ dismissed = localStorage.getItem('mgb-dismissed-'+id)==='1'; } catch(e){}
-  var stepsHtml = steps.map(function(s,i){
-    return '<div class="mgb-step" data-action="'+s[1]+'" onclick="handleMgbStep(this)">'
-      +'<div class="mgb-step-num">'+(i+1)+'</div>'+s[0]+'</div>';
-  }).join('');
-  var html = '<div class="mgb'+(dismissed?' collapsed':'')+'" id="mgb-'+id+'">';
-  html += '<div class="mgb-inner">';
-  html += '<div class="mgb-icon">'+icon+'</div>';
-  html += '<div class="mgb-body">';
-  html += '<div class="mgb-title">'+title+'</div>';
-  html += '<div class="mgb-desc">'+desc+'</div>';
-  html += '<div class="mgb-steps">'+stepsHtml+'</div>';
-  html += '<div class="mgb-lrb"><div class="mgb-lrb-dot"></div>'+lrb+'</div>';
-  html += '</div></div>';
-  html += '<button class="mgb-close" data-id="'+id+'" onclick="dismissMgb(this.dataset.id)" title="Dismiss">&#x2715;</button>';
-  html += '</div>';
-  html += '<div class="mgb-reopen'+(dismissed?' show':'')+'" id="mgb-reopen-'+id+'">';
-  html += '<button data-id="'+id+'" onclick="reopenMgb(this.dataset.id)">? Guide</button>';
-  html += '</div>';
-  return html;
-}
-function handleMgbStep(el){
-  var action = el.dataset.action;
-  if(action) eval(action);
-}
-function dismissMgb(id){
-  var el=document.getElementById('mgb-'+id);
-  var re=document.getElementById('mgb-reopen-'+id);
-  if(el){el.style.opacity='0';el.style.transition='opacity .2s';
-    setTimeout(function(){el.classList.add('collapsed');el.style.opacity='1';el.style.transition='';},200);}
-  if(re) re.classList.add('show');
-  try{localStorage.setItem('mgb-dismissed-'+id,'1');}catch(e){}
-}
-function reopenMgb(id){
-  var el=document.getElementById('mgb-'+id);
-  var re=document.getElementById('mgb-reopen-'+id);
-  if(el) el.classList.remove('collapsed');
-  if(re) re.classList.remove('show');
-  try{localStorage.removeItem('mgb-dismissed-'+id);}catch(e){}
-}
-
 // ═══ AUTH ═══
 function authTab(tab){
   var fi=document.getElementById('auth-form-in');
@@ -1433,9 +1217,6 @@ function authTab(tab){
   if(tu) tu.classList.toggle('active',tab==='up');
 }
 function enterApp(){
-  var sb = document.getElementById('int-sidebar');
-  if(sb) sb.style.display='flex';
-  document.body.classList.add('sidebar-open');
   var overlay=document.getElementById('auth-overlay');
   if(!overlay)return;
   overlay.style.opacity='0';
@@ -1490,34 +1271,20 @@ function tileWindows(){
   var cols=Math.ceil(Math.sqrt(keys.length));
   var rows=Math.ceil(keys.length/cols);
   var g=8;
-  var sbW=document.body.classList.contains('sidebar-open')?56:0;
-  var vw=window.innerWidth-sbW;
-  var vh=window.innerHeight-40-36; // 36px extra to account for 44px top offset
+  var vw=window.innerWidth;
+  var vh=window.innerHeight-40; // subtract toolbar height
   var tw=Math.floor((vw-g*(cols+1))/cols);
   var th=Math.floor((vh-g*(rows+1))/rows);
   keys.forEach(function(k,i){
     var c=i%cols, r=Math.floor(i/cols);
     var el=wins[k].el;
     el.classList.remove('maximized','snapped-left','snapped-right');
-    el.style.left=(sbW+g+c*(tw+g))+'px';
-    el.style.top=(44+r*(th+g))+'px';
-    el.style.zIndex=++zTop;
+    el.style.left=(g+c*(tw+g))+'px';
+    el.style.top=(g+r*(th+g))+'px';
     el.style.width=tw+'px';
     el.style.height=th+'px';
   });
 }
-
-
-// Reset guide banners if version changed (ensures fixed banners show after updates)
-(function(){
-  var V = 'mgb-v3';
-  try{
-    if(localStorage.getItem('mgb-version') !== V){
-      Object.keys(localStorage).filter(function(k){return k.startsWith('mgb-dismissed-');}).forEach(function(k){localStorage.removeItem(k);});
-      localStorage.setItem('mgb-version', V);
-    }
-  }catch(e){}
-})();
 
 // ═══ INIT ═══
 
@@ -1696,7 +1463,6 @@ case 'dashboard':return`
   <div class="wt" data-tab="activity" onclick="switchTab('dashboard','activity')">Activity</div>
   <div class="wt" data-tab="team" onclick="switchTab('dashboard','team')">Team</div>
 </div>
-${mgb("dashboard","<svg viewBox='0 0 16 16'><rect x='1' y='1' width='6' height='6' rx='1.5'/><rect x='9' y='1' width='6' height='6' rx='1.5'/><rect x='1' y='9' width='6' height='6' rx='1.5'/><rect x='9' y='9' width='6' height='6' rx='1.5'/></svg>","Welcome to your Dashboard — the nerve centre of Kiran-3","Everything happening across Studio, Simulation, Code and Fleet surfaces here in real time. Watch your sim pass rate, build health, fleet status and BOM cost from one view. Any stat card you click opens the full module.",[["Review active sim runs","openModule('sim-results')"],["Check fleet health","openModule('fleet')"],["Open AI copilot","openModule('ai')"]],"Live Robot Blueprint v4.1 is synced — all modules are reading the same Kiran-3 definition right now.")}
 <div class="tpanel" data-panel="overview">
 <div class="mod">
   <div class="sh"><div class="sh-l"><div class="sh-title">Kiran-3 Overview</div><div class="sh-sub">Differential drive AMR · v2.3.1 · Updated 2h ago</div></div><div class="sh-r"><span class="badge bg-g"><span class="bdot" style="background:var(--sage)"></span>LRB Live</span></div></div>
@@ -1755,15 +1521,15 @@ case 'projects':return`
 </div>`;
 
 case 'studio':return`
-${mgb("studio","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='4'/><path d='M8 1v3M8 12v3M1 8h3M12 8h3'/></svg>","Vanika Studio — design your robot, then send it everywhere","Import your URDF or start from a template. Every save updates the Live Robot Blueprint instantly — Code auto-generates typed sensor accessors, Sim picks up the new geometry, and Hardware re-prices the BOM. You never copy data between tools.",[["Import URDF file","openModule('import-urdf')"],["Configure joints","openModule('joint-editor')"],["AI design review","toast('AI Review','Checking CoM, collision geometry and sensor FoV…')"],["View rendered robot","openModule('robot-render')"]],"Every save writes to the LRB and triggers instant updates in Code, Sim and Hardware BOM.")}
 <div class="wtabs">
   <div class="wt active" data-tab="builder" onclick="switchTab('studio','builder')">3D Builder</div>
   <div class="wt" data-tab="params" onclick="switchTab('studio','params')">Parameters</div>
   <div class="wt" data-tab="sensors" onclick="switchTab('studio','sensors')">Sensors</div>
   <div class="wt" data-tab="lrb" onclick="switchTab('studio','lrb')">Live Blueprint</div>
 </div>
-<div class="tpanel" data-panel="builder" style="display:flex;flex-direction:row;flex:1;overflow:hidden">
 
+<!-- 3D BUILDER TAB -->
+<div class="tpanel" data-panel="builder" style="display:flex;flex-direction:row;flex:1;overflow:hidden">
   <!-- Left: Tools panel -->
   <div style="width:200px;flex-shrink:0;border-right:0.5px solid var(--border);background:var(--white);display:flex;flex-direction:column;overflow:hidden">
     <div style="padding:8px 10px 6px;border-bottom:0.5px solid var(--border);font-size:10px;font-weight:500;color:var(--ink4);text-transform:uppercase;letter-spacing:.05em;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
@@ -1967,7 +1733,6 @@ case 'code':return`
   <div class="wt" onclick="openModule('git')">Git ↗</div>
   <div class="wt" onclick="openModule('ros-graph')">ROS Graph ↗</div>
 </div>
-${mgb("code","<svg viewBox='0 0 16 16'><path d='M4 5l-3 3 3 3M12 5l3 3-3 3M9 3l-2 10'/></svg>","Vanika Code — a cloud IDE that knows your robot","Monaco editor with full ROS2 support, 30 pre-built node templates, and an AI Copilot that has loaded your Kiran-3 blueprint. Ask it to generate a PID controller and it will use your exact joint names and sensor topics — no copy-pasting from docs.",[["Browse 30 ROS2 templates","toast('Templates','Opening ROS2 template library…')"],["Ask AI Copilot to generate a node","openModule('ai')"],["Build & deploy to robot","openModule('deploy-pipeline')"]],"When you add a sensor in Studio, a typed robot.sdk.hpp accessor appears here automatically within 3 seconds.")}
 <div class="tpanel" data-panel="editor" style="flex-direction:row">
   <div style="width:150px;flex-shrink:0;border-right:0.5px solid var(--border);background:var(--pearl);padding:7px;overflow-y:auto;font-family:var(--mono);font-size:11px">
     <div style="font-size:10px;color:var(--ink4);text-transform:uppercase;letter-spacing:.04em;padding:3px 7px 4px">src/</div>
@@ -2000,8 +1765,6 @@ ${mgb("code","<svg viewBox='0 0 16 16'><path d='M4 5l-3 3 3 3M12 5l3 3-3 3M9 3l-
 </div>`;
 
 case 'terminal':return`
-${mgb("terminal","<svg viewBox='0 0 16 16'><rect x='1' y='2' width='14' height='12' rx='2'/><path d='M4 6l3 3-3 3M9 12h4'/></svg>","Terminal — a real cloud shell connected to your robot build environment","A full Linux terminal running in the same cloud environment as your firmware builds. Run colcon build, launch ROS2 nodes, inspect topics with ros2 topic echo, or SSH directly into a deployed robot. Fully isolated — no local setup, no environment drift between teammates.",[["Run colcon build","toast(\'Terminal\',\'Running: colcon build\')"],["List ROS2 topics","toast(\'Terminal\',\'Running: ros2 topic list\')"],["View ROS graph","openModule(\'ros-graph\')"],["SSH to robot","toast(\'Terminal\',\'Opening SSH via Fleet proxy\')"]],"The terminal has the same ROS2 distro as your LRB project — ros2 topic list will show your actual robot topics.")}
-
 <div class="wtabs"><div class="wt active">bash</div><div class="wt" onclick="toast('Terminal 2','Opened.')">+</div><div class="f1"></div><button class="wtbtn" style="margin:4px 9px 4px 0" onclick="toast('Clear','Cleared.')">Clear</button></div>
 <div class="term" id="term-out" style="flex:1">
   <div class="tl"><span class="tp">vanika@kiran3 ~$</span><span> ros2 launch kiran3_bringup sensors.launch.py</span></div>
@@ -2021,7 +1784,6 @@ case 'git':return`
   <div class="wt" data-tab="log" onclick="switchTab('git','log')">Log</div>
   <div class="wt" data-tab="branches" onclick="switchTab('git','branches')">Branches</div>
 </div>
-${mgb("git","<svg viewBox='0 0 16 16'><circle cx='4' cy='4' r='2'/><circle cx='12' cy='4' r='2'/><circle cx='4' cy='12' r='2'/><path d='M4 6v2a2 2 0 002 2h2M12 6v4'/></svg>","Git — version control built into your robot IDE","Every firmware change, every URDF tweak, every ROS2 node lives here — connected directly to GitHub or GitLab. Commit from inside Vanika, create branches for experiments, open pull requests for review, and see full diffs before merging. No context-switching to a separate terminal or browser tab.",[["Commit changes","toast(\'Git\',\'Opening commit dialog\')"],["Create a branch","toast(\'Git\',\'Creating feature branch\')"],["Open pull request","openModule(\'git-pr\')"],["View history","toast(\'Git\',\'Loading history\')"]],"Git commits are stamped with the LRB version — so you can always trace a firmware commit back to the exact robot model it was built against.")}
 <div class="tpanel" data-panel="changes" style="flex-direction:row">
   <div style="width:190px;flex-shrink:0;border-right:0.5px solid var(--border);padding:9px 7px;overflow-y:auto;background:var(--pearl)">
     <div style="font-size:10px;color:var(--ink4);text-transform:uppercase;letter-spacing:.04em;padding:0 5px 5px">Staged (3)</div>
@@ -2117,7 +1879,6 @@ case 'simulation':return`
   <div class="wt" onclick="openModule('sim-results')">Results ↗</div>
   <div class="wt" onclick="openModule('sim-scenarios')">Scenarios ↗</div>
 </div>
-${mgb("simulation","<svg viewBox='0 0 16 16'><polygon points='8,2 14,14 2,14'/></svg>","Vanika Sim — run 1,000 scenarios overnight in the cloud","Bullet3 physics engine, zero local GPU needed. Pick a scenario, set fault injections (IMU noise, LiDAR dropout, wheel slip), batch to 5,000 runs and wake up to a pass-rate distribution. Every result feeds the AI flywheel.",[["Choose a scenario","openModule('sim-scenarios')"],["Configure fault injection","openModule('sim-run-config')"],["View last run results","openModule('sim-results')"]],"Sim always uses the latest LRB geometry — change a joint limit in Studio and the next sim run picks it up automatically.")}
 <div class="tpanel" data-panel="run">
 <div class="mod">
   <div class="sh"><div class="sh-l"><div class="sh-title">New Simulation Run</div><div class="sh-sub">Config from LRB v4.1</div></div></div>
@@ -2169,7 +1930,6 @@ case 'hardware':return`
   <div class="wt active" data-tab="bom" onclick="switchTab('hardware','bom')">Bill of Materials</div>
   <div class="wt" data-tab="suppliers" onclick="switchTab('hardware','suppliers')">Suppliers</div>
 </div>
-${mgb("hardware","<svg viewBox='0 0 16 16'><rect x='2' y='5' width='12' height='7' rx='2'/><path d='M5 5V3.5a2 2 0 014 0V5'/></svg>","Vanika Hardware — your URDF becomes a live costed BOM","Every sensor and actuator in your URDF is mapped to a real component with live Octopart pricing from Mouser, Digi-Key and RS. Lead times update every 4 hours. AI swap recommendations appear when a part is out of stock or over budget.",[["Review AI swap recommendations","openModule('bom-item-detail')"],["Check lead times","toast('Lead times','Refreshing Octopart data…')"],["Export BOM to Excel","toast('Export','BOM exported to Excel.')"],["Send to manufacture","openModule('manufacture')"]],"BOM auto-updates whenever the LRB sensor or actuator list changes — add a sensor in Studio, it appears here in seconds.")}
 <div class="tpanel" data-panel="bom">
 <div class="mod">
   <div class="sh"><div class="sh-l"><div class="sh-title">BOM · Kiran-3</div><div class="sh-sub">Derived from LRB v4.1 · 1 item needs attention</div></div><div class="sh-r"><span class="badge bg-a">₹1,22,450 total</span></div></div>
@@ -2198,7 +1958,6 @@ case 'fleet':return`
   <div class="wt" onclick="openModule('fleet-ota')">OTA History ↗</div>
   <div class="wt" onclick="openModule('fleet-alerts')">Alerts <span class="tbadge">2</span></div>
 </div>
-${mgb("fleet","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='5'/><path d='M8 3v5l3 2'/></svg>","Vanika Fleet — deploy firmware and monitor robots in the field","A Rust edge agent (<2MB) runs on each robot and streams CPU, battery, velocity and error logs at 10Hz. Push firmware OTA from the Code module — the agent validates SHA256, applies atomically and rolls back on failure. No physical access needed.",[["Deploy firmware OTA","openModule('deploy-pipeline')"],["View live telemetry","openModule('fleet-robot')"],["Set alert rules","openModule('alert-rules')"],["Assign a mission","openModule('assign-mission')"]],"Fleet pulls the latest firmware build directly from the Code pipeline — one click from IDE to physical robot.")}
 <div class="tpanel" data-panel="live" style="flex-direction:row">
   <div style="flex:1;display:flex;flex-direction:column">
     <div class="fmap" style="flex:1;margin:9px 9px 0;min-height:180px">
@@ -2309,7 +2068,6 @@ case 'analytics':return`
   <div class="wt" data-tab="fleet" onclick="openModule('fleet-analytics')">Fleet</div>
   <div class="wt" onclick="openModule('ai-history')">AI usage ↗</div>
 </div>
-${mgb("analytics","<svg viewBox='0 0 16 16'><path d='M2 12l3-4 3 3 4-6 2 3'/></svg>","Vanika Analytics — trends across sim, fleet and hardware over time","Track sim pass rate week-over-week, fleet battery degradation curves, BOM cost evolution and team activity. Filter by robot, date range or module. All data is exportable as CSV for your own analysis or investor updates.",[["Check sim pass rate trend","switchTab('analytics','sim')"],["View fleet battery health","switchTab('analytics','fleet')"],["Export to CSV","toast('Export','Analytics data exported.')"]],"All analytics are powered by real events from the LRB change log, sim results, and fleet telemetry — no manual data entry.")}
 <div class="tpanel" data-panel="ov">
 <div class="mod">
   <div class="sh"><div class="sh-l"><div class="sh-title">This month</div><div class="sh-sub">May 2025</div></div></div>
@@ -2333,8 +2091,6 @@ ${mgb("analytics","<svg viewBox='0 0 16 16'><path d='M2 12l3-4 3 3 4-6 2 3'/></s
 </div>`;
 
 case 'ai':return`
-${mgb("ai","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='5'/><path d='M5.5 8l2 2 3-3'/></svg>","Vanika AI — a robotics copilot that already knows your robot","Every AI response is grounded in your Live Robot Blueprint. The AI knows your sensor names, joint limits, ROS2 distro, and last sim results before you type a word. Ask it to write a ROS2 node, debug a trajectory, explain a sim failure, or generate a complete package — it answers with your robot in mind, not a generic one.",[["Generate a ROS2 node","toast('AI','Opening code generation…')"],["Debug a sim failure","openModule('sim-results')"],["Review robot design","openModule('studio')"],["Explore AI history","openModule('ai-history')"]],'The AI context window always includes the current LRB snapshot — your robot model is injected into every prompt automatically.')}
-
 <div class="wtabs"><div class="wt active">Chat</div><div class="wt" onclick="openModule('ai-history')">History ↗</div></div>
 <div style="flex:1;display:flex;overflow:hidden">
   <div class="chatarea f1" id="ai-chat-area">${(()=>`<div class="chatmsg"><div class="cavatar ai">V</div><div><div style="font-size:10px;color:var(--ink4);margin-bottom:2px">Vanika AI · Kiran-3 LRB v4.1</div><div class="bubble">Hi Kisshhan! I have your full Kiran-3 Live Robot Blueprint loaded. I noticed the IMU MPU-9250 is backordered — want me to find alternatives?</div></div></div><div class="chatmsg u"><div class="cavatar u">A</div><div class="bubble">Yes, show me alternatives for the IMU</div></div><div class="chatmsg"><div class="cavatar ai">V</div><div class="bubble">Based on your LRB config (I2C, 9-axis, topic: /imu/data), here are 2 drop-in alternatives:<br><br><strong>1. ICM-20689</strong> — InvenSense, ₹520, in stock at Robu.in. Same pinout.<br><strong>2. LSM9DS1</strong> — ST, ₹440, in stock. Minor driver change needed — I can generate it.<div class="codesnip">// Auto-generated for LSM9DS1<br>#include "sensors/lsm9ds1.hpp"<br>// topic: /imu/data — unchanged</div></div></div>`)()}</div>
@@ -2374,8 +2130,6 @@ case 'notifications':return`
 </div>`;
 
 case 'settings':return`
-${mgb("settings","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='3'/><path d='M8 1v2M8 13v2M1 8h2M13 8h2M3.2 3.2l1.4 1.4M11.4 11.4l1.4 1.4M3.2 12.8l1.4-1.4M11.4 4.6l1.4-1.4'/></svg>","Settings — configure Vanika to match how your team works","Set your ROS2 distro, default simulation scenario, AI model preference, build environment, notification rules, and team permissions here. Settings are org-wide by default — changes apply to all projects unless overridden at project level.",[["Set ROS2 distro","toast(\'Settings\',\'ROS2 distro selector open\')"],["Configure AI model","toast(\'Settings\',\'Opening AI preferences\')"],["Set alert rules","openModule(\'alert-rules\')"],["Manage team","openModule(\'team-invite\')"]],"ROS2 distro and sim defaults are written to the LRB — changing distro here updates ros_distro across all your projects.")}
-
 <div class="sbl">
   <div class="sbleft">
     <div class="sbsect">Workspace</div>
@@ -2449,7 +2203,6 @@ case 'docs':return`
 </div>`;
 
 case 'profile':return`
-${mgb("profile","<svg viewBox='0 0 16 16'><circle cx='8' cy='5' r='3'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6'/></svg>","Your profile — identity, preferences, and usage across Vanika","Your profile shows your role, org, API token usage, and activity across all projects. Set your preferred IDE theme, keybindings, notification preferences, and AI Copilot language. Changes apply instantly across all open windows and sync to your teammates view of the project.",[["Change theme","toast(\'Theme\',\'Opening theme switcher\')"],["View API usage","toast(\'Usage\',\'Loading token usage\')"],["Notification settings","openModule(\'notification-settings\')"],["Invite teammates","openModule(\'team-invite\')"]],"Your Copilot language preference here affects AI code generation — set it to match your team for better ROS2 suggestions.")}
 <div class="mod">
   <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
     <div class="pavatar">KP</div>
@@ -2473,7 +2226,6 @@ ${mgb("profile","<svg viewBox='0 0 16 16'><circle cx='8' cy='5' r='3'/><path d='
 case 'marketplace':return`
 <div class="wtabs"><div class="wt active">Templates</div><div class="wt" onclick="openModule('marketplace')">ROS2 Nodes</div><div class="wt" onclick="openModule('marketplace')">Community</div></div>
 <div class="sbar"><svg viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="4.5" stroke-width="1.3"/><path d="M10 10l3 3" stroke-width="1.3" stroke-linecap="round"/></svg><input placeholder="Search marketplace…"><select class="inp" style="width:120px;height:26px;font-size:11px"><option>All types</option><option>Mobile robot</option><option>Arm</option><option>Drone</option></select></div>
-${mgb("marketplace","<svg viewBox='0 0 16 16'><rect x='1' y='6' width='14' height='9' rx='2'/><path d='M5 6V4a3 3 0 016 0v2'/></svg>","Marketplace — production-ready nodes, templates, and AI plugins, one click away","Browse community-contributed and Vanika-verified packages. One-click import adds a ROS2 node into your Code project, a URDF template into Studio, or a simulation scenario into Sim — all pre-wired to your current LRB. No copy-pasting or dependency management.",[["Browse ROS2 nodes","toast(\'Marketplace\',\'Loading verified nodes\')"],["Find URDF templates","toast(\'Marketplace\',\'Loading robot templates\')"],["Explore sim scenarios","toast(\'Marketplace\',\'Loading scenarios\')"],["Publish your work","toast(\'Marketplace\',\'Opening submission flow\')"]],"All marketplace items are validated against the LRB schema — imported templates automatically populate sensor and joint names from your current project.")}
 <div class="mod">
   <div class="g3">
     ${[['🤖','AMR Starter Pack','Diff-drive · nav stack','Official',['ROS2','Warehouse']],['🦾','6-DOF Arm','MoveIt2 ready','Official',['ROS2','MoveIt']],['🚁','Aerial Scout','Quadcopter · SLAM','Community',['Drone','SLAM']],['📦','Warehouse AMR Pro','Fleet-ready AMR','Official',['Warehouse','Fleet']],['🧩','Sensor Suite','12 sensors pre-wired','Community',['Sensors']],['⚡','Minimal Base','Bare starter','Official',['Custom']]].map(([ico,n,d,tag,tags])=>`
@@ -2487,7 +2239,6 @@ ${mgb("marketplace","<svg viewBox='0 0 16 16'><rect x='1' y='6' width='14' heigh
 </div>`;
 
 case 'onboarding':return`
-${mgb("onboarding","<svg viewBox='0 0 16 16'><path d='M8 1l2 4 4.5.7-3.2 3.1.7 4.5L8 11.2l-4 2.1.7-4.5L1.5 5.7 6 5z'/></svg>","Welcome to Vanika — build your first robot in under 15 minutes","Follow these steps in order. Each takes 2–4 minutes. By the end you will have a 3D robot model, firmware code, a running simulation, and a live hardware BOM — all linked through the Live Robot Blueprint. This is the fastest path to your first robot on the platform.",[["Import or create your robot","openModule(\'import-urdf\')"],["Add a sensor in Studio","openModule(\'sensor-picker\')"],["Open the Code IDE","openModule(\'code\')"],["Run your first simulation","openModule(\'simulation\')"]],"Once you complete these 4 steps, the LRB will fully describe your robot — every other Vanika module unlocks from there.")}
 <div class="mod">
   <div class="sh"><div class="sh-l"><div class="sh-title">Getting started with Vanika</div><div class="sh-sub">4 of 5 steps complete</div></div></div>
   <div class="prog" style="margin-bottom:18px;height:5px"><div class="pfill" style="width:80%"></div></div>
@@ -2505,7 +2256,6 @@ case 'robot-detail':return`
   <div class="wt" data-tab="sims" onclick="switchTab('robot-detail','sims')">Sim runs</div>
   <div class="wt" data-tab="act" onclick="switchTab('robot-detail','act')">Activity</div>
 </div>
-
 <div class="tpanel" data-panel="ov">
 <div class="mod">
   <div style="display:flex;gap:13px;align-items:flex-start;margin-bottom:14px">
@@ -3802,7 +3552,6 @@ case 'deploy-pipeline':return`
   <div class="wt" data-tab="history" onclick="switchTab('deploy-pipeline','history')">History</div>
   <div class="wt" data-tab="robots" onclick="switchTab('deploy-pipeline','robots')">Target Robots</div>
 </div>
-${mgb("deploy-pipeline","<svg viewBox='0 0 16 16'><path d='M2 8h12M10 4l4 4-4 4'/><circle cx='5' cy='8' r='2'/></svg>","Deploy Pipeline — push code from your IDE straight to the robot","One click triggers the full chain: colcon build → Docker image → ECR push → OTA dispatch → edge agent on robot validates SHA256, applies update, restarts ROS2. Every step is visible here in real time. If anything fails, automatic rollback fires within seconds.",[["Select target robots","switchTab(\'deploy-pipeline\',\'robots\')"],["Run pipeline","toast(\'Deploy\',\'Pipeline started\')"],["View build logs","openModule(\'build-logs\')"],["See deploy history","switchTab(\'deploy-pipeline\',\'history\')"]],"Each build is stamped with your current LRB version — so you always know which robot model is running on which physical robot.")}
 <div class="tpanel" data-panel="pipeline">
 <div class="mod">
   <div class="sh"><div class="sh-l"><div class="sh-title">Deploy to Robot</div><div class="sh-sub">Kiran-3 · v2.3.1 → v2.4.0 · 5 robots targeted</div></div>
@@ -3857,11 +3606,9 @@ ${mgb("deploy-pipeline","<svg viewBox='0 0 16 16'><path d='M2 8h12M10 4l4 4-4 4'
   <div class="lir"><span class="badge ${status==='Online'?'bg-g':'bg-n'}">${status}</span></div></div>`).join('')}
 </div>
 </div>
-`;
+\`;
 
-case 'manufacture':return`
-${mgb("manufacture","<svg viewBox=\"0 0 16 16\"><rect x=\"1\" y=\"6\" width=\"14\" height=\"8\" rx=\"2\"/><path d=\"M5 6V4a3 3 0 016 0v2\"/><path d=\"M1 10h14\" stroke-dasharray=\"2,2\"/></svg>","Vanika Manufacture — from digital design to physical robot","Once your robot is designed in Studio, this module takes it to the physical world. Run a DFM check, choose materials per component, export STEP and STL files, and send RFQs to verified manufacturing partners — all without leaving Vanika.",[["Run DFM check","switchTab(\"manufacture\",\"dfm\")"],["Choose materials","switchTab(\"manufacture\",\"materials\")"],["Export STEP + STL","toast(\"Export\",\"Generating STEP, STL, DXF files\")"],["Request quotes","switchTab(\"manufacture\",\"rfq\")"]],"Manufacturing data links back to Studio — fixing DFM issues updates the LRB geometry automatically.")}
-
+case 'manufacture':return\`
 <div class="wtabs">
   <div class="wt active" data-tab="overview" onclick="switchTab('manufacture','overview')">Overview</div>
   <div class="wt" data-tab="materials" onclick="switchTab('manufacture','materials')">Materials</div>
@@ -4011,7 +3758,6 @@ case 'robot-render':return`
   <div class="wt" data-tab="views" onclick="switchTab('robot-render','views')">Orthographic Views</div>
   <div class="wt" data-tab="export" onclick="switchTab('robot-render','export')">Export</div>
 </div>
-${mgb("robot-render","<svg viewBox='0 0 16 16'><rect x='2' y='4' width='12' height='9' rx='2'/><path d='M6 4V3a2 2 0 014 0v1'/><circle cx='8' cy='8.5' r='2'/></svg>","Robot Render — see your finished robot before it physically exists","This is what your robot actually looks like as a finished product — outer shell, sensors, wheels, LEDs, all materials applied. Share with investors, align the team on visual design, or confirm the look before sending to manufacturing. Export to OBJ for AR previews or PDF for client presentations.",[["Export HD render","toast(\'Render\',\'High-res render queued\')"],["Orthographic views","switchTab(\'robot-render\',\'views\')"],["Export for manufacturing","switchTab(\'robot-render\',\'export\')"],["Send to manufacture","openModule(\'manufacture\')"]],"The render reflects your current LRB — change a sensor or material in Studio and re-render to see the updated robot instantly.")}
 <div class="tpanel" data-panel="render">
 <div class="mod">
   <div class="sh"><div class="sh-l"><div class="sh-title">Kiran-3 · Rendered view</div><div class="sh-sub">Differential drive AMR · 4.2kg · ABS chassis</div></div>

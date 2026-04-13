@@ -29,6 +29,12 @@
 }
 [data-theme="dark"] body{background:var(--pearl);color:var(--ink)}
 [data-theme="dark"] .auth-overlay{background:var(--pearl)}
+body.popout-mode .auth-overlay{display:none!important}
+body.popout-mode #fab-stack{display:flex!important}
+body.popout-mode #lrb-badge-wrap{display:flex!important}
+body.popout-mode #mode-switcher{display:flex!important}
+body.popout-mode #int-sidebar{display:none!important}
+body.popout-mode .launcher{display:none!important}
 [data-theme="dark"] .auth-right{background:var(--white);border-left-color:var(--border)}
 [data-theme="dark"] .auth-input{background:var(--white);color:var(--ink);border-color:var(--border2)}
 [data-theme="dark"] .auth-oauth{background:transparent;border-color:var(--border2);color:var(--ink3)}
@@ -705,7 +711,56 @@ textarea.inp{height:auto;padding:7px 10px;resize:vertical;line-height:1.5}
 .lci-core{width:36px;height:36px;border-radius:10px;background:var(--white);border:0.5px solid var(--border2);display:flex;align-items:center;justify-content:center;margin-bottom:11px;transition:all 0.15s}
 .lci-core svg{width:17px;height:17px;stroke:var(--sage3);fill:none}
 
-body.sidebar-open #launcher{padding-left:56px}</style>
+body.sidebar-open #launcher{padding-left:56px}
+/* ── View Mode System ── */
+.mode-btn{width:24px;height:24px;border:none;background:transparent;cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--ink4);transition:all .12s}
+.mode-btn svg{width:12px;height:12px}
+.mode-btn:hover{background:var(--sage-tint);color:var(--sage)}
+.mode-btn.active{background:var(--white);color:var(--sage);box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+body.sidebar-open #focus-panel,body.sidebar-open #split-panel{left:56px}
+
+/* ── Focus mode modebar (module tabs) ── */
+#focus-modebar{scrollbar-width:none}
+#focus-modebar::-webkit-scrollbar{display:none}
+.fmod-tab{display:flex;align-items:center;gap:6px;height:36px;padding:0 14px;font-size:12px;color:var(--ink4);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .12s;flex-shrink:0}
+.fmod-tab:hover{color:var(--ink);background:var(--pearl)}
+.fmod-tab.active{color:var(--sage);border-bottom-color:var(--sage);font-weight:500}
+
+.fmod-tab-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);flex-shrink:0;animation:lrb-pulse 1.5s ease-in-out infinite;margin-left:2px}
+.fmod-tab-close{width:14px;height:14px;border-radius:3px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .1s;margin-left:2px;flex-shrink:0}
+.fmod-tab:hover .fmod-tab-close{opacity:0.5}
+.fmod-tab-close:hover{opacity:1!important;background:var(--sage-tint)}
+.fmod-tab-close svg{width:8px;height:8px;stroke:currentColor;stroke-width:2}
+
+/* ── Split mode ── */
+.split-header{height:36px;flex-shrink:0;background:var(--white);border-bottom:0.5px solid var(--border);display:flex;align-items:center;padding:0 10px;gap:8px}
+.split-module-pill{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:var(--ink);cursor:pointer;padding:3px 8px;border-radius:6px;background:var(--pearl);border:0.5px solid var(--border);transition:all .12s}
+.split-module-pill:hover{background:var(--sage-tint);border-color:var(--sage);color:var(--sage)}
+.split-module-picker{position:absolute;top:40px;background:var(--white);border:0.5px solid var(--border2);border-radius:var(--radius-lg);box-shadow:var(--wshadow-a);padding:6px;z-index:1000;min-width:160px}
+.split-module-picker-item{padding:7px 10px;font-size:12px;color:var(--ink3);border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:7px}
+.split-module-picker-item:hover{background:var(--sage-tint);color:var(--sage)}
+.split-divider{width:4px;flex-shrink:0;background:var(--border);cursor:col-resize;transition:background .12s;position:relative;z-index:2}
+.split-divider:hover,.split-divider.resizing{background:var(--sage)}
+.split-add-panel{width:28px;height:28px;border-radius:7px;border:0.5px dashed var(--border2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink4);font-size:16px;transition:all .12s;flex-shrink:0}
+.split-add-panel:hover{background:var(--sage-tint);border-color:var(--sage);color:var(--sage)}
+.split-popout-btn{margin-left:auto;width:24px;height:24px;border:none;background:transparent;cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--ink4);transition:all .12s}
+.split-popout-btn:hover{background:var(--sage-tint);color:var(--sage)}
+.split-popout-btn svg{width:11px;height:11px;stroke:currentColor;fill:none}
+
+/* Copy button for code blocks */
+.codesnip{position:relative}
+.codesnip:hover .copy-btn{opacity:1}
+.copy-btn{position:absolute;top:6px;right:6px;padding:2px 7px;font-size:10px;background:var(--sage);color:#fff;border:none;border-radius:4px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:var(--sans)}
+.copy-btn:hover{background:var(--sage3)}
+/* Focus modebar fade-in */
+.fmod-tab{animation:tab-in .15s ease}
+@keyframes tab-in{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+/* Split divider hover zone */
+.split-divider::before{content:'';position:absolute;top:0;bottom:0;left:-4px;right:-4px}
+/* Module content fade-in */
+#focus-content>*,#split-a-content>*,#split-b-content>*,#split-c-content>*{animation:mod-in .2s ease}
+@keyframes mod-in{from{opacity:0}to{opacity:1}}
+</style>
 </head>
 <body>
 
@@ -853,11 +908,25 @@ body.sidebar-open #launcher{padding-left:56px}</style>
   <div class="gadd" onclick="showLauncher()" title="Open module">+</div>
 
   <div class="gtb-sep"></div>
+  <div id="lrb-badge-wrap" style="display:none;align-items:center;gap:6px;padding:0 12px;height:40px">
+    <div style="width:6px;height:6px;border-radius:50%;background:var(--sage);animation:lrb-pulse 2.4s ease-in-out infinite"></div>
+    <span id="lrb-badge" style="font-size:11px;font-weight:500;color:var(--sage3);cursor:pointer;transition:all 0.5s" onclick="openModule('studio')">LRB v4.1</span>
+    <span style="font-size:10px;color:var(--ink4)">· Kiran-3</span>
+  </div>
+  <div class="gtb-sep"></div>
   <div class="gtb-right">
-    <button class="gbtn" onclick="tileWindows()">
-      <svg viewBox="0 0 14 14" fill="none" style="width:10px;height:10px;stroke:currentColor"><rect x="1" y="1" width="5" height="5" rx="1" stroke-width="1.2"/><rect x="8" y="1" width="5" height="5" rx="1" stroke-width="1.2"/><rect x="1" y="8" width="5" height="5" rx="1" stroke-width="1.2"/><rect x="8" y="8" width="5" height="5" rx="1" stroke-width="1.2"/></svg>
-      Tile
-    </button>
+    <!-- Mode switcher -->
+    <div id="mode-switcher" style="display:none;align-items:center;gap:2px;background:var(--pearl);border:0.5px solid var(--border);border-radius:8px;padding:2px;margin-right:8px">
+      <button id="mode-btn-focus"  class="mode-btn active" onclick="setViewMode('focus')"  title="Focused — one module fills workspace">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1" y="1" width="12" height="12" rx="1.5"/></svg>
+      </button>
+      <button id="mode-btn-split"  class="mode-btn"        onclick="setViewMode('split')"  title="Split — side by side panels">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1" y="1" width="5" height="12" rx="1"/><rect x="8" y="1" width="5" height="12" rx="1"/></svg>
+      </button>
+      <button id="mode-btn-popout" class="mode-btn"        onclick="popOutActive()"         title="Pop out to new window (multi-monitor)">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 2H2v10h10V8M8 2h4v4M7 7l5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
     <button class="gbtn" onclick="openModule('notifications')">
       <svg viewBox="0 0 14 14" fill="none" style="width:10px;height:10px;stroke:currentColor"><path d="M7 1a4 4 0 00-4 4v2L1.5 9h11L11 7V5A4 4 0 007 1z" stroke-width="1.2"/><path d="M5.5 11a1.5 1.5 0 003 0" stroke-width="1.2"/></svg>
       <span style="background:var(--red);color:#fff;font-size:9px;padding:1px 4px;border-radius:5px">4</span>
@@ -912,8 +981,32 @@ body.sidebar-open #launcher{padding-left:56px}</style>
 
   </aside>
 
-  <!-- DESKTOP WORKSPACE -->
-  <div id="workspace"></div>
+  <!-- MODE 1: FOCUSED panel -->
+  <div id="focus-panel" style="display:none;position:fixed;left:0;top:40px;right:0;bottom:0;flex-direction:column;overflow:hidden;z-index:500">
+    <div id="focus-modebar" style="height:36px;flex-shrink:0;background:var(--white);border-bottom:0.5px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:0;overflow-x:auto;overflow-y:hidden"></div>
+    <div id="focus-content" style="flex:1;overflow:auto;display:flex;flex-direction:column"></div>
+  </div>
+
+  <!-- MODE 2: SPLIT panels -->
+  <div id="split-panel" style="display:none;position:fixed;left:0;top:40px;right:0;bottom:0;flex-direction:row;overflow:hidden;z-index:500">
+    <div class="split-cell" id="split-a" style="flex:1;display:flex;flex-direction:column;min-width:320px;overflow:hidden">
+      <div class="split-header" id="split-a-header"></div>
+      <div class="split-content" id="split-a-content" style="flex:1;overflow:auto;display:flex;flex-direction:column"></div>
+    </div>
+    <div class="split-divider" id="split-div-ab" onmousedown="startSplitResize(event,'ab')"></div>
+    <div class="split-cell" id="split-b" style="flex:1;display:flex;flex-direction:column;min-width:320px;overflow:hidden">
+      <div class="split-header" id="split-b-header"></div>
+      <div class="split-content" id="split-b-content" style="flex:1;overflow:auto;display:flex;flex-direction:column"></div>
+    </div>
+    <div class="split-divider split-divider-c" id="split-div-bc" style="display:none" onmousedown="startSplitResize(event,'bc')"></div>
+    <div class="split-cell" id="split-c" style="display:none;flex:1;flex-direction:column;min-width:320px;overflow:hidden">
+      <div class="split-header" id="split-c-header"></div>
+      <div class="split-content" id="split-c-content" style="flex:1;overflow:auto;display:flex;flex-direction:column"></div>
+    </div>
+  </div>
+
+  <!-- Legacy floating workspace (hidden by default) -->
+  <div id="workspace" style="display:none"></div>
 </div>
 
 <!-- LAUNCHER -->
@@ -1054,7 +1147,280 @@ body.sidebar-open #launcher{padding-left:56px}</style>
 <div id="toast"><div id="ti"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke-width="1.5" stroke-linecap="round"/></svg></div><div><div id="tt" style="font-weight:500"></div><div id="tb" style="opacity:.7;font-size:11px;margin-top:1px"></div></div></div>
 
 <script>
+// ── Popout detection — runs SYNCHRONOUSLY before first paint ──
+(function(){
+  var h = window.location.hash || '';
+  if(h.indexOf('popout=') !== -1){
+    // Add class to body BEFORE browser renders auth overlay
+    document.body.classList.add('popout-mode');
+    // Store module ID for later use
+    window._POPOUT_MODULE = h.replace(/.*popout=([a-z0-9\-]+).*/,'$1');
+  }
+})();
+
 let wins={},zTop=10,activeWin=null,ctxTarget=null,drag=null,rsz=null;
+// ── View mode state ──
+var viewMode='focus'; // 'focus' | 'split'
+var focusTabs=[];     // [{id, title, mod}]
+var activeFocusTab=null;
+var splitCells={a:null,b:null,c:null}; // module id per cell
+var pendingLRBUpdate={}; // tracks which module tabs need refresh
+
+// ── Universal cross-window LRB sync via postMessage ──
+// postMessage works across ALL origins, ALL browsers, file:// and http://
+
+// Primary window listens for popout "ready" signal (on page load/refresh)
+window.addEventListener('message', function(e) {
+  if (!e.data) return;
+  // Popout requests current lrb state (on load OR on every ping)
+  if ((e.data.type === 'vanika-ready' || e.data.type === 'vanika-ping') && e.source && e.source !== window) {
+    var _sm = {};
+    Object.keys(lrb.sensors).forEach(function(k){ _sm[k] = lrb.sensors[k].active; });
+    try { e.source.postMessage({type:'vanika-lrb', sensors:_sm, version:lrb.version}, '*'); } catch(ex){}
+  }
+  // Also handle incoming lrb updates (e.g. if Studio is in popout, Hardware in primary)
+  if (e.data.type === 'vanika-lrb' && e.source !== window) {
+    _applyLRBMessage(e.data);
+  }
+});
+
+// Shared function to apply an lrb message and update all reactive DOM
+var _lastAppliedVersion = 0;
+function _applyLRBMessage(data) {
+  if (!data || !data.sensors) return;
+  // Skip if nothing changed (prevents flicker from 300ms polling)
+  var newHash = data.version + ':' + Object.keys(data.sensors).map(function(k){return data.sensors[k]?'1':'0';}).join('');
+  if (newHash === _applyLRBMessage._lastHash) return;
+  _applyLRBMessage._lastHash = newHash;
+  var changed = false;
+  Object.keys(data.sensors).forEach(function(k) {
+    if (lrb.sensors[k] && lrb.sensors[k].active !== data.sensors[k]) {
+      lrb.sensors[k].active = data.sensors[k];
+      changed = true;
+      var row = document.getElementById('sp-row-'+k);
+      if (row) { var chk = row.querySelector('.sp-check'); if (chk) chk.classList.toggle('on', data.sensors[k]); }
+    }
+  });
+  if (data.version) lrb.version = data.version;
+  if (!changed) return;
+  var _active = Object.keys(lrb.sensors).filter(function(k){ return lrb.sensors[k].active; });
+  // BOM
+  document.querySelectorAll('.lrb-bom-tbody').forEach(function(tbody) {
+    var rows = _active.map(function(k) {
+      var s=lrb.sensors[k], m=SENSOR_META[k]||{icon:'',label:k};
+      var sc=s.status==='In stock'?'bg-g':s.status==='Backordered'?'bg-r':'bg-a';
+      return '<tr class="cr"><td><strong style="font-weight:500">'+m.icon+' '+s.model+'</strong><span style="font-size:10px;color:var(--ink4);margin-left:6px">'+s.topic+'</span></td>'
+        +'<td style="font-family:var(--mono)">1</td><td style="font-family:var(--mono)">₹'+s.price.toLocaleString('en-IN')+'</td>'
+        +'<td style="color:var(--ink3)">'+s.supplier+'</td><td><span class="badge '+sc+'">'+s.status+'</span></td><td></td></tr>';
+    });
+    rows.push('<tr class="cr"><td><strong>🔋 LiPo 24V 20Ah</strong></td><td style="font-family:var(--mono)">1</td><td style="font-family:var(--mono)">₹18,000</td><td style="color:var(--ink3)">Maxamps</td><td><span class="badge bg-g">In stock</span></td><td></td></tr>');
+    rows.push('<tr class="cr"><td><strong>⚙ Drive Motors</strong></td><td style="font-family:var(--mono)">2</td><td style="font-family:var(--mono)">₹2,800</td><td style="color:var(--ink3)">Robu.in</td><td><span class="badge bg-g">In stock</span></td><td></td></tr>');
+    tbody.innerHTML = rows.join('');
+    var tot = document.querySelector('.lrb-bom-total');
+    if (tot) { tot.textContent='₹'+_active.reduce(function(s,k){return s+lrb.sensors[k].price;},23600).toLocaleString('en-IN')+' total'; tot.style.background='var(--sage)'; tot.style.color='#fff'; setTimeout(function(){tot.style.background='';tot.style.color='';},800); }
+  });
+  // Code
+  document.querySelectorAll('.codearea').forEach(function(ca) {
+    var lines=[{c:'cm',t:'# robot_sdk.py — LRB v'+lrb.version.toFixed(1)},{c:'kw',t:'import rclpy'},{c:'kw',t:'from vanika_sdk import RobotClient'},{c:'kw',t:''},{c:'cm',t:'# '+_active.length+' sensors active'}];
+    _active.forEach(function(k){var s=lrb.sensors[k],m=SENSOR_META[k]||{label:k};lines.push({c:'cm',t:'# '+m.label+' · '+s.topic});lines.push({c:'fn',t:'def get_'+k+'(robot): return robot.sensors.'+s.id+'.read()'});lines.push({c:'kw',t:''});});
+    ca.innerHTML=lines.map(function(l,i){return '<div class="cl"><span class="ln">'+(i+1)+'</span><span class="'+l.c+'">'+l.t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span></div>';}).join('');
+  });
+  document.querySelectorAll('.lrb-sim-banner').forEach(function(el){el.innerHTML='<strong>LRB v'+lrb.version.toFixed(1)+':</strong> '+_active.length+' sensors active';el.style.background='var(--sage-tint)';setTimeout(function(){el.style.background='';},700);});
+  document.querySelectorAll('.lrb-fleet-topics').forEach(function(el){el.innerHTML=_active.map(function(k){return '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:0.5px solid var(--border);font-size:10px"><div style="width:5px;height:5px;border-radius:50%;background:var(--sage)"></div><span style="font-family:var(--mono);color:var(--ink3)">'+lrb.sensors[k].topic+'</span></div>';}).join('');});
+  document.querySelectorAll('.lrb-ai-context').forEach(function(el){el.innerHTML='<div class="row" style="gap:4px"><div style="width:5px;height:5px;border-radius:50%;background:var(--sage);margin-top:3px"></div><span style="font-size:11px;color:var(--ink3)">LRB v'+lrb.version.toFixed(1)+' · '+_active.length+' sensors</span></div>';});
+  // Studio LRB JSON panel + version labels
+  document.querySelectorAll('[data-panel="lrb"] .codearea').forEach(function(ca){
+    var sJson=_active.map(function(k,i){var s=lrb.sensors[k];return '<div class="cl"><span class="ln">'+(i+1)+'</span><span class="st">&quot;'+k+'&quot;</span><span class="kw">: </span><span class="st">&quot;'+s.topic+'&quot;</span></div>';}).join('');
+    ca.innerHTML='<div class="cl"><span class="kw">{ v:'+lrb.version.toFixed(1)+', active:[</span></div>'+sJson+'<div class="cl"><span class="kw">]}</span></div>';
+  });
+  document.querySelectorAll('[data-lrb-studio-version]').forEach(function(el){el.textContent='v'+lrb.version.toFixed(1);});
+  var b=document.getElementById('lrb-badge');
+  if(b){b.textContent='LRB v'+lrb.version.toFixed(1);b.style.color='#fff';b.style.background='var(--sage)';b.style.padding='2px 8px';b.style.borderRadius='6px';setTimeout(function(){b.style.color='';b.style.background='';b.style.padding='';b.style.borderRadius='';},1200);}
+}
+
+
+// ── Popout window registry for direct cross-window LRB sync ──
+var _popoutWindows = []; // stores refs to all open popout windows
+
+// This function is called ON this window by other windows
+window.receiveVanikaLRB = function(sensorMap, version) {
+  var changed = false;
+  Object.keys(sensorMap || {}).forEach(function(k) {
+    if (lrb.sensors[k] && lrb.sensors[k].active !== sensorMap[k]) {
+      lrb.sensors[k].active = sensorMap[k];
+      changed = true;
+      // Sync Studio visual if visible
+      var row = document.getElementById('sp-row-' + k);
+      if (row) { var chk = row.querySelector('.sp-check'); if (chk) chk.classList.toggle('on', sensorMap[k]); }
+    }
+  });
+  if (version) lrb.version = version;
+  if (!changed) return;
+
+  var _active = Object.keys(lrb.sensors).filter(function(k){ return lrb.sensors[k].active; });
+
+  // Update BOM
+  document.querySelectorAll('.lrb-bom-tbody').forEach(function(tbody) {
+    var _rows = _active.map(function(k) {
+      var s=lrb.sensors[k], m=SENSOR_META[k]||{icon:'',label:k};
+      var sc=s.status==='In stock'?'bg-g':s.status==='Backordered'?'bg-r':'bg-a';
+      return '<tr class="cr"><td><strong style="font-weight:500">'+m.icon+' '+s.model+'</strong>'
+        +'<span style="font-size:10px;color:var(--ink4);margin-left:6px">'+s.topic+'</span></td>'
+        +'<td style="font-family:var(--mono)">1</td><td style="font-family:var(--mono)">₹'
+        +s.price.toLocaleString('en-IN')+'</td>'
+        +'<td style="color:var(--ink3)">'+s.supplier+'</td>'
+        +'<td><span class="badge '+sc+'">'+s.status+'</span></td><td></td></tr>';
+    });
+    _rows.push('<tr class="cr"><td><strong style="font-weight:500">🔋 LiPo 24V 20Ah</strong></td><td style="font-family:var(--mono)">1</td><td style="font-family:var(--mono)">₹18,000</td><td style="color:var(--ink3)">Maxamps</td><td><span class="badge bg-g">In stock</span></td><td></td></tr>');
+    _rows.push('<tr class="cr"><td><strong style="font-weight:500">⚙ Drive Motors</strong></td><td style="font-family:var(--mono)">2</td><td style="font-family:var(--mono)">₹2,800</td><td style="color:var(--ink3)">Robu.in</td><td><span class="badge bg-g">In stock</span></td><td></td></tr>');
+    tbody.innerHTML = _rows.join('');
+    var _tot = document.querySelector('.lrb-bom-total');
+    if (_tot) {
+      _tot.textContent = '₹' + _active.reduce(function(s,k){return s+lrb.sensors[k].price;},23600).toLocaleString('en-IN') + ' total';
+      _tot.style.background='var(--sage)'; _tot.style.color='#fff';
+      setTimeout(function(){ _tot.style.background=''; _tot.style.color=''; }, 800);
+    }
+  });
+
+  // Update Code
+  document.querySelectorAll('.codearea').forEach(function(ca) {
+    var _lines = [{c:'cm',t:'# robot_sdk.py — LRB v'+lrb.version.toFixed(1)},{c:'kw',t:'import rclpy'},{c:'kw',t:'from vanika_sdk import RobotClient'},{c:'kw',t:''}];
+    _active.forEach(function(k){
+      var s=lrb.sensors[k],m=SENSOR_META[k]||{label:k};
+      _lines.push({c:'cm',t:'# '+m.label+' · '+s.topic});
+      _lines.push({c:'fn',t:'def get_'+k+'(robot): return robot.sensors.'+s.id+'.read()'});
+      _lines.push({c:'kw',t:''});
+    });
+    ca.innerHTML = _lines.map(function(l,i){ return '<div class="cl"><span class="ln">'+(i+1)+'</span><span class="'+l.c+'">'+l.t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span></div>'; }).join('');
+  });
+
+  // Sim, Fleet, AI
+  document.querySelectorAll('.lrb-sim-banner').forEach(function(el){ el.innerHTML='<strong>LRB v'+lrb.version.toFixed(1)+' synced:</strong> '+_active.length+' sensors active'; el.style.background='var(--sage-tint)'; setTimeout(function(){el.style.background='';},800); });
+  document.querySelectorAll('.lrb-fleet-topics').forEach(function(el){ el.innerHTML=_active.map(function(k){ return '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:0.5px solid var(--border);font-size:10px"><div style="width:5px;height:5px;border-radius:50%;background:var(--sage)"></div><span style="font-family:var(--mono);color:var(--ink3)">'+lrb.sensors[k].topic+'</span></div>'; }).join(''); });
+
+  // LRB badge
+  var _b = document.getElementById('lrb-badge');
+  if(_b){ _b.textContent='LRB v'+lrb.version.toFixed(1); _b.style.color='#fff'; _b.style.background='var(--sage)'; _b.style.padding='2px 8px'; _b.style.borderRadius='6px'; setTimeout(function(){ _b.style.color=''; _b.style.background=''; _b.style.padding=''; _b.style.borderRadius=''; },1200); }
+
+  // Pending tab dots
+  try{ ['code','hardware','simulation','fleet','ai'].forEach(function(mid){ var marks={code:'.codearea',hardware:'.lrb-bom-tbody',simulation:'.lrb-sim-banner',fleet:'.lrb-fleet-topics',ai:'.lrb-ai-context'}; if(!document.querySelector(marks[mid])) pendingLRBUpdate[mid]=true; }); refreshFocusModebar(); }catch(x){}
+};
+
+
+// ── Cross-window LRB sync via BroadcastChannel ──
+// Works for popout windows on same file:// or http:// origin
+(function(){
+  try {
+    window._lrbChannel = new BroadcastChannel('vanika-lrb-v1');
+    window._lrbChannel.onmessage = function(e) {
+      if (!e.data || e.data.type !== 'lrb-update') return;
+      // Apply sensor state from other window
+      var changed = false;
+      Object.keys(e.data.sensors || {}).forEach(function(k) {
+        if (lrb.sensors[k] && lrb.sensors[k].active !== e.data.sensors[k]) {
+          lrb.sensors[k].active = e.data.sensors[k];
+          changed = true;
+          // Update visual indicator in Studio sensor panel if visible
+          var row = document.getElementById('sp-row-' + k);
+          if (row) {
+            var chk = row.querySelector('.sp-check');
+            if (chk) chk.classList.toggle('on', e.data.sensors[k]);
+          }
+        }
+      });
+      if (e.data.version) lrb.version = e.data.version;
+      if (!changed) return;
+
+      // Update LRB badge
+      var badge = document.getElementById('lrb-badge');
+      if (badge) {
+        badge.textContent = 'LRB v' + lrb.version.toFixed(1);
+        badge.style.color = '#fff'; badge.style.background = 'var(--sage)';
+        badge.style.padding = '2px 8px'; badge.style.borderRadius = '6px';
+        setTimeout(function(){ badge.style.color=''; badge.style.background=''; badge.style.padding=''; badge.style.borderRadius=''; }, 1200);
+      }
+
+      // Rebuild ALL reactive elements in this window
+      var _active = Object.keys(lrb.sensors).filter(function(k){ return lrb.sensors[k].active; });
+
+      // BOM
+      document.querySelectorAll('.lrb-bom-tbody').forEach(function(tbody) {
+        var _rows = _active.map(function(k) {
+          var s = lrb.sensors[k], m = SENSOR_META[k] || {icon:'', label:k};
+          var sc = s.status==='In stock'?'bg-g':s.status==='Backordered'?'bg-r':'bg-a';
+          return '<tr class="cr"><td><strong style="font-weight:500">'+m.icon+' '+s.model+'</strong>'
+            +'<span style="font-size:10px;color:var(--ink4);margin-left:6px">'+s.topic+'</span></td>'
+            +'<td style="font-family:var(--mono)">1</td>'
+            +'<td style="font-family:var(--mono)">₹'+s.price.toLocaleString('en-IN')+'</td>'
+            +'<td style="color:var(--ink3)">'+s.supplier+'</td>'
+            +'<td><span class="badge '+sc+'">'+s.status+'</span></td><td></td></tr>';
+        });
+        _rows.push('<tr class="cr"><td><strong style="font-weight:500">🔋 LiPo 24V 20Ah</strong></td>'
+          +'<td style="font-family:var(--mono)">1</td><td style="font-family:var(--mono)">₹18,000</td>'
+          +'<td style="color:var(--ink3)">Maxamps</td><td><span class="badge bg-g">In stock</span></td><td></td></tr>');
+        _rows.push('<tr class="cr"><td><strong style="font-weight:500">⚙ Drive Motors 12V DC</strong></td>'
+          +'<td style="font-family:var(--mono)">2</td><td style="font-family:var(--mono)">₹2,800</td>'
+          +'<td style="color:var(--ink3)">Robu.in</td><td><span class="badge bg-g">In stock</span></td><td></td></tr>');
+        tbody.innerHTML = _rows.join('');
+        var _tot = document.querySelector('.lrb-bom-total');
+        if (_tot) {
+          var _total = _active.reduce(function(s,k){return s+lrb.sensors[k].price;},23600);
+          _tot.textContent = '₹'+_total.toLocaleString('en-IN')+' total';
+          _tot.style.background='var(--sage)'; _tot.style.color='#fff';
+          setTimeout(function(){ _tot.style.background=''; _tot.style.color=''; },900);
+        }
+      });
+
+      // Code IDE
+      document.querySelectorAll('.codearea').forEach(function(ca) {
+        var _lines = [
+          {c:'cm',t:'# robot_sdk.py — LRB v'+lrb.version.toFixed(1)},
+          {c:'kw',t:'import rclpy'},{c:'kw',t:'from vanika_sdk import RobotClient'},{c:'kw',t:''},
+          {c:'cm',t:'# '+_active.length+' active sensors'},
+        ];
+        _active.forEach(function(k){
+          var s=lrb.sensors[k], m=SENSOR_META[k]||{label:k};
+          _lines.push({c:'cm',t:'# '+m.label+' · '+s.topic});
+          _lines.push({c:'fn',t:'def get_'+k+'(robot): return robot.sensors.'+s.id+'.read()'});
+          _lines.push({c:'kw',t:''});
+        });
+        ca.innerHTML = _lines.map(function(l,i){
+          return '<div class="cl"><span class="ln">'+(i+1)+'</span><span class="'+l.c+'">'
+            +l.t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span></div>';
+        }).join('');
+      });
+
+      // Sim banner
+      document.querySelectorAll('.lrb-sim-banner').forEach(function(el){
+        el.innerHTML = '<strong>LRB v'+lrb.version.toFixed(1)+' synced:</strong> '+_active.length+' sensors active';
+        el.style.background='var(--sage-tint)';
+        setTimeout(function(){ el.style.background=''; },800);
+      });
+
+      // Fleet topics
+      document.querySelectorAll('.lrb-fleet-topics').forEach(function(el){
+        el.innerHTML = _active.map(function(k){
+          return '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:0.5px solid var(--border);font-size:10px">'
+            +'<div style="width:5px;height:5px;border-radius:50%;background:var(--sage)"></div>'
+            +'<span style="font-family:var(--mono);color:var(--ink3)">'+lrb.sensors[k].topic+'</span></div>';
+        }).join('');
+      });
+
+      // Pending tab dots
+      try {
+        ['code','hardware','simulation','fleet','ai'].forEach(function(mid) {
+          var marks = {code:'.codearea',hardware:'.lrb-bom-tbody',simulation:'.lrb-sim-banner',fleet:'.lrb-fleet-topics',ai:'.lrb-ai-context'};
+          if (!document.querySelector(marks[mid])) pendingLRBUpdate[mid] = true;
+        });
+        refreshFocusModebar();
+      } catch(x){}
+    };
+  } catch(err) {
+    window._lrbChannel = null; // BroadcastChannel not supported
+  }
+})();
+
+var splitResize=null;
 var desktop=null,gtbTabs=null;
 (function initDesktop(){
   var el=document.getElementById('workspace');
@@ -1120,52 +1486,322 @@ const MODS={
 
 function openModule(id){
   if(!id||id==='newrobot')return;
-  // Ensure desktop reference is live
-  if(!desktop) desktop=document.getElementById('workspace');
-  if(!desktop) return;
-  var mod=PAGE_TO_MODULE[id]||'studio';
-  switchToModule(mod);
-  // If already open, bring to front
-  if(wins[id]){
-    var w=wins[id];
-    if(w.el&&w.el.classList.contains('minimized')) w.el.classList.remove('minimized');
-    bringFront(id);updateTabs();return;
+  // Route to current view mode
+  if(viewMode==='split'){
+    openInSplit(id, splitActiveCell||'a');
+    return;
   }
-  // Create new window
-  var def=MODS[id]||{title:id,w:680,h:480};
-  var modWins=Object.keys(wins).filter(function(k){return wins[k]&&wins[k].el&&wins[k].mod===mod&&!wins[k].el.classList.contains('minimized');});
-  var n=modWins.length;
-  var ox=Math.min(n*26,180),oy=Math.min(n*26,100);
-  var el=document.createElement('div');
-  el.className='win';
-  el.id='win-'+id;
-  el.setAttribute('data-module',mod);
-  var _sbL=document.body.classList.contains('sidebar-open')?56:0;
-  el.style.cssText='left:'+(_sbL+58+ox)+'px;top:'+(44+oy)+'px;width:'+def.w+'px;height:'+def.h+'px;z-index:'+(++zTop);
-  try{
-    var pageHTML=(id==='studio')?buildStudio3DPage():getPage(id);
-    el.innerHTML=buildTB(id,def.title)+'<div class="wbody">'+pageHTML+'</div><div class="wrsz"></div>';
-  }catch(e){
-    el.innerHTML=buildTB(id,def.title)+'<div class="wbody"><div class="mod"><p style="padding:20px;color:var(--ink3)">Loading...</p></div></div><div class="wrsz"></div>';
-  }
-  var rsz=el.querySelector('.wrsz');
-  if(rsz) rsz.addEventListener('mousedown',function(e){startRsz(e,id);});
-  desktop.appendChild(el);
-  wins[id]={el:el,title:def.title,mod:mod};
-  bringFront(id);updateTabs();
-  makeDraggable(el,id);
-  if(id==='studio') setTimeout(function(){initStudio3D('win-studio');},50);
-  // Fade-in: set transition first, then change opacity so browser animates it
-  el.style.opacity='0';
-  el.style.transform='scale(0.97)';
-  el.style.transition='none';
-  // Force reflow so opacity:0 is committed before we set transition+opacity:1
-  void el.offsetHeight;
-  el.style.transition='opacity 0.16s ease,transform 0.16s ease';
-  el.style.opacity='1';
-  el.style.transform='scale(1)';
-  setTimeout(function(){el.style.transition='box-shadow 0.15s';},200);
+  // Default: focus mode
+  openInFocus(id);
 }
+
+function openInFocus(id){
+  if(!id)return;
+  hideLauncher();
+  var def=MODS[id]||{title:id,w:660,h:460};
+  var mod=PAGE_TO_MODULE[id]||'studio';
+
+  // If already in tabs, just activate it
+  var existing=focusTabs.find(function(t){return t.id===id;});
+  if(existing){ setActiveFocusTab(id); return; }
+
+  // Add new tab
+  focusTabs.push({id:id,title:def.title,mod:mod});
+  setActiveFocusTab(id);
+
+  // renderFocusContent (called by setActiveFocusTab above) handles refresh
+}
+
+function setActiveFocusTab(id){
+  activeFocusTab=id;
+  delete pendingLRBUpdate[id]; // clear pending flag
+  renderFocusModebar();
+  renderFocusContent(id);
+  // renderFocusContent above handles refresh immediately
+}
+
+function refreshFocusModebar(){ renderFocusModebar(); }
+function renderFocusModebar(){
+  var bar=document.getElementById('focus-modebar');
+  if(!bar)return;
+  bar.innerHTML=focusTabs.map(function(t){
+    var active=t.id===activeFocusTab;
+    var hasPending=(!active) && pendingLRBUpdate[t.id];
+    return '<div class="fmod-tab'+(active?' active':'')+'" onclick="setActiveFocusTab(\''+t.id+'\')"'
+      +' title="'+(hasPending?'LRB updated — click to see changes':t.title)+'">'
+      +'<span>'+t.title.split('·')[0].trim()+'</span>'
+      +(hasPending?'<div class="fmod-tab-dot"></div>':'')
+      +'<div class="fmod-tab-close" onclick="event.stopPropagation();closeFocusTab(\''+t.id+'\')">'
+      +'<svg viewBox="0 0 8 8"><path d="M1 1l6 6M7 1L1 7"/></svg></div>'
+      +'</div>';
+  }).join('');
+
+  // Add split view button at end
+  bar.innerHTML+='<div style="flex:1"></div>'
+    +'<div style="display:flex;align-items:center;gap:6px;padding:0 10px">'
+    +'<button class="split-add-panel" onclick="addToSplit()" title="Open in split view">⊞</button>'
+    +'<button class="split-popout-btn" onclick="popOutModule(activeFocusTab)" title="Pop out to new window">'
+    +'<svg viewBox="0 0 12 12"><path d="M5 2H2v8h8V7M7 2h3v3M5 7l5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    +'</button></div>';
+}
+
+function renderFocusContent(id){
+  var panel=document.getElementById('focus-content');
+  if(!panel)return;
+  panel.innerHTML=''; // clear first — ensures no stale elements before querySelector runs
+  var html = id==='studio' ? buildStudio3DPage() : getPage(id);
+  panel.innerHTML=html;
+  // Populate LRB-reactive content immediately — DOM is ready after innerHTML
+  if(id==='hardware')   { refreshHardwareBOM(); }
+  if(id==='code')       { refreshCodeIDE(); }
+  if(id==='simulation') { refreshSimLRB(); autoSelectCompute(); }
+  if(id==='fleet')      { refreshFleetLRB(); }
+  if(id==='ai')         { refreshAIContext(); }
+  if(id==='studio')     { refreshStudioLRB(); setTimeout(function(){initStudio3D('focus-content');},60); }
+}
+
+function closeFocusTab(id){
+  focusTabs=focusTabs.filter(function(t){return t.id!==id;});
+  if(activeFocusTab===id){
+    activeFocusTab=focusTabs.length?focusTabs[focusTabs.length-1].id:null;
+    if(activeFocusTab) renderFocusContent(activeFocusTab);
+    else {
+      var fc=document.getElementById('focus-content');
+      if(fc) fc.innerHTML='<div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--ink4)">'
+        +'<svg viewBox="0 0 32 32" style="width:36px;height:36px;stroke:currentColor;fill:none;opacity:0.2" stroke-width="1.2"><rect x="2" y="2" width="28" height="28" rx="6"/><path d="M16 10v12M10 16h12"/></svg>'
+        +'<div style="font-size:13px;font-weight:500;color:var(--ink3)">Open a module from the launcher</div>'
+        +'<div style="font-size:11px;color:var(--ink4)">Click the Vanika logo or press Space</div></div>';
+    }
+  }
+  renderFocusModebar();
+}
+
+// ── SPLIT MODE ── 
+var splitActiveCell='a';
+function openInSplit(id, cell){
+  cell=cell||splitActiveCell||'a';
+  hideLauncher();
+  splitCells[cell]=id;
+  renderSplitCell(cell,id);
+}
+
+function renderSplitCell(cell,id){
+  var hdr=document.getElementById('split-'+cell+'-header');
+  var cnt=document.getElementById('split-'+cell+'-content');
+  if(!hdr||!cnt)return;
+  var def=MODS[id]||{title:id};
+  hdr.innerHTML=buildSplitHeader(cell,id,def.title);
+  var html=id==='studio'?buildStudio3DPage():getPage(id);
+  cnt.innerHTML=html;
+  // Populate immediately after innerHTML — no setTimeout needed
+  if(id==='hardware')   { refreshHardwareBOM(); }
+  if(id==='code')       { refreshCodeIDE(); }
+  if(id==='simulation') { refreshSimLRB(); autoSelectCompute(); }
+  if(id==='fleet')      { refreshFleetLRB(); }
+  if(id==='ai')         { refreshAIContext(); }
+  if(id==='studio')     { refreshStudioLRB(); setTimeout(function(){initStudio3D('split-'+cell+'-content');},60); }
+}
+
+function buildSplitHeader(cell,id,title){
+  var shortTitle=title?title.split('·')[0].trim():id;
+  var moduleIcons={studio:'⊙',code:'⌨',simulation:'△',hardware:'⊞',fleet:'◷',ai:'◉',dashboard:'▦',analytics:'↗',manufacture:'⊠','deploy-pipeline':'→',marketplace:'⊛'};
+  var icon=moduleIcons[id]||'○';
+  return '<div class="split-module-pill" onclick="showModulePicker(\''+cell+'\')" title="Change module">'+icon+' '+shortTitle+' ▾</div>'
+    +'<button class="split-add-panel" onclick="addSplitPanel()" title="Add third panel" style="margin-left:4px">+</button>'
+    +'<button class="split-popout-btn" onclick="popOutModule(\''+id+'\')" title="Pop out to new window" style="margin-left:auto">'
+    +'<svg viewBox="0 0 12 12"><path d="M5 2H2v8h8V7M7 2h3v3M5 7l5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+}
+
+function showModulePicker(cell){
+  splitActiveCell=cell;
+  // Remove any existing picker
+  document.querySelectorAll('.split-module-picker').forEach(function(e){e.remove();});
+  var hdr=document.getElementById('split-'+cell+'-header');
+  if(!hdr)return;
+  var coreModules=[['studio','Vanika Studio'],['code','Vanika Code'],['simulation','Vanika Sim'],['hardware','Vanika Hardware'],['fleet','Vanika Fleet'],['ai','Vanika AI Core'],['dashboard','Dashboard'],['analytics','Analytics'],['manufacture','Manufacture']];
+  var picker=document.createElement('div');
+  picker.className='split-module-picker';
+  picker.style.position='fixed';
+  var rect=hdr.getBoundingClientRect();
+  picker.style.top=(rect.bottom+2)+'px';
+  picker.style.left=rect.left+'px';
+  picker.innerHTML=coreModules.map(function(m){
+    return '<div class="split-module-picker-item" onclick="openInSplit(\''+m[0]+'\',\''+cell+'\');this.closest(\'.split-module-picker\').remove()">'+m[1]+'</div>';
+  }).join('');
+  document.body.appendChild(picker);
+  setTimeout(function(){document.addEventListener('click',function h(){picker.remove();document.removeEventListener('click',h);},{once:true});},10);
+}
+
+function addSplitPanel(){
+  var c=document.getElementById('split-c');
+  var divBC=document.getElementById('split-div-bc');
+  if(!c||!divBC)return;
+  if(c.style.display==='none'||c.style.display===''){
+    c.style.display='flex';
+    divBC.style.display='block';
+    if(!splitCells.c) openInSplit('simulation','c');
+  }
+}
+
+function addToSplit(){
+  // From focus mode: add current tab to split view
+  setViewMode('split');
+  if(activeFocusTab) openInSplit(activeFocusTab,'a');
+  if(focusTabs.length>1) openInSplit(focusTabs[focusTabs.length-2].id,'b');
+}
+
+// Split resize
+function startSplitResize(e,pair){
+  e.preventDefault();
+  var div=e.target;
+  div.classList.add('resizing');
+  var startX=e.clientX;
+  var cellA=document.getElementById('split-'+pair[0]);
+  var cellB=document.getElementById('split-'+pair[1]);
+  var startW=cellA?cellA.offsetWidth:400;
+  function onMove(ev){
+    var delta=ev.clientX-startX;
+    var newW=Math.max(280,startW+delta);
+    if(cellA)cellA.style.flex='none';
+    if(cellA)cellA.style.width=newW+'px';
+  }
+  function onUp(){
+    div.classList.remove('resizing');
+    document.removeEventListener('mousemove',onMove);
+    document.removeEventListener('mouseup',onUp);
+  }
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
+}
+
+// ── SET VIEW MODE ──
+function setViewMode(mode){
+  viewMode=mode;
+
+  // Update buttons
+  ['focus','split'].forEach(function(m){
+    var btn=document.getElementById('mode-btn-'+m);
+    if(btn)btn.classList.toggle('active',m===mode);
+  });
+
+  // Show/hide panels
+  var fp=document.getElementById('focus-panel');
+  var sp=document.getElementById('split-panel');
+  var sbOff=document.body.classList.contains('sidebar-open')?56:0;
+
+  if(mode==='focus'){
+    // Clear ALL split cell contents so document.querySelector never finds
+    // stale elements from a previous split session
+    ['a','b','c'].forEach(function(c){
+      var el=document.getElementById('split-'+c+'-content');
+      if(el) el.innerHTML='';
+      splitCells[c]=null;
+    });
+    if(fp){fp.style.cssText='display:flex;flex-direction:column;position:fixed;left:'+sbOff+'px;top:40px;right:0;bottom:0;overflow:hidden;z-index:500';}
+    if(sp)sp.style.display='none';
+    if(activeFocusTab){
+      renderFocusModebar();
+      renderFocusContent(activeFocusTab);
+    } else if(focusTabs.length>0){
+      activeFocusTab=focusTabs[0].id;
+      renderFocusModebar();
+      renderFocusContent(activeFocusTab);
+    }
+  } else if(mode==='split'){
+    hideLauncher();
+    // Clear focus-content so document.querySelector never finds stale
+    // elements from the previous focus session
+    var fc=document.getElementById('focus-content');
+    if(fc) fc.innerHTML='';
+
+    if(fp)fp.style.display='none';
+    if(sp){sp.style.cssText='display:flex;flex-direction:row;position:fixed;left:'+sbOff+'px;top:40px;right:0;bottom:0;overflow:hidden;z-index:500';}
+
+    var tabIds = focusTabs.map(function(t){return t.id;});
+    var idA = tabIds[tabIds.length-1] || 'studio';
+    var idB = tabIds[tabIds.length-2] || 'code';
+    if(tabIds.length === 1){
+      var complements = {studio:'code',code:'hardware',hardware:'simulation',simulation:'ai',fleet:'ai',ai:'studio'};
+      idB = complements[idA] || 'code';
+    }
+    splitCells.a = null; splitCells.b = null;
+    openInSplit(idA,'a');
+    openInSplit(idB,'b');
+  }
+}
+
+// ── POP OUT TO NEW WINDOW (multi-monitor) ──
+function popOutModule(id){
+  if(!id){toast('Nothing to pop out','Open a module first.');return;}
+  // Write lrb to localStorage for popout to read on init
+  try{ localStorage.setItem('vanika-lrb-sync',JSON.stringify({lrb:lrb,ts:Date.now()})); }catch(e){}
+
+  var base = window.location.href.split('#')[0];
+  var url  = base + '#popout=' + id;
+  var name = 'vanika_popout_' + id;
+  var opts = 'width=1280,height=820,menubar=no,toolbar=no,location=no,status=no,resizable=yes';
+  var w = window.open(url, name, opts);
+  if(!w){
+    toast('Pop-out blocked','Allow pop-ups for this page, then try again.');
+  } else {
+    // Store reference so we can push LRB updates directly to this window
+    _popoutWindows.push(w);
+    // Clean closed windows periodically
+    setTimeout(function cleanPopouts(){
+      _popoutWindows = _popoutWindows.filter(function(pw){ return pw && !pw.closed; });
+      if(_popoutWindows.length > 0) setTimeout(cleanPopouts, 2000);
+    }, 2000);
+    toast(id.charAt(0).toUpperCase()+id.slice(1)+' opened', 'Drag to your second monitor — syncs in real time.');
+  }
+}
+
+function popOutActive(){
+  popOutModule(activeFocusTab||splitCells.a);
+}
+
+// Listen for LRB changes from other windows
+window.addEventListener('storage',function(e){
+  if(e.key==='vanika-lrb-sync'&&e.newValue){
+    try{
+      var data=JSON.parse(e.newValue);
+      if(data&&data.lrb){
+        // Merge sensor and joint state
+        Object.keys(data.lrb.sensors||{}).forEach(function(k){
+          if(lrb.sensors[k])lrb.sensors[k].active=data.lrb.sensors[k].active;
+        });
+        lrb.version=data.lrb.version||lrb.version;
+        // Refresh all open panels
+        refreshCodeIDE();refreshHardwareBOM();refreshStudioLRB();
+        refreshSimLRB();refreshFleetLRB();refreshAIContext();
+        if(activeFocusTab) renderFocusContent(activeFocusTab);
+        var badge=document.getElementById('lrb-badge');
+        if(badge)badge.textContent='LRB v'+lrb.version.toFixed(1);
+      }
+    }catch(err){}
+  }
+});
+
+// Broadcast LRB changes to other windows
+var _lrbOrigSync=lrbSync;
+function lrbSync(changed,nowActive){
+  _lrbOrigSync(changed,nowActive);
+
+  // Build sensor state snapshot
+  var _sensorMap = {};
+  Object.keys(lrb.sensors).forEach(function(k){ _sensorMap[k] = lrb.sensors[k].active; });
+
+  // Push to all open popout windows via postMessage (works across ALL origins/browsers)
+  _popoutWindows = _popoutWindows.filter(function(pw){ return pw && !pw.closed; });
+  var _pmsg = {type:'vanika-lrb', sensors:_sensorMap, version:lrb.version};
+  _popoutWindows.forEach(function(pw){
+    try{ pw.postMessage(_pmsg, '*'); }catch(e){}
+  });
+  // Also BroadcastChannel + localStorage as additional layers
+  try{ if(window._lrbChannel) window._lrbChannel.postMessage(_pmsg); }catch(e){}
+  try{ localStorage.setItem('vanika-lrb-sync',JSON.stringify({lrb:lrb,ts:Date.now()})); }catch(e){}
+}
+
+
 
 // Module system: PAGE → module mapping
 var PAGE_TO_MODULE={
@@ -1355,12 +1991,40 @@ function hideLauncher(){document.getElementById('launcher').style.display='none'
 document.getElementById('launcher').addEventListener('click',e=>{if(e.target===document.getElementById('launcher'))hideLauncher();});
 
 // TAB SWITCHING
-function switchTab(winId,tabId){
-  const win=document.getElementById('win-'+winId);if(!win)return;
-  win.querySelectorAll('.wt').forEach(t=>t.classList.toggle('active',t.dataset.tab===tabId));
-  win.querySelectorAll('.tpanel').forEach(p=>{
-    p.classList.toggle('hidden',p.dataset.panel!==tabId);
-    if(p.dataset.panel===tabId)p.style.display='flex';
+function switchTab(moduleId, panel){
+  // Find the container that actually has this module's content
+  // Search all rendered containers — works in both focus and split modes
+  var container = null;
+  var candidates = [
+    document.getElementById('focus-content'),
+    document.getElementById('split-a-content'),
+    document.getElementById('split-b-content'),
+    document.getElementById('split-c-content')
+  ];
+  for(var i=0;i<candidates.length;i++){
+    var c=candidates[i];
+    if(c && c.querySelector('[data-panel]')){
+      // Verify this container belongs to the right module
+      // by checking if it has a wtab for this module
+      var wt=c.querySelector('[onclick*="switchTab(\'"+(moduleId)+"\'"]');
+      if(wt || c.querySelector('[data-panel="'+panel+'"]')){
+        container=c; break;
+      }
+    }
+  }
+  if(!container) return;
+
+  // Hide all tpanels, show the requested one
+  container.querySelectorAll('.tpanel').forEach(function(el){
+    el.classList.add('hidden');
+  });
+  var target = container.querySelector('[data-panel="'+panel+'"]');
+  if(target) target.classList.remove('hidden');
+
+  // Update tab active states
+  container.querySelectorAll('.wt').forEach(function(el){
+    el.classList.remove('active');
+    if(el.dataset.tab===panel) el.classList.add('active');
   });
 }
 
@@ -1443,6 +2107,10 @@ function enterApp(){
   setTimeout(function(){
     overlay.style.display='none';
     document.getElementById('fab-stack').style.display='flex';
+    var _lbw=document.getElementById('lrb-badge-wrap');if(_lbw)_lbw.style.display='flex';
+    var ms=document.getElementById('mode-switcher');if(ms)ms.style.display='flex';
+    // Default to focus mode
+    setViewMode('focus');
     showLauncher();
   },450);
 }
@@ -1453,21 +2121,421 @@ function startApp(){document.getElementById("fab-stack").style.display="flex";sh
 // ═══ SEND AI ═══
 function sendAI(text){
   if(!text||!text.trim())return;
-  var area=document.getElementById('ai-chat-area');
-  if(!area){openModule('ai');setTimeout(function(){sendAI(text);},350);return;}
-  area.innerHTML+='<div class="chatmsg u"><div class="cavatar u">K</div><div class="bubble">'+text+'</div></div>';
-  var thinking=document.getElementById('ai-thinking-indicator');
-  if(thinking)thinking.style.display='flex';
+  var _aiEl=getModuleEl('ai');
+  var area=_aiEl?_aiEl.querySelector('#ai-chat-area'):document.querySelector('#ai-chat-area');
+  if(!area){openModule('ai');setTimeout(function(){sendAI(text);},400);return;}
+
+  // Add user message
+  var escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  area.innerHTML+='<div class="chatmsg u"><div class="cavatar u">K</div><div class="bubble">'+escaped+'</div></div>';
   area.scrollTop=99999;
-  var inp=document.getElementById('ai-inp');
+
+  var thinkEl = _aiEl ? _aiEl.querySelector('#vanika-thinking') : document.querySelector('#vanika-thinking');
+  if(thinkEl)thinkEl.style.display='flex';
+  var inp = _aiEl ? _aiEl.querySelector('#ai-inp') : document.querySelector('#ai-inp');
   if(inp){inp.disabled=true;inp.style.opacity='0.5';inp.value='';}
+
+  // Simulate thinking delay (600–1400ms feels real)
+  var delay = 600 + Math.floor(Math.random()*800);
   setTimeout(function(){
-    if(thinking)thinking.style.display='none';
-    if(inp){inp.disabled=false;inp.style.opacity='1';inp.focus();}
-    area.innerHTML+='<div class="chatmsg"><div class="cavatar ai">V</div><div class="bubble">Based on your Kiran-3 LRB, here is my recommendation for <em>'+text+'</em>.<br><br>I can generate code, update the LRB, or open a related module. What would you like?</div></div>';
+    var thinkEl2 = _aiEl ? _aiEl.querySelector('#vanika-thinking') : document.querySelector('#vanika-thinking');
+    var inp2 = _aiEl ? _aiEl.querySelector('#ai-inp') : document.querySelector('#ai-inp');
+    if(thinkEl2)thinkEl2.style.display='none';
+    if(inp2){inp2.disabled=false;inp2.style.opacity='1';inp2.focus();}
+
+    var reply = buildAIReply(text);
+    area.innerHTML+='<div class="chatmsg"><div class="cavatar ai">V</div><div class="bubble">'
+      +'<div style="font-size:10px;color:var(--ink4);margin-bottom:5px">Vanika AI · '+lrb.name+' LRB v'+lrb.version.toFixed(1)+'</div>'
+      +reply+'</div></div>';
     area.scrollTop=99999;
-  },1800);
+  }, delay);
 }
+
+function buildAIReply(q) {
+  var t = q.toLowerCase();
+
+  // ── Live LRB data ──
+  var active   = Object.keys(lrb.sensors).filter(function(k){return lrb.sensors[k].active;});
+  var inactive = Object.keys(lrb.sensors).filter(function(k){return !lrb.sensors[k].active;});
+  var sNames   = active.map(function(k){return SENSOR_META[k].label;});
+  var joints   = Object.keys(lrb.joints||{});
+  var lidar    = lrb.sensors.lidar;
+  var imu      = lrb.sensors.imu;
+  var cam      = lrb.sensors.camera;
+  var gps      = lrb.sensors.gps;
+  var ros      = lrb.ros_distro;
+  var ver      = lrb.version.toFixed(1);
+  var boList   = Object.keys(lrb.sensors).filter(function(k){return lrb.sensors[k].status==='Backordered';});
+  var bomTotal = active.reduce(function(s,k){return s+lrb.sensors[k].price;}, 18000+5600);
+  var hasL = lidar.active, hasI = imu.active, hasC = cam.active;
+  var passRate = hasL ? (hasI ? 94 : 81) : 62;
+
+  // ── Output helpers ──
+  function row(label, value, color) {
+    color = color||'var(--ink)';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;'
+      +'padding:5px 0;border-bottom:0.5px solid var(--border);font-size:11px">'
+      +'<span style="color:var(--ink3)">'+label+'</span>'
+      +'<span style="font-weight:500;color:'+color+'">'+value+'</span></div>';
+  }
+  function finding(level, title, detail) {
+    var colors = {critical:'#C0392B',warn:'var(--amber)',info:'var(--sage3)',ok:'var(--sage)'};
+    var icons  = {critical:'✕',warn:'⚠',info:'→',ok:'✓'};
+    var bgs    = {critical:'rgba(192,57,43,0.07)',warn:'rgba(255,200,100,0.1)',info:'rgba(45,106,79,0.06)',ok:'rgba(45,106,79,0.06)'};
+    var borders= {critical:'#C0392B',warn:'var(--amber)',info:'var(--sage-tint2)',ok:'var(--sage)'};
+    return '<div style="display:flex;gap:8px;padding:7px 10px;background:'+bgs[level]
+      +';border-left:2px solid '+borders[level]+';border-radius:0 6px 6px 0;margin-bottom:5px">'
+      +'<span style="color:'+colors[level]+';font-weight:700;flex-shrink:0;margin-top:1px">'+icons[level]+'</span>'
+      +'<div><div style="font-size:11px;font-weight:500;color:var(--ink);margin-bottom:1px">'+title+'</div>'
+      +(detail?'<div style="font-size:10px;color:var(--ink3);line-height:1.5">'+detail+'</div>':'')
+      +'</div></div>';
+  }
+  function section(title) {
+    return '<div style="font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;'
+      +'color:var(--ink4);margin:10px 0 5px">'+title+'</div>';
+  }
+  function pill(label, color) {
+    color = color||'var(--sage)';
+    var bg = color==='var(--sage)'?'var(--sage-tint)':color==='var(--amber)'?'rgba(255,200,100,0.15)':'rgba(192,57,43,0.1)';
+    return '<span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:500;color:'+color
+      +';background:'+bg+';padding:2px 8px;border-radius:10px;margin:2px 2px 2px 0">'
+      +'<span style="width:5px;height:5px;border-radius:50%;background:'+color+'"></span>'+label+'</span>';
+  }
+  function codeblock(lines) {
+    return '<div class="codesnip" style="margin:7px 0 2px;font-size:10px;line-height:1.7">'
+      +(Array.isArray(lines)?lines.join('<br>'):lines)+'</div>';
+  }
+
+  // ══════════════════════════════════════════════════════
+  // CROSS-MODULE INTELLIGENCE HANDLERS
+  // ══════════════════════════════════════════════════════
+
+  // ── Full design review ──
+  if(/design review|review.*design|flag.*issue|full review|check.*robot|audit|list every issue/.test(t)) {
+    var out = section('KIRAN-3 · FULL SYSTEM REVIEW · LRB v'+ver);
+    out += section('Hardware & BOM');
+    out += boList.length
+      ? finding('critical', boList[0].toUpperCase()+' backordered',
+          lrb.sensors[boList[0]].model+' unavailable at '+lrb.sensors[boList[0]].supplier
+          +'. Blocks physical assembly. Alternatives: ICM-42688-P (₹'+(lrb.sensors[boList[0]].price+40)
+          +') or LSM6DSO (₹'+(lrb.sensors[boList[0]].price-20)+').')
+      : finding('ok','All components in stock','BOM total: ₹'+bomTotal.toLocaleString('en-IN'));
+    if(!gps.active) out += finding('warn','GPS inactive',
+      'Outdoor deployment relies on wheel odometry only. Drift ~2m per 100m. Recommended for production.');
+    if(!lrb.sensors.ultrasonic.active) out += finding('info','No ultrasonic coverage',
+      'Blind zone exists below LiDAR range_min (0.1m). Risk at docking positions < 10cm.');
+    out += section('Simulation');
+    out += row('Pass rate', passRate+'%', passRate>=90?'var(--sage)':passRate>=75?'var(--amber)':'#C0392B');
+    out += row('Scenario', 'Warehouse navigation');
+    out += row('Edge cases', '3 logged');
+    out += (hasL&&hasI)
+      ? finding('warn','Corner blind zone',
+          'Edge cases at t=14.2s, 89.1s, 142.8s trace to LiDAR range_min=0.1m. '
+          +'Chassis width is 0.48m — reduce range_min to 0.05m in Studio sensor params.')
+      : finding('critical','Sensor config degraded',
+          'LiDAR '+(hasL?'on':'OFF')+' · IMU '+(hasI?'on':'OFF')+'. Pass rate '+passRate+'% vs 94% baseline.');
+    out += section('Code & Fleet');
+    out += finding('ok','SDK in sync','robot_sdk.py generated from LRB v'+ver+'. '+active.length+' sensor accessors. ROS2 '+ros+'.');
+    out += finding('ok','Fleet healthy','5 robots online. Edge agent v1. OTA pipeline ready. DA-012 low battery (12%).');
+    out += section('Priority actions');
+    var p=1;
+    if(boList.length) out += row((p++)+'. Resolve backorder','Blocking','#C0392B');
+    if(!hasL||!hasI)  out += row((p++)+'. Activate '+(!hasL?'LiDAR':'IMU'),'High impact','var(--amber)');
+    if(hasL&&hasI)    out += row((p++)+'. Fix LiDAR range_min','94% → 97%+','var(--amber)');
+    if(!gps.active)   out += row((p++)+'. Enable GPS','Recommended for prod','var(--sage3)');
+    return out;
+  }
+
+  // ── Sim pass rate analysis ──
+  if(/sim|pass.rate|failing|fail|why.*low|improve.*sim|what.*change|simulation pass/.test(t)) {
+    var out = section('SIMULATION ANALYSIS · KIRAN-3 · RUN #47');
+    out += row('Current pass rate', passRate+'%', passRate>=90?'var(--sage)':passRate>=75?'var(--amber)':'#C0392B');
+    out += row('Baseline (full sensors)', '94%');
+    out += row('Delta', (passRate-94>0?'+':'')+(passRate-94)+'%',
+               passRate>=94?'var(--sage)':'#C0392B');
+    out += row('Scenario', 'Warehouse navigation');
+    out += row('Physics engine', 'Bullet3');
+    out += section('Root cause analysis');
+    if(!hasL) out += finding('critical','LiDAR disabled — primary cause',
+      'Navigation falls back to dead reckoning. -32% pass rate impact. Re-enable in Studio → Sensors.');
+    if(!hasI) out += finding('warn','IMU disabled',
+      'Gyro stabilisation unavailable. -13% on E-Stop and narrow corridor scenarios. Re-enable in Studio.');
+    if(hasL&&hasI) {
+      out += finding('warn','Corner blind zone (3 edge cases)',
+        't=14.2s, 89.1s, 142.8s: obstacle avoidance triggers late near corridor corners. '
+        +'Root cause: range_min=0.1m creates a 10cm blind zone. Chassis edge is 0.24m from centre.');
+      out += section('Fix');
+      out += codeblock(['# Studio → Sensors → LiDAR → range_min','range_min: 0.1  →  0.05  (metres)']);
+      out += finding('ok','Expected outcome','94% → 97–98% pass rate. Corner edge cases eliminated.');
+    }
+    out += section('Scenario comparison');
+    out += row('Warehouse navigation', passRate+'%');
+    out += row('E-Stop recovery', (hasI?97:88)+'%');
+    out += row('Dynamic obstacle', (hasL?89:61)+'%');
+    out += row('Narrow corridor', (hasL&&hasI?91:71)+'%');
+    return out;
+  }
+
+  // ── BOM cost optimisation ──
+  if(/bom|cost|optimis|saving|cheaper|budget|price|hardware.*review/.test(t)) {
+    var out = section('BOM COST ANALYSIS · KIRAN-3 · '+active.length+' ACTIVE SENSORS');
+    out += row('Current unit cost', '₹'+bomTotal.toLocaleString('en-IN'), 'var(--ink)');
+    out += row('At 50 units (current)', '₹'+Math.round(bomTotal*50/1000)+'k total');
+    out += section('Component breakdown');
+    active.forEach(function(k){
+      var s=lrb.sensors[k];
+      out += row(SENSOR_META[k].label+' ('+s.model+')', '₹'+s.price.toLocaleString('en-IN'),
+                 s.status==='Backordered'?'#C0392B':'var(--ink3)');
+    });
+    out += row('Drive motors (×2)','₹5,600');
+    out += row('Battery pack','₹18,000');
+    out += section('Optimisation opportunities');
+    out += finding('warn', 'IMU MPU-9250 → LSM6DSO',
+      'Saves ₹'+(lrb.sensors.imu.price-420)+'/unit. Same I²C interface, identical /imu/data topic. In stock at Robu.in.');
+    out += finding('info', 'OAK-D Lite → OAK-1',
+      'Saves ₹3,700/unit if stereo depth not required. Reduces BOM by 4.5%. Confirm use case first.');
+    out += finding('info', '50-unit bulk pricing',
+      'Robu.in offers 8–12% volume discount on sensors+motors. Saves ₹'+Math.round(bomTotal*0.1).toLocaleString('en-IN')+'/unit at 50 units.');
+    out += section('Summary');
+    var saving = (lrb.sensors.imu.price-420) + 3700 + Math.round(bomTotal*0.09);
+    out += row('Potential saving/unit', '₹'+saving.toLocaleString('en-IN'), 'var(--sage)');
+    out += row('At 50 units', '₹'+Math.round(saving*50/1000)+'k total', 'var(--sage)');
+    out += row('Revised unit cost', '₹'+(bomTotal-saving).toLocaleString('en-IN'));
+    return out;
+  }
+
+  // ── IMU backordered — options ──
+  if(/backordered|imu.*option|option.*imu|wait|block|supply|sourcing|what.*break/.test(t)) {
+    var s = lrb.sensors.imu;
+    var out = section('SUPPLY CHAIN ANALYSIS · '+s.model.toUpperCase());
+    out += row('Status','Backordered','#C0392B');
+    out += row('Current supplier', s.supplier);
+    out += row('Current unit price','₹'+s.price);
+    out += row('Impact on timeline','Blocks hardware assembly','#C0392B');
+    out += section('What breaks if you wait');
+    out += finding('critical','Assembly blocked',
+      'Cannot build physical Kiran-3 units without the IMU. Physical testing, sim validation, and pilot batch are all blocked.');
+    out += finding('warn','Sim pass rate impact',
+      'Without IMU: E-Stop recovery drops from 97% → 88%. Gyro stabilisation unavailable.');
+    out += finding('warn','Fleet deployment impact',
+      'Edge agent telemetry loses /imu/data stream. Health monitoring degrades for deployed robots.');
+    out += section('Alternatives found');
+    out += finding('ok','ICM-42688-P — TDK',
+      'Same I²C pinout. 6-axis. ₹'+(s.price+40)+'. In stock at Robu.in. Zero driver changes required.');
+    out += finding('ok','LSM6DSO — ST Microelectronics',
+      '₹'+(s.price-20)+'. In stock. Minor register map differences — driver update takes ~2 hours. '
+      +'I can generate the updated driver for ROS2 '+ros+'.');
+    out += section('Recommendation');
+    out += finding('info','Swap to LSM6DSO now',
+      'Saves ₹'+(s.price-(s.price-20))+' per unit, clears the blocker today. LRB topic /imu/data unchanged — no other module is affected.');
+    return out;
+  }
+
+  // ── Pilot batch readiness ──
+  if(/ready|pilot|manufactur|production|batch|ship/.test(t)) {
+    var blockers = [];
+    var warnings = [];
+    if(boList.length) blockers.push(lrb.sensors[boList[0]].model+' backordered');
+    if(!hasL) blockers.push('LiDAR inactive — sim pass rate too low');
+    if(!hasI) warnings.push('IMU inactive — degraded stabilisation');
+    if(!gps.active) warnings.push('GPS inactive — outdoor navigation limited');
+    var ready = blockers.length === 0;
+    var out = section('PILOT BATCH READINESS · KIRAN-3 · 10 UNITS');
+    out += row('Status', ready?'Ready':'Not ready', ready?'var(--sage)':'#C0392B');
+    out += row('Sim pass rate', passRate+'%', passRate>=90?'var(--sage)':'var(--amber)');
+    out += row('BOM complete', boList.length===0?'Yes':'Partial — 1 backordered', boList.length===0?'var(--sage)':'#C0392B');
+    out += row('LRB version','v'+ver);
+    out += row('Fleet-ready','Yes — OTA pipeline validated');
+    if(blockers.length) {
+      out += section('Blockers (must resolve)');
+      blockers.forEach(function(b){ out += finding('critical',b,''); });
+    }
+    if(warnings.length) {
+      out += section('Warnings (recommended)');
+      warnings.forEach(function(w){ out += finding('warn',w,''); });
+    }
+    out += section(ready?'Recommended next steps':'Path to ready');
+    if(ready) {
+      out += finding('ok','Run 100 sim iterations','Validate edge cases before committing to hardware order.');
+      out += finding('ok','Raise RFQ in Manufacture module','3 verified suppliers. Lead time 5–14 days at 10 units.');
+      out += finding('ok','Estimated pilot timeline','Order → manufacture → delivery: 3–4 weeks.');
+    } else {
+      if(boList.length) out += finding('warn','Day 1: Resolve '+lrb.sensors[boList[0]].model+' backorder','Swap to LSM6DSO. 2 hours to update driver.');
+      out += finding('info','Day 1: Run full sim suite','Re-run with current LRB. Get baseline pass rate.');
+      out += finding('info','Day 2: Raise RFQ','Open Manufacture → Get Quote once BOM is complete.');
+    }
+    return out;
+  }
+
+  // ── Fleet deployment risk ──
+  if(/fleet|deploy.*risk|risk.*deploy|ota.*risk|roll.*out|all.*robot|firmware.*risk/.test(t)) {
+    var out = section('FLEET DEPLOYMENT RISK ASSESSMENT');
+    out += row('LRB version to deploy','v'+ver);
+    out += row('Robots targeted','5 of 5 online');
+    out += row('Overall risk','Medium — 1 robot below safe battery','var(--amber)');
+    out += section('Per-robot assessment');
+    var robots = [
+      ['K3-001','98%','Navigating','Low — stable, well-tested config'],
+      ['K3-002','91%','Idle / Docked','Low — stable. Best candidate for first deploy.'],
+      ['K3-003','68%','Charging','Low-medium — will reach 80%+ before deploy window.'],
+      ['DA-012','12%','Low battery','CRITICAL — OTA mid-deploy will brick if power fails. Do not deploy.'],
+      ['DA-013','87%','Navigating','Low-medium — pause mission before OTA.'],
+    ];
+    robots.forEach(function(r){
+      var level = r[2]==='Low battery'?'critical':r[3].startsWith('Low —')?'ok':'warn';
+      out += finding(level, r[0]+' · '+r[1]+' battery · '+r[2], r[3]);
+    });
+    out += section('Safe deployment sequence');
+    out += row('1. Charge DA-012 → 40%+', 'Before starting');
+    out += row('2. Deploy K3-002 (first)', 'Monitor 5 min');
+    out += row('3. Deploy K3-001, K3-003', 'Rolling — max 2 simultaneous');
+    out += row('4. Deploy DA-013', 'After mission pause');
+    out += row('5. Deploy DA-012', 'Last — after charging');
+    out += finding('ok','Rollback guaranteed',
+      'SHA256 validation + 30s watchdog. Automatic rollback on startup failure. No manual intervention needed.');
+    return out;
+  }
+
+  // ── What to work on next ──
+  if(/next|priority|what.*do|suggest.*task|most important|what.*work|what.*engineer/.test(t)) {
+    var out = section('ENGINEERING PRIORITIES · KIRAN-3 · LRB v'+ver);
+    var rank = 1;
+    if(boList.length) {
+      out += finding('critical',
+        rank+++'. Resolve '+lrb.sensors[boList[0]].model+' backorder [BLOCKING]',
+        'Physical assembly and pilot batch blocked. Swap to LSM6DSO: same pinout, in stock at ₹'
+        +(lrb.sensors[boList[0]].price-20)+'. Estimated effort: 2h (driver update + BOM change).');
+    }
+    if(hasL&&hasI) {
+      out += finding('warn',
+        rank+++'. Fix LiDAR range_min [HIGH IMPACT]',
+        'Change range_min from 0.1m → 0.05m in Studio → Sensors → LiDAR. Expected: 3–4% sim pass rate improvement. Effort: 5 minutes.');
+    } else {
+      if(!hasL) out += finding('critical',
+        rank+++'. Enable LiDAR [HIGH IMPACT]',
+        'Navigation pass rate is '+passRate+'% vs 94% baseline. Toggle on in Studio → Sensors. BOM + Code update automatically.');
+      if(!hasI) out += finding('warn',
+        rank+++'. Enable IMU [RECOMMENDED]',
+        'E-Stop recovery drops from 97% → 88% without IMU. Toggle on in Studio → Sensors.');
+    }
+    if(!gps.active) {
+      out += finding('info',
+        rank+++'. Enable GPS [RECOMMENDED FOR PRODUCTION]',
+        'Adds absolute positioning for outdoor deployments. BOM adds ₹1,800. Code gets get_gps() accessor automatically. Effort: 30 seconds.');
+    }
+    out += finding('info',
+      rank+++'. Run 100-iteration sim batch [VALIDATION]',
+      'Validate current config under fault injection. Establish baseline before pilot batch order. Effort: 20 minutes (unattended).');
+    out += section('After these: readiness');
+    out += row('Pilot batch (10 units)', boList.length?'Blocked':'Ready after sim validation');
+    out += row('Full fleet deploy', 'Charge DA-012 first');
+    return out;
+  }
+
+  // ── Sensor comparison (what am I missing) ──
+  if(/miss|without|inactive|not.*active|gps.*ultra|compar.*sensor|sensor.*compar|what.*missing/.test(t)) {
+    if(!inactive.length) {
+      var out = section('SENSOR COVERAGE · KIRAN-3 · FULL CONFIG');
+      out += finding('ok','All 6 sensors active','Complete sensor suite. No coverage gaps detected.');
+      return out;
+    }
+    var out = section('INACTIVE SENSOR IMPACT ANALYSIS · LRB v'+ver);
+    var impacts = {
+      gps:        {sev:'warn', title:'No absolute positioning (GPS off)', detail:'Dead reckoning drifts ~2m per 100m travelled. Critical for outdoor deployments and multi-floor facilities. Adds ₹1,800 to BOM.'},
+      ultrasonic: {sev:'warn', title:'Close-range blind zone (Ultrasonic off)', detail:'Objects within 0–10cm of chassis undetected. LiDAR range_min is 0.1m. Risk at docking stations and tight shelving.'},
+      camera:     {sev:'warn', title:'No visual obstacle detection (Camera off)', detail:'Nav2 relies on LiDAR geometry only. No object classification, no lane/marking detection, no visual SLAM fallback.'},
+      encoder:    {sev:'critical', title:'No wheel odometry (Encoder off)', detail:'Velocity estimation and dead reckoning unavailable. Navigation accuracy severely degraded without encoder feedback.'},
+      lidar:      {sev:'critical', title:'No 2D ranging (LiDAR off)', detail:'Primary obstacle detection unavailable. Warehouse navigation drops from 94% → 62% pass rate.'},
+      imu:        {sev:'warn',     title:'No gyro stabilisation (IMU off)', detail:'E-Stop recovery drops 97% → 88%. Vibration compensation and tilt correction unavailable.'},
+    };
+    inactive.forEach(function(k){
+      var imp = impacts[k]||{sev:'info',title:SENSOR_META[k].label+' inactive',detail:'Sensor data unavailable on topic '+lrb.sensors[k].topic};
+      out += finding(imp.sev, imp.title, imp.detail);
+    });
+    out += section('To activate');
+    out += finding('info','Studio → Sensors panel',
+      'Toggle any sensor on. LRB updates, Code regenerates accessors, BOM adds the component. Takes 5 seconds.');
+    return out;
+  }
+
+  // ── ROS2 code generation (belongs in Code IDE, but handle gracefully) ──
+  if(/\b(write|generate|create|ros2?|node|subscriber|publisher|code)\b/.test(t)) {
+    if(/lidar|scan/.test(t) && hasL) {
+      return section('ROS2 SUBSCRIBER · '+lidar.model.toUpperCase()+' · '+lidar.topic)
+        + codeblock(['#include &lt;rclcpp/rclcpp.hpp&gt;','#include &lt;sensor_msgs/msg/laser_scan.hpp&gt;','',
+          'class LidarNode : public rclcpp::Node {','public:',
+          '  LidarNode() : Node("kiran3_lidar") {',
+          '    sub_ = create_subscription&lt;sensor_msgs::msg::LaserScan&gt;(',
+          '      "'+lidar.topic+'", 10, [this](auto m){ process(m); });',
+          '  }','private:',
+          '  void process(sensor_msgs::msg::LaserScan::ConstSharedPtr m) {',
+          '    auto min = *std::min_element(m->ranges.begin(), m->ranges.end());',
+          '    RCLCPP_INFO(get_logger(), "min_range: %.3f", min);',
+          '  }',
+          '  rclcpp::Subscription&lt;sensor_msgs::msg::LaserScan&gt;::SharedPtr sub_;',
+          '};'])
+        + finding('info','Tip','For full ROS2 node generation, use the Code IDE → Copilot. This module focuses on cross-system analysis.');
+    }
+    if(/imu|gyro/.test(t) && hasI) {
+      return section('ROS2 SUBSCRIBER · '+imu.model.toUpperCase()+' · '+imu.topic)
+        + codeblock(['from sensor_msgs.msg import Imu','',
+          'self.imu_sub = self.create_subscription(',
+          '  Imu, "'+imu.topic+'", self.on_imu, 10)','',
+          'def on_imu(self, msg):',
+          '  yaw = msg.orientation.z  # sensor_id: '+imu.id,
+          "  self.get_logger().info(f'yaw={yaw:.3f}')"])
+        + finding('info','Tip','Code IDE → Copilot generates complete ROS2 packages with launch files. This is a quick reference only.');
+    }
+    return section('CODE GENERATION')
+      + finding('info','Use the Code IDE for this',
+        'Vanika AI Core focuses on cross-module analysis. '
+        +'The Code module has a dedicated Copilot that generates full ROS2 packages using your LRB sensor topics: '
+        +active.map(function(k){return lrb.sensors[k].topic;}).join(', ')+'.')
+      + finding('ok','Active sensors in robot_sdk.py', active.map(function(k){return 'get_'+k+'()';}).join(', '));
+  }
+
+  // ── Greet ──
+  if(/^(hi|hello|hey|what can|help me|get started)/.test(t)) {
+    var out = section('VANIKA AI CORE · KIRAN-3 · LRB v'+ver+' · ALL MODULES LOADED');
+    out += row('Active sensors', active.length+'/6', active.length>=4?'var(--sage)':'var(--amber)');
+    out += row('Sim pass rate', passRate+'%', passRate>=90?'var(--sage)':passRate>=75?'var(--amber)':'#C0392B');
+    out += row('BOM blockers', boList.length?boList.length+' backordered':'None', boList.length?'#C0392B':'var(--sage)');
+    out += row('Fleet', '5 online');
+    out += section('What I analyse');
+    out += finding('info','Cross-module reasoning',
+      'I read Studio, Sim results, Hardware BOM, Fleet telemetry and Code simultaneously. '
+      +'I find problems across modules that you would not see in any single view.');
+    out += finding('info','Not a coding assistant',
+      'Use the Code IDE for writing firmware. Ask me why your sim is failing, whether you are ready for a pilot batch, or what to fix next.');
+    return out;
+  }
+
+  // ── Default — structured, never chatbot ──
+  var out = section('ANALYSIS · KIRAN-3 · LRB v'+ver);
+  out += row('Sensors', active.length+' active: '+sNames.join(', '));
+  out += row('Sim pass rate', passRate+'%', passRate>=90?'var(--sage)':'var(--amber)');
+  out += row('BOM', boList.length?'1 backordered':'Clean');
+  out += section('Suggested queries');
+  [
+    'Do a full design review',
+    'Why is my sim pass rate '+passRate+'%?',
+    'Is Kiran-3 ready for a pilot batch?',
+    'Optimise my BOM for cost',
+    'What are the 3 most important tasks right now?',
+  ].forEach(function(s){
+    out += '<div style="padding:4px 0;border-bottom:0.5px solid var(--border);font-size:11px;cursor:pointer;color:var(--sage3)" onclick="sendAI(\''+s+'\')">&rsaquo; '+s+'</div>';
+  });
+  return out;
+}
+
+function code(lines) {
+  var txt = Array.isArray(lines) ? lines.join('<br>') : lines;
+  return '<div class="codesnip" style="margin:7px 0 2px;font-size:10px;line-height:1.7">'
+    + txt
+    + '<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>';
+}
+
+
 
 // ═══ THEME ═══
 function applyTheme(t){
@@ -1519,6 +2587,838 @@ function tileWindows(){
   }catch(e){}
 })();
 
+
+// ══════════════════════════════════════════════════════
+// VANIKA LIVE ROBOT BLUEPRINT — shared demo state
+// ══════════════════════════════════════════════════════
+var lrb = {
+  version: 4.1,
+  name: "Kiran-3",
+  ros_distro: "humble",
+  sensors: {
+    lidar:      { active:true,  id:"front_lidar", model:"RPLiDAR A1",  topic:"/scan",         price:6200,  supplier:"Cytron",    status:"In stock"   },
+    imu:        { active:true,  id:"imu_main",    model:"MPU-9250",    topic:"/imu/data",     price:480,   supplier:"Robu.in",   status:"Backordered"},
+    camera:     { active:true,  id:"front_cam",   model:"OAK-D Lite",  topic:"/camera/color", price:8900,  supplier:"Luxonis",   status:"In stock"   },
+    ultrasonic: { active:false, id:"us_front",    model:"HC-SR04",     topic:"/ultrasonic",   price:120,   supplier:"Robu.in",   status:"In stock"   },
+    gps:        { active:false, id:"gps_main",    model:"NEO-M8N",     topic:"/gps/fix",      price:1800,  supplier:"RobotShop", status:"In stock"   },
+    encoder:    { active:true,  id:"wheel_enc",   model:"AMT102-V",    topic:"/joint_states", price:950,   supplier:"CUI",       status:"In stock"   }
+  },
+  joints: {
+    left_wheel:  { name: "Left wheel",  type: "continuous", torque: 2.5, vel: 10.0 },
+    right_wheel: { name: "Right wheel", type: "continuous", torque: 2.5, vel: 10.0 },
+    head_pan:    { name: "Head pan",    type: "revolute",   torque: 0.8, vel: 3.14, limit_lower: -1.57, limit_upper: 1.57 },
+    head_tilt:   { name: "Head tilt",   type: "revolute",   torque: 0.5, vel: 2.0,  limit_lower: -0.5,  limit_upper: 0.5 }
+  },
+  compute: { model: "Raspberry Pi 5", ram_gb: 8, os: "Ubuntu 22.04" },
+  mass_kg: 4.2,
+  chassis: { material: "ABS", wall_mm: 3 }
+};
+
+var SENSOR_META = {
+  lidar:      { label:"LiDAR",      icon:"\u29c6", py:"robot.sensors.front_lidar.scan()",    cpp:"robot_->sensors().front_lidar->scan()" },
+  imu:        { label:"IMU",        icon:"\u25c8", py:"robot.sensors.imu_main.data()",       cpp:"robot_->sensors().imu_main->data()" },
+  camera:     { label:"Camera",     icon:"\u2b1a", py:"robot.sensors.front_cam.image()",     cpp:"robot_->sensors().front_cam->image()" },
+  ultrasonic: { label:"Ultrasonic", icon:"\u25c9", py:"robot.sensors.us_front.distance()",  cpp:"robot_->sensors().us_front->distance()" },
+  gps:        { label:"GPS",        icon:"\u25ce", py:"robot.sensors.gps_main.fix()",        cpp:"robot_->sensors().gps_main->fix()" },
+  encoder:    { label:"Encoder",    icon:"\u25d1", py:"robot.sensors.wheel_enc.ticks()",     cpp:"robot_->sensors().wheel_enc->ticks()" }
+};
+
+function _lrbOrigSync(changed, nowActive) {
+  // Bump version
+  lrb.version = Math.round((lrb.version + 0.1) * 10) / 10;
+
+  // Flash LRB badge
+  try {
+    var badge = document.getElementById('lrb-badge');
+    if (badge) {
+      badge.textContent = 'LRB v' + lrb.version.toFixed(1);
+      badge.style.cssText += ';color:#fff;background:var(--sage);padding:2px 8px;border-radius:6px;transition:none';
+      setTimeout(function(){ badge.style.cssText = badge.style.cssText.replace(/;?color:[^;]+|;?background:[^;]+|;?padding:[^;]+|;?border-radius:[^;]+|;?transition:[^;]+/g,''); }, 1200);
+    }
+  } catch(e){}
+
+  // Derive active sensor list once
+  var activeSensors = Object.keys(lrb.sensors).filter(function(k){ return lrb.sensors[k].active; });
+
+  // ── Hardware BOM: update ALL instances anywhere in document ──
+  try {
+    var allTbody = document.querySelectorAll('.lrb-bom-tbody');
+    allTbody.forEach(function(tbody) {
+      var total = 18000 + 5600;
+      var rows = activeSensors.map(function(k) {
+        var s = lrb.sensors[k], m = SENSOR_META[k];
+        total += s.price;
+        var sc = s.status==='In stock'?'bg-g':s.status==='Backordered'?'bg-r':'bg-a';
+        var act = s.status==='Backordered'?'<button class="btn bo bsm" onclick="toast(\'AI Swap\',\'2 alternatives found\')">Swap</button>':'';
+        return '<tr class="cr"><td><strong style="font-weight:500">'+m.icon+' '+s.model
+          +'</strong><span style="font-size:10px;color:var(--ink4);margin-left:6px">'+s.topic+'</span></td>'
+          +'<td style="font-family:var(--mono)">1</td>'
+          +'<td style="font-family:var(--mono)">\u20b9'+s.price.toLocaleString('en-IN')+'</td>'
+          +'<td style="color:var(--ink3)">'+s.supplier+'</td>'
+          +'<td><span class="badge '+sc+'">'+s.status+'</span></td>'
+          +'<td>'+act+'</td></tr>';
+      });
+      rows.push('<tr class="cr"><td><strong style="font-weight:500">🔋 LiPo 24V 20Ah</strong></td><td style="font-family:var(--mono)">1</td><td style="font-family:var(--mono)">\u20b918,000</td><td style="color:var(--ink3)">Maxamps</td><td><span class="badge bg-g">In stock</span></td><td></td></tr>');
+      rows.push('<tr class="cr"><td><strong style="font-weight:500">\u2699 Drive Motors 12V DC</strong></td><td style="font-family:var(--mono)">2</td><td style="font-family:var(--mono)">\u20b92,800</td><td style="color:var(--ink3)">Robu.in</td><td><span class="badge bg-g">In stock</span></td><td></td></tr>');
+      tbody.innerHTML = rows.join('');
+      // Flash the total
+      var totEl = tbody.closest('.mod') ? tbody.closest('.mod').querySelector('.lrb-bom-total') : null;
+      if (!totEl) totEl = document.querySelector('.lrb-bom-total');
+      if (totEl) {
+        totEl.textContent = '\u20b9'+total.toLocaleString('en-IN')+' total';
+        totEl.style.background='var(--sage)'; totEl.style.color='#fff';
+        setTimeout(function(){ totEl.style.background=''; totEl.style.color=''; }, 900);
+      }
+    });
+  } catch(e){ if(window.console) console.error('BOM refresh error:',e); }
+
+  // ── Code IDE: update ALL .codearea instances ──
+  try {
+    var allCode = document.querySelectorAll('.codearea');
+    allCode.forEach(function(codeArea) {
+      var lines = [
+        {c:'cm', t:'# robot_sdk.py \u2014 Auto-generated by Vanika LRB v'+lrb.version.toFixed(1)},
+        {c:'cm', t:'# DO NOT EDIT \u2014 regenerated on every LRB change'},
+        {c:'cm', t:'# Robot: '+lrb.name+' \u00b7 ROS2 '+lrb.ros_distro},
+        {c:'kw', t:''},{c:'kw', t:'import rclpy'},{c:'kw', t:'from vanika_sdk import RobotClient, Robot'},{c:'kw', t:''},
+        {c:'cm', t:'# \u2500\u2500 Sensors ('+activeSensors.length+' active) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'},
+      ];
+      activeSensors.forEach(function(k){
+        var s=lrb.sensors[k], m=SENSOR_META[k];
+        lines.push({c:'cm', t:'# '+m.label+' \u00b7 '+s.model+' \u00b7 '+s.topic});
+        lines.push({c:'fn', t:'def get_'+k+'(robot): return robot.sensors.'+s.id+'.read()'});
+        lines.push({c:'kw', t:''});
+      });
+      lines.push({c:'cm', t:'# \u2500\u2500 Actuators \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'});
+      lines.push({c:'fn', t:'def drive(robot, left_vel, right_vel): ...'});
+      codeArea.innerHTML = lines.map(function(l,i){
+        return '<div class="cl"><span class="ln">'+(i+1)+'</span><span class="'+l.c+'">'+
+          l.t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span></div>';
+      }).join('');
+      // Update label
+      var lbl = codeArea.parentElement ? codeArea.parentElement.querySelector('[data-lrb-label]') : null;
+      if (!lbl) lbl = document.querySelector('[data-lrb-label]');
+      if (lbl){ lbl.textContent='\u00b7 auto-generated by LRB v'+lrb.version.toFixed(1); lbl.style.color='var(--sage)'; setTimeout(function(){lbl.style.color='';},1400); }
+    });
+  } catch(e){ if(window.console) console.error('Code refresh error:',e); }
+
+  // ── Studio LRB tab ──
+  try {
+    var allLrb = document.querySelectorAll('[data-panel="lrb"] .codearea');
+    allLrb.forEach(function(lrbPanel){
+      var sJson = activeSensors.map(function(k,i){
+        var s=lrb.sensors[k];
+        return '<div class="cl"><span class="ln">'+(8+i*3)+'</span><span class="kw">&nbsp;&nbsp;&nbsp;&nbsp;{ </span>'
+          +'<span class="st">&quot;id&quot;</span><span class="kw">: </span><span class="st">&quot;'+s.id+'&quot;</span>'
+          +'<span class="kw">, </span><span class="st">&quot;type&quot;</span><span class="kw">: </span><span class="st">&quot;'+k+'&quot;</span>'
+          +'<span class="kw">, </span><span class="st">&quot;topic&quot;</span><span class="kw">: </span><span class="st">&quot;'+s.topic+'&quot;</span>'
+          +'<span class="kw"> },</span></div>';
+      }).join('');
+      lrbPanel.innerHTML = '<div class="cl"><span class="ln">1</span><span class="kw">{</span></div>'
+        +'<div class="cl"><span class="ln">2</span><span class="st">&nbsp;&nbsp;&quot;version&quot;</span><span class="kw">: </span><span class="nu">'+lrb.version.toFixed(1)+'</span><span class="kw">,</span></div>'
+        +'<div class="cl"><span class="ln">3</span><span class="st">&nbsp;&nbsp;&quot;name&quot;</span><span class="kw">: </span><span class="st">&quot;Kiran-3&quot;</span><span class="kw">,</span></div>'
+        +'<div class="cl"><span class="ln">4</span><span class="st">&nbsp;&nbsp;&quot;sensors&quot;</span><span class="kw">: [ </span><span class="cm">// '+activeSensors.length+' active</span></div>'
+        +sJson
+        +'<div class="cl"><span class="ln">'+(8+activeSensors.length*3)+'</span><span class="kw">&nbsp;&nbsp;]</span></div>'
+        +'<div class="cl"><span class="ln">'+(9+activeSensors.length*3)+'</span><span class="kw">}</span></div>';
+    });
+    // LRB tab sub-header
+    document.querySelectorAll('[data-panel="lrb"] .sh-sub').forEach(function(sub){
+      sub.textContent = 'v'+lrb.version.toFixed(1)+' \u00b7 Just updated';
+    });
+  } catch(e){ if(window.console) console.error('Studio LRB refresh error:',e); }
+
+  // ── Sim banner ──
+  try {
+    document.querySelectorAll('.lrb-sim-banner').forEach(function(banner){
+      banner.innerHTML = '<strong>LRB v'+lrb.version.toFixed(1)+' synced:</strong> Kiran-3 \u00b7 '
+        +activeSensors.length+' sensors active'
+        +(lrb.sensors.lidar.active?' \u00b7 LiDAR fault injection available':' \u00b7 \u26a0 No LiDAR \u2014 some scenarios limited')
+        +(lrb.sensors.imu.active?'':' \u00b7 \u26a0 No IMU \u2014 gyro tests disabled');
+      banner.style.background='var(--sage-tint)';
+      setTimeout(function(){ banner.style.background=''; }, 900);
+    });
+  } catch(e){}
+
+  // ── Fleet topics ──
+  try {
+    document.querySelectorAll('.lrb-fleet-topics').forEach(function(topicsEl){
+      var core = [{t:'/cmd_vel',h:'10Hz'},{t:'/odom',h:'30Hz'},{t:'/joint_states',h:'50Hz'}];
+      var sensorT = activeSensors.map(function(k){return {t:lrb.sensors[k].topic, h:k==='lidar'?'10Hz':k==='camera'?'30Hz':'50Hz'};});
+      topicsEl.innerHTML = core.concat(sensorT).map(function(x){
+        return '<div style="display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:0.5px solid var(--border);font-size:10px">'
+          +'<div style="width:6px;height:6px;border-radius:50%;background:var(--sage);flex-shrink:0"></div>'
+          +'<span style="font-family:var(--mono);color:var(--ink3);flex:1">'+x.t+'</span>'
+          +'<span style="color:var(--ink4)">'+x.h+'</span></div>';
+      }).join('');
+      var hdr = document.querySelector('.lrb-fleet-topics-header');
+      if (hdr) hdr.textContent = (core.length+sensorT.length)+' active topics \u00b7 LRB v'+lrb.version.toFixed(1);
+    });
+  } catch(e){}
+
+  // ── AI context ──
+  try {
+    document.querySelectorAll('.lrb-ai-context').forEach(function(ctxEl){
+      var bo = Object.keys(lrb.sensors).filter(function(k){return lrb.sensors[k].status==='Backordered';});
+      ctxEl.innerHTML = [
+        {d:'sage', t:'Kiran-3 LRB v'+lrb.version.toFixed(1)},
+        {d:'sage', t:activeSensors.length+' sensors in context'},
+        {d:'sage', t:Object.keys(lrb.joints||{}).length+' joints loaded'},
+        {d:bo.length?'amber':'sage', t:bo.length?'1 part backordered':'All parts in stock'},
+      ].map(function(item){
+        var col=item.d==='amber'?'var(--amber)':'var(--sage)';
+        return '<div class="row" style="gap:4px;margin-bottom:3px">'
+          +'<div style="width:5px;height:5px;border-radius:50%;background:'+col+';flex-shrink:0;margin-top:3px"></div>'
+          +'<span style="font-size:11px;color:var(--ink3)">'+item.t+'</span></div>';
+      }).join('');
+      ctxEl.style.background='rgba(45,106,79,0.06)';
+      setTimeout(function(){ ctxEl.style.background=''; }, 700);
+    });
+    // Add LRB update notification to AI chat
+    var chatArea = document.querySelector('#ai-chat-area');
+    if (chatArea) {
+      var notif = document.createElement('div');
+      notif.style.cssText = 'padding:5px 12px;background:var(--sage-tint);border-left:2px solid var(--sage);margin:3px 8px;border-radius:0 4px 4px 0;font-size:10px;color:var(--sage3)';
+      notif.innerHTML = '<strong>LRB v'+lrb.version.toFixed(1)+'</strong> \u00b7 Active sensors: '+activeSensors.map(function(k){return SENSOR_META[k].label;}).join(', ');
+      chatArea.appendChild(notif);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+  } catch(e){}
+
+  // ── Pending tab indicator for focus mode ──
+  try {
+    var LRB_MODULES = ['code','hardware','simulation','fleet','ai','studio'];
+    LRB_MODULES.forEach(function(mid){
+      var hasElement = false;
+      var MARKERS = {code:'.codearea',hardware:'.lrb-bom-tbody',studio:'[data-panel="lrb"]',simulation:'.lrb-sim-banner',fleet:'.lrb-fleet-topics',ai:'.lrb-ai-context'};
+      if (MARKERS[mid]) hasElement = !!document.querySelector(MARKERS[mid]);
+      if (!hasElement) pendingLRBUpdate[mid] = true;
+    });
+    refreshFocusModebar();
+  } catch(e){}
+
+  // ── Toast ──
+  try {
+    var meta2 = SENSOR_META[changed]||{};
+    var msg = (nowActive?'+':'\u2212')+' '+(meta2.label||changed)+' \u2192 LRB v'+lrb.version.toFixed(1);
+    toast('LRB synced', msg);
+  } catch(e){}
+}
+
+
+function refreshCodeIDE() {
+  var codeArea = document.querySelector('.codearea');
+  if (!codeArea) return;
+  var active = Object.keys(lrb.sensors).filter(function(k) { return lrb.sensors[k].active; });
+  var lines = [
+    {c:'cm', t:'# robot_sdk.py \u2014 Auto-generated by Vanika LRB v' + lrb.version.toFixed(1)},
+    {c:'cm', t:'# DO NOT EDIT \u2014 regenerated on every LRB change'},
+    {c:'cm', t:'# Robot: ' + lrb.name + ' \u00b7 ROS2 ' + lrb.ros_distro},
+    {c:'kw', t:''},
+    {c:'kw', t:'import rclpy'},
+    {c:'kw', t:'from vanika_sdk import RobotClient, Robot'},
+    {c:'kw', t:''},
+    {c:'cm', t:'# \u2500\u2500 Sensors (' + active.length + ' active) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'},
+  ];
+  active.forEach(function(k) {
+    var s = lrb.sensors[k], m = SENSOR_META[k];
+    lines.push({c:'cm', t:'# ' + m.label + ' \u00b7 ' + s.model + ' \u00b7 ' + s.topic});
+    lines.push({c:'fn', t:'def get_' + k + '(robot): return robot.sensors.' + s.id + '.read()'});
+    lines.push({c:'kw', t:''});
+  });
+  lines.push({c:'cm', t:'# \u2500\u2500 Actuators \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'});
+  lines.push({c:'fn', t:'def drive(robot, left_vel, right_vel): ...'});
+  codeArea.innerHTML = lines.map(function(l,i) {
+    return '<div class="cl"><span class="ln">'+(i+1)+'</span><span class="'+l.c+'">'+l.t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span></div>';
+  }).join('');
+  var lbl = document.querySelector('[data-lrb-label]');
+  if (lbl) { lbl.textContent = '\u00b7 auto-generated by LRB v' + lrb.version.toFixed(1); lbl.style.color='var(--sage)'; setTimeout(function(){lbl.style.color='';},1500); }
+}
+
+function refreshHardwareBOM() {
+  var tbody = document.querySelector('.lrb-bom-tbody');
+  if (!tbody) return;
+  var active = Object.keys(lrb.sensors).filter(function(k) { return lrb.sensors[k].active; });
+  var total = 18000 + 5600; // base: battery + motors
+  var rows = active.map(function(k) {
+    var s = lrb.sensors[k], m = SENSOR_META[k];
+    total += s.price;
+    var sc = s.status==='In stock'?'bg-g':s.status==='Backordered'?'bg-r':'bg-a';
+    var action = s.status==='Backordered'?'<button class="btn bo bsm" onclick="toast(\'AI Swap\',\'2 compatible alternatives found\')">Swap</button>':'';
+    return '<tr class="cr"><td><strong style="font-weight:500">'+m.icon+' '+s.model+'</strong><span style="font-size:10px;color:var(--ink4);margin-left:7px">'+s.topic+'</span></td>'
+      +'<td style="font-family:var(--mono)">1</td>'
+      +'<td style="font-family:var(--mono)">\u20b9'+s.price.toLocaleString('en-IN')+'</td>'
+      +'<td style="color:var(--ink3)">'+s.supplier+'</td>'
+      +'<td><span class="badge '+sc+'">'+s.status+'</span></td>'
+      +'<td>'+action+'</td></tr>';
+  });
+  rows.push('<tr class="cr"><td><strong style="font-weight:500">🔋 LiPo 24V 20Ah</strong></td><td style="font-family:var(--mono)">1</td><td style="font-family:var(--mono)">\u20b918,000</td><td style="color:var(--ink3)">Maxamps</td><td><span class="badge bg-g">In stock</span></td><td></td></tr>');
+  rows.push('<tr class="cr"><td><strong style="font-weight:500">\u2699 Drive Motors 12V DC</strong></td><td style="font-family:var(--mono)">2</td><td style="font-family:var(--mono)">\u20b92,800</td><td style="color:var(--ink3)">Robu.in</td><td><span class="badge bg-g">In stock</span></td><td></td></tr>');
+  tbody.innerHTML = rows.join('');
+  var tb = document.querySelector('.lrb-bom-total');
+  if (tb) { tb.textContent = '\u20b9'+total.toLocaleString('en-IN')+' total'; tb.style.background='var(--sage)'; tb.style.color='#fff'; setTimeout(function(){tb.style.background='';tb.style.color='';},1000); }
+}
+
+function refreshStudioLRB() {
+  var lrbPanel = document.querySelector('[data-panel="lrb"] .codearea');
+  if (!lrbPanel) return;
+  var active = Object.keys(lrb.sensors).filter(function(k){return lrb.sensors[k].active;});
+  var sJson = active.map(function(k,i){
+    var s=lrb.sensors[k];
+    return '<div class="cl"><span class="ln">'+(8+i*3)+'</span><span class="kw">&nbsp;&nbsp;&nbsp;&nbsp;{ </span><span class="st">&quot;id&quot;</span><span class="kw">: </span><span class="st">&quot;'+s.id+'&quot;</span><span class="kw">, </span><span class="st">&quot;type&quot;</span><span class="kw">: </span><span class="st">&quot;'+k+'&quot;</span><span class="kw">, </span><span class="st">&quot;topic&quot;</span><span class="kw">: </span><span class="st">&quot;'+s.topic+'&quot;</span><span class="kw"> },</span></div>';
+  }).join('');
+  lrbPanel.innerHTML = '<div class="cl"><span class="ln">1</span><span class="kw">{</span></div>'
+    +'<div class="cl"><span class="ln">2</span><span class="st">&nbsp;&nbsp;&quot;version&quot;</span><span class="kw">: </span><span class="nu">'+lrb.version.toFixed(1)+'</span><span class="kw">,</span></div>'
+    +'<div class="cl"><span class="ln">3</span><span class="st">&nbsp;&nbsp;&quot;name&quot;</span><span class="kw">: </span><span class="st">&quot;Kiran-3&quot;</span><span class="kw">,</span></div>'
+    +'<div class="cl"><span class="ln">4</span><span class="st">&nbsp;&nbsp;&quot;ros_distro&quot;</span><span class="kw">: </span><span class="st">&quot;humble&quot;</span><span class="kw">,</span></div>'
+    +'<div class="cl"><span class="ln">5</span><span class="st">&nbsp;&nbsp;&quot;sensors&quot;</span><span class="kw">: [ </span><span class="cm">// '+active.length+' active</span></div>'
+    +sJson
+    +'<div class="cl"><span class="ln">'+(8+active.length*3)+'</span><span class="kw">&nbsp;&nbsp;]</span></div>'
+    +'<div class="cl"><span class="ln">'+(9+active.length*3)+'</span><span class="kw">}</span></div>';
+  var sub=document.querySelector('[data-panel="lrb"] .sh-sub');
+  if(sub)sub.textContent='v'+lrb.version.toFixed(1)+' \u00b7 Just updated';
+}
+
+function studioTogglePart(part, row) {
+  // Support both indicator styles:
+  // buildStudio3DPage uses .sp-check.on (checkbox)
+  // getPage('studio') uses #stp-X (circle)
+  var spCheck = row ? row.querySelector('.sp-check') : null;
+  var circleInd = document.getElementById('stp-' + part);
+  var isActive;
+
+  if (spCheck) {
+    // checkbox style — toggle .on class
+    isActive = !spCheck.classList.contains('on');
+    spCheck.classList.toggle('on', isActive);
+  } else if (circleInd) {
+    // circle indicator style
+    var curBg = circleInd.style.background || '';
+    isActive = !(curBg.includes('sage') || circleInd.innerHTML.includes('path'));
+    circleInd.style.background = isActive ? 'var(--sage)' : 'var(--border2)';
+    circleInd.innerHTML = isActive ? '<svg viewBox="0 0 10 10" style="width:8px;height:8px;stroke:#fff;fill:none;stroke-width:2"><path d="M2 5l2.5 2.5L8 2.5"/></svg>' : '';
+  } else {
+    isActive = lrb.sensors[part] ? !lrb.sensors[part].active : false;
+  }
+
+  if (lrb.sensors[part] !== undefined) {
+    lrb.sensors[part].active = isActive;
+
+    // ── DIRECT reactive update — no function chain ──
+    var _active = Object.keys(lrb.sensors).filter(function(k){ return lrb.sensors[k].active; });
+
+    // Update every BOM table in the document
+    document.querySelectorAll('.lrb-bom-tbody').forEach(function(tbody) {
+      var _rows = _active.map(function(k) {
+        var s = lrb.sensors[k], m = SENSOR_META[k] || {icon:'',label:k};
+        var sc = s.status==='In stock'?'bg-g':s.status==='Backordered'?'bg-r':'bg-a';
+        var act = s.status==='Backordered'
+          ? '<button class="btn bo bsm" onclick="toast(&quot;AI Swap&quot;,&quot;Alternatives found&quot;)">Swap</button>' : '';
+        return '<tr class="cr">'
+          + '<td><strong style="font-weight:500">' + m.icon + ' ' + s.model + '</strong>'
+          + '<span style="font-size:10px;color:var(--ink4);margin-left:6px">' + s.topic + '</span></td>'
+          + '<td style="font-family:var(--mono)">1</td>'
+          + '<td style="font-family:var(--mono)">₹' + s.price.toLocaleString('en-IN') + '</td>'
+          + '<td style="color:var(--ink3)">' + s.supplier + '</td>'
+          + '<td><span class="badge ' + sc + '">' + s.status + '</span></td>'
+          + '<td>' + act + '</td></tr>';
+      });
+      _rows.push('<tr class="cr"><td><strong style="font-weight:500">������ LiPo 24V 20Ah</strong></td>'
+        + '<td style="font-family:var(--mono)">1</td><td style="font-family:var(--mono)">₹18,000</td>'
+        + '<td style="color:var(--ink3)">Maxamps</td><td><span class="badge bg-g">In stock</span></td><td></td></tr>');
+      _rows.push('<tr class="cr"><td><strong style="font-weight:500">⚙ Drive Motors 12V DC</strong></td>'
+        + '<td style="font-family:var(--mono)">2</td><td style="font-family:var(--mono)">₹2,800</td>'
+        + '<td style="color:var(--ink3)">Robu.in</td><td><span class="badge bg-g">In stock</span></td><td></td></tr>');
+      tbody.innerHTML = _rows.join('');
+      // Flash total badge
+      var _tot = tbody.closest ? tbody.closest('.tpanel') : null;
+      _tot = _tot ? _tot.querySelector('.lrb-bom-total') : document.querySelector('.lrb-bom-total');
+      if (_tot) {
+        var _total = _active.reduce(function(s,k){return s+lrb.sensors[k].price;},23600);
+        _tot.textContent = '₹' + _total.toLocaleString('en-IN') + ' total';
+        _tot.style.background = 'var(--sage)'; _tot.style.color = '#fff';
+        setTimeout(function(){ _tot.style.background=''; _tot.style.color=''; }, 900);
+      }
+    });
+
+    // Update Sim banner, Fleet topics, AI context
+    document.querySelectorAll('.lrb-sim-banner').forEach(function(el){
+      el.innerHTML='<strong>LRB v'+(Math.round((lrb.version+0.1)*10)/10).toFixed(1)+' updating:</strong> '
+        +_active.length+' sensors active'
+        +(lrb.sensors.lidar&&lrb.sensors.lidar.active?' · LiDAR fault injection available':' · ⚠ No LiDAR');
+    });
+    document.querySelectorAll('.lrb-fleet-topics').forEach(function(el){
+      el.innerHTML=_active.map(function(k){return '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:0.5px solid var(--border);font-size:10px"><div style="width:5px;height:5px;border-radius:50%;background:var(--sage)"></div><span style="font-family:var(--mono);color:var(--ink3)">'+lrb.sensors[k].topic+'</span></div>';}).join('');
+    });
+    document.querySelectorAll('.lrb-ai-context').forEach(function(el){
+      el.innerHTML='<div class="row" style="gap:4px"><div style="width:5px;height:5px;border-radius:50%;background:var(--sage);margin-top:3px"></div><span style="font-size:11px;color:var(--ink3)">LRB · '+_active.length+' sensors active</span></div>';
+    });
+
+    // Update every Code area
+    document.querySelectorAll('.codearea').forEach(function(ca) {
+      var _lines = [
+        {c:'cm',t:'# robot_sdk.py — LRB v' + (Math.round((lrb.version+0.001)*10)/10).toFixed(1)},
+        {c:'kw',t:'import rclpy'},
+        {c:'kw',t:'from vanika_sdk import RobotClient'},
+        {c:'kw',t:''},
+        {c:'cm',t:'# Sensors (' + _active.length + ' active)'},
+      ];
+      _active.forEach(function(k) {
+        var s=lrb.sensors[k], m=SENSOR_META[k]||{label:k};
+        _lines.push({c:'cm', t:'# '+m.label+' · '+s.model+' · '+s.topic});
+        _lines.push({c:'fn', t:'def get_'+k+'(robot): return robot.sensors.'+s.id+'.read()'});
+        _lines.push({c:'kw', t:''});
+      });
+      ca.innerHTML = _lines.map(function(l,i) {
+        return '<div class="cl"><span class="ln">'+(i+1)+'</span><span class="'+l.c+'">'
+          +l.t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span></div>';
+      }).join('');
+    });
+
+    // Update Studio LRB JSON panel (only when Studio is the active module showing it)
+    document.querySelectorAll('[data-panel="lrb"] .codearea').forEach(function(ca){
+      var sJson=_active.map(function(k,i){var s=lrb.sensors[k];return '<div class="cl"><span class="ln">'+(i+1)+'</span><span class="st">&quot;'+k+'&quot;</span><span class="kw">: </span><span class="st">&quot;'+s.topic+'&quot;</span></div>';}).join('');
+      ca.innerHTML='<div class="cl"><span class="kw">{ active:[</span></div>'+sJson+'<div class="cl"><span class="kw">]}</span></div>';
+    });
+    document.querySelectorAll('[data-lrb-studio-version]').forEach(function(el){el.textContent='v'+(Math.round((lrb.version+0.1)*10)/10).toFixed(1);});
+
+    // Now call lrbSync for badge, toast, broadcast, other modules
+    lrbSync(part, isActive);
+  } else {
+    toggleRobotPart(part, row);
+  }
+}
+
+
+function refreshSimLRB() {
+  var syncBanner = document.querySelector('.lrb-sim-banner');
+  if (syncBanner) {
+    var active = Object.keys(lrb.sensors).filter(function(k){ return lrb.sensors[k].active; });
+    var hasFaultSensors = lrb.sensors.imu.active || lrb.sensors.lidar.active;
+    var _tier = (lrb.sensors.lidar.active || lrb.sensors.camera.active) ? 'GPU accelerated' :
+                 (active.length >= 4) ? 'High (8 vCPU)' : 'Standard (2 vCPU)';
+    syncBanner.innerHTML = '<strong>LRB v' + lrb.version.toFixed(1) + ' synced:</strong> Kiran-3 · '
+      + active.length + ' sensors active'
+      + (lrb.sensors.lidar.active ? ' · LiDAR fault injection available' : ' · ⚠ No LiDAR — some scenarios limited')
+      + (lrb.sensors.imu.active ? '' : ' · ⚠ No IMU — gyro tests disabled')
+      + ' · ↪ Compute: <strong>' + _tier + '</strong>';
+    syncBanner.style.background = 'var(--sage-tint)';
+    syncBanner.style.borderColor = 'var(--sage-tint2)';
+    setTimeout(function(){
+      syncBanner.style.background = '';
+      syncBanner.style.borderColor = '';
+    }, 1000);
+  }
+
+  // Auto-select compute tier based on active sensors
+  autoSelectCompute();
+
+  // Update fault injection availability
+  var faultPanel = document.querySelector('.lrb-fault-panel');
+  if (faultPanel) {
+    var lidarRow = faultPanel.querySelector('[data-fault="lidar"]');
+    var imuRow   = faultPanel.querySelector('[data-fault="imu"]');
+    if (lidarRow) lidarRow.style.opacity = lrb.sensors.lidar.active ? '1' : '0.4';
+    if (imuRow)   imuRow.style.opacity   = lrb.sensors.imu.active   ? '1' : '0.4';
+  }
+}
+
+function refreshFleetLRB() {
+  var topicsEl = document.querySelector('.lrb-fleet-topics');
+  if (!topicsEl) return;
+
+  var active = Object.keys(lrb.sensors).filter(function(k){ return lrb.sensors[k].active; });
+  var coreTopics = [
+    { topic: '/cmd_vel',    hz: '10Hz', type: 'geometry_msgs/Twist',   status: 'g' },
+    { topic: '/odom',       hz: '30Hz', type: 'nav_msgs/Odometry',      status: 'g' },
+    { topic: '/joint_states',hz:'50Hz', type: 'sensor_msgs/JointState', status: 'g' },
+  ];
+  var sensorTopics = active.map(function(k){
+    return { topic: lrb.sensors[k].topic, hz: k==='lidar'?'10Hz':k==='camera'?'30Hz':'50Hz',
+             type: k==='lidar'?'sensor_msgs/LaserScan':k==='camera'?'sensor_msgs/Image':'sensor_msgs/Imu',
+             status: 'g' };
+  });
+  var allTopics = coreTopics.concat(sensorTopics);
+
+  topicsEl.innerHTML = allTopics.map(function(t){
+    return '<div style="display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:0.5px solid var(--border);font-size:11px">'
+      + '<div style="width:6px;height:6px;border-radius:50%;background:var(--sage);flex-shrink:0"></div>'
+      + '<span style="font-family:var(--mono);color:var(--ink3);flex:1;font-size:10px">' + t.topic + '</span>'
+      + '<span style="font-size:9px;color:var(--ink4)">' + t.hz + '</span>'
+      + '</div>';
+  }).join('');
+
+  var topicsHeader = document.querySelector('.lrb-fleet-topics-header');
+  if (topicsHeader) topicsHeader.textContent = allTopics.length + ' active topics · LRB v' + lrb.version.toFixed(1);
+}
+
+function refreshAIContext() {
+  var ctxEl = document.querySelector('.lrb-ai-context');
+  if (!ctxEl) return;
+
+  var active = Object.keys(lrb.sensors).filter(function(k){ return lrb.sensors[k].active; });
+  var joints  = Object.keys(lrb.joints || {}).length;
+
+  ctxEl.innerHTML = [
+    { dot: 'sage', text: 'Kiran-3 LRB v' + lrb.version.toFixed(1) },
+    { dot: 'sage', text: active.length + ' sensors in context' },
+    { dot: 'sage', text: joints + ' joints loaded' },
+    { dot: 'sage', text: 'BOM · ' + active.length + ' components' },
+    { dot: active.some(function(k){return lrb.sensors[k].status==='Backordered';}) ? 'amber' : 'sage',
+      text: active.some(function(k){return lrb.sensors[k].status==='Backordered';}) ? '1 part backordered' : 'All parts in stock' },
+  ].map(function(item){
+    var col = item.dot === 'amber' ? 'var(--amber)' : 'var(--sage)';
+    return '<div class="row" style="gap:4px;margin-bottom:3px">'
+      + '<div style="width:5px;height:5px;border-radius:50%;background:' + col + ';flex-shrink:0;margin-top:3px"></div>'
+      + '<span style="font-size:11px;color:var(--ink3)">' + item.text + '</span></div>';
+  }).join('');
+
+  // Flash the context panel
+  ctxEl.style.background = 'rgba(45,106,79,0.06)';
+  setTimeout(function(){ ctxEl.style.background = ''; }, 800);
+
+  // Add a system message to chat showing LRB updated
+  var chatArea = document.querySelector('#ai-chat-area');
+  if (chatArea) {
+    var active_names = Object.keys(lrb.sensors).filter(function(k){ return lrb.sensors[k].active; })
+      .map(function(k){ return SENSOR_META[k].label; }).join(', ');
+    var notif = document.createElement('div');
+    notif.style.cssText = 'padding:6px 12px;background:var(--sage-tint);border-left:2px solid var(--sage);margin:4px 8px;border-radius:4px;font-size:10px;color:var(--sage3)';
+    notif.innerHTML = '<strong>LRB v' + lrb.version.toFixed(1) + ' loaded</strong> · Active sensors: ' + active_names;
+    chatArea.appendChild(notif);
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }
+}
+
+
+function lrbSyncJoint(jointName) {
+  lrb.version = Math.round((lrb.version + 0.1) * 10) / 10;
+  var badge = document.getElementById('lrb-badge');
+  if (badge) {
+    badge.textContent = 'LRB v' + lrb.version.toFixed(1);
+    badge.style.color = '#fff';
+    badge.style.background = 'var(--sage)';
+    badge.style.padding = '2px 8px';
+    badge.style.borderRadius = '6px';
+    setTimeout(function() { badge.style.color='';badge.style.background='';badge.style.padding='';badge.style.borderRadius=''; }, 1200);
+  }
+  var j = (lrb.joints||{})[jointName];
+  // Update Studio LRB tab if visible
+  refreshStudioLRB();
+  refreshSimLRB();
+  toast('LRB v' + lrb.version.toFixed(1) + ' synced', (j?j.name:jointName) + ' torque → Sim config updated');
+}
+
+
+function startSimRun(btn) {
+  // Prevent double-click
+  btn.disabled = true;
+  btn.textContent = '⟳ Running…';
+
+  var _simEl = getModuleEl('simulation') || btn.closest('.mod') && btn.closest('.mod').parentElement;
+  function _q(sel){return _simEl?_simEl.querySelector(sel):document.getElementById(sel.replace('#',''));}
+  var progress = _simEl ? _simEl.querySelector('#sim-run-progress') : document.getElementById('sim-run-progress');
+  var bar      = _simEl ? _simEl.querySelector('#sim-run-bar') : document.getElementById('sim-run-bar');
+  var stage    = _simEl ? _simEl.querySelector('#sim-run-stage') : document.getElementById('sim-run-stage');
+  var pct      = _simEl ? _simEl.querySelector('#sim-run-pct') : document.getElementById('sim-run-pct');
+  var log      = _simEl ? _simEl.querySelector('#sim-run-log') : document.getElementById('sim-run-log');
+  var stats    = _simEl ? _simEl.querySelector('#sim-last-stats') : document.getElementById('sim-last-stats');
+
+  if (progress) progress.style.display = 'block';
+  if (stats)    stats.style.opacity    = '0.3';
+  if (log)      log.innerHTML          = '';
+
+  // Determine scenario from select
+  var sel = btn.closest('.mod') ? btn.closest('.mod').querySelector('select') : null;
+  var scenario = sel ? sel.value : 'Warehouse navigation';
+
+  // Generate realistic results based on active sensors
+  var activeSensors = Object.keys(lrb.sensors).filter(function(k){return lrb.sensors[k].active;});
+  var hasLidar  = lrb.sensors.lidar.active;
+  var hasIMU    = lrb.sensors.imu.active;
+  var hasCamera = lrb.sensors.camera.active;
+  var basePass  = hasLidar ? (hasIMU ? 94 : 81) : 62;
+  var finalPass = basePass + Math.floor(Math.random() * 5) - 2;
+  var runTime   = (2 + Math.random()).toFixed(1);
+  var runNum    = parseInt(document.getElementById('sim-stat-run') ? document.getElementById('sim-stat-run').textContent : '47') + 1;
+
+  // Staged pipeline
+  var stages = [
+    { pct:  5, msg: 'Spawning Bullet3 physics pod…',                   delay: 400  },
+    { pct: 15, msg: 'Loading LRB v' + lrb.version.toFixed(1) + ' — ' + activeSensors.length + ' sensors configured', delay: 600 },
+    { pct: 25, msg: 'Building ' + scenario + ' environment…',          delay: 700  },
+    { pct: 38, msg: 'Calibrating sensor noise models…',                delay: 500  },
+    { pct: 50, msg: 'Robot initialised · Starting navigation…',        delay: 800  },
+    { pct: 63, msg: 'Run in progress · t=0:' + Math.floor(Math.random()*30+10) + 's', delay: 900 },
+    { pct: 75, msg: hasLidar ? 'LiDAR scan nominal · 0 obstacles hit' : '⚠ No LiDAR — sensor degraded mode', delay: 700 },
+    { pct: 85, msg: 'Writing results to S3…',                          delay: 500  },
+    { pct: 95, msg: 'Publishing to Kafka · Updating AI flywheel…',     delay: 400  },
+    { pct:100, msg: 'Run #'+runNum+' complete · Pass rate: '+finalPass+'%', delay: 300 }
+  ];
+
+  var logLines = [];
+  var i = 0;
+  function runStage() {
+    if (i >= stages.length) {
+      // Done
+      btn.disabled  = false;
+      btn.textContent = '▶ Run simulation';
+      if (stats) stats.style.opacity = '1';
+
+      // Update stats
+      var passEl = _sq('#sim-stat-pass');
+      var timeEl = _sq('#sim-stat-time');
+      var runEl  = _sq('#sim-stat-run');
+      if (passEl) { passEl.textContent = finalPass + '%'; passEl.style.color = finalPass >= 85 ? 'var(--sage)' : 'var(--amber)'; }
+      if (timeEl) timeEl.textContent = runTime + 'm';
+      if (runEl)  runEl.textContent  = runNum;
+
+      // Flash the results stats
+      if (stats) {
+        stats.style.transition = 'opacity 0s';
+        stats.style.opacity = '1';
+        stats.style.background = 'var(--sage-tint)';
+        setTimeout(function(){ stats.style.background = ''; stats.style.transition = ''; }, 1200);
+      }
+
+      // Update sim-results page if open
+      refreshSimResults(runNum, scenario, finalPass, runTime);
+
+      toast('Sim run #' + runNum + ' complete', finalPass + '% pass rate · ' + runTime + 'm · ' + (finalPass >= 85 ? 'Pass' : 'Review needed'));
+      setTimeout(function(){ if(progress) progress.style.display='none'; }, 2000);
+      return;
+    }
+
+    var s = stages[i++];
+    if (bar)   bar.style.width = s.pct + '%';
+    if (stage) stage.textContent = s.msg;
+    if (pct)   pct.textContent   = s.pct + '%';
+
+    logLines.push('<span style="color:var(--ink4)">[' + new Date().toLocaleTimeString() + ']</span> ' + s.msg);
+    if (logLines.length > 5) logLines.shift();
+    if (log) log.innerHTML = logLines.join('<br>');
+
+    setTimeout(runStage, s.delay);
+  }
+  runStage();
+}
+
+function refreshSimResults(runNum, scenario, passRate, runTime) {
+  // Find the sim-results panel by its unique .cbars element
+  var barsEl = document.querySelector('.cbars');
+  if (!barsEl) return;
+  var _el = barsEl.closest('.mod') || barsEl.parentElement;
+
+  var titleEl = document.querySelector('.sh-title');
+  var subEl   = document.querySelector('.sh-sub');
+  var badgeEl = document.querySelector('.sh .badge');
+
+  if (titleEl) titleEl.textContent = 'Sim Results · Run #' + runNum;
+  if (subEl)   subEl.textContent   = scenario + ' · ' + runTime + 'm';
+  if (badgeEl) {
+    badgeEl.textContent = passRate >= 85 ? 'Pass' : 'Review';
+    badgeEl.className   = 'badge ' + (passRate >= 85 ? 'bg-g' : 'bg-a');
+  }
+
+  // Update pass rate stat card
+  var passEl = document.getElementById('sim-stat-pass');
+  if (passEl) { passEl.textContent = passRate + '%'; passEl.style.color = passRate>=85?'var(--sage)':'var(--amber)'; }
+
+  // Regenerate velocity bars
+  if (barsEl) {
+    var bars = Array.from({length:20}, function(){ return Math.floor(Math.random()*60+30); });
+    barsEl.innerHTML = bars.map(function(h){ return '<div class="cb" style="height:'+h+'%"></div>'; }).join('');
+  }
+}
+
+
+function buildAIOpeningMsg() {
+  var active = Object.keys(lrb.sensors).filter(function(k){return lrb.sensors[k].active;});
+  var bo = Object.keys(lrb.sensors).filter(function(k){return lrb.sensors[k].status==='Backordered';});
+  var bomNote = bo.length
+    ? '<strong>'+lrb.sensors[bo[0]].model+' backordered</strong> — 2 alternatives found'
+    : 'All components in stock';
+  var boColor = bo.length ? 'rgba(255,200,100,0.1)' : 'var(--sage-tint)';
+  var boBorder = bo.length ? 'var(--amber)' : 'var(--sage)';
+  return '<div class="chatmsg"><div class="cavatar ai">V</div><div>'
+    + '<div style="font-size:10px;color:var(--ink4);margin-bottom:4px">Vanika AI Core &middot; Kiran-3 LRB v'+lrb.version.toFixed(1)+' &middot; All modules scanned</div>'
+    + '<div class="bubble">'
+    + '<div style="font-size:12px;font-weight:500;margin-bottom:8px">I have reviewed your full Kiran-3 project. Here is what I found:</div>'
+    + '<div style="display:flex;flex-direction:column;gap:6px">'
+    + '<div style="background:var(--sage-tint);border-left:2px solid var(--sage);padding:7px 10px;border-radius:0 6px 6px 0;font-size:11px"><strong>Design</strong> &middot; Studio LRB v'+lrb.version.toFixed(1)+' &middot; '+active.length+' sensors active &middot; 4 joints configured</div>'
+    + '<div style="background:'+boColor+';border-left:2px solid '+boBorder+';padding:7px 10px;border-radius:0 6px 6px 0;font-size:11px"><strong>Hardware</strong> &middot; '+bomNote+'</div>'
+    + '<div style="background:var(--sage-tint);border-left:2px solid var(--sage);padding:7px 10px;border-radius:0 6px 6px 0;font-size:11px"><strong>Simulation</strong> &middot; Last run: <strong>94% pass rate</strong> &middot; 3 edge cases logged</div>'
+    + '<div style="background:var(--sage-tint);border-left:2px solid var(--sage);padding:7px 10px;border-radius:0 6px 6px 0;font-size:11px"><strong>Fleet</strong> &middot; 5 robots online &middot; '+(active.length+3)+' active ROS2 topics streaming</div>'
+    + '</div>'
+    + '<div style="margin-top:10px;font-size:11px;color:var(--ink3)">'
+    + (bo.length ? '&there4; <strong>Priority:</strong> '+lrb.sensors[bo[0]].model+' is backordered. This blocks hardware assembly. Ask me to resolve it.' : '&checkmark; No critical blockers found.')
+    + '<br>What would you like me to dig into?'
+    + '</div></div></div></div>';
+}
+
+
+
+// ── Simulation compute tier logic ──
+var COMPUTE_HINTS = {
+  standard: '2 vCPU · ~200Hz physics · Good for IMU, GPS, Encoder, Ultrasonic',
+  high:     '8 vCPU · 500Hz physics · Parallel scenario batching · 4× faster parameter sweeps',
+  gpu:      'GPU + CUDA · Full LiDAR ray-cast (10k+ rays/frame) · Camera depth maps · Required for LiDAR/Camera sensors',
+};
+
+function updateComputeHint(val) {
+  var hint = document.getElementById('sim-compute-hint');
+  if (hint) hint.textContent = COMPUTE_HINTS[val] || '';
+}
+
+function autoSelectCompute() {
+  var sel = document.getElementById('sim-compute-select');
+  if (!sel) return;
+  var needsGPU   = lrb.sensors.lidar.active || lrb.sensors.camera.active;
+  var needsHigh  = !needsGPU && (Object.keys(lrb.sensors).filter(function(k){return lrb.sensors[k].active;}).length >= 4);
+  var tier = needsGPU ? 'gpu' : needsHigh ? 'high' : 'standard';
+  sel.value = tier;
+  updateComputeHint(tier);
+
+  // Flash the select to signal auto-selection
+  sel.style.borderColor = 'var(--sage)';
+  sel.style.boxShadow   = '0 0 0 2px rgba(45,106,79,0.15)';
+  setTimeout(function(){ sel.style.borderColor=''; sel.style.boxShadow=''; }, 1200);
+}
+function updateSimEnvProfile(val) {
+  var badge = document.getElementById('sim-env-badge');
+  if (!badge) return;
+  var profiles = {
+    generic: {
+      label: 'Generic defaults',
+      color: 'var(--ink4)',
+      bg: 'var(--pearl)',
+      border: 'var(--border)',
+      detail: 'Bullet3 defaults · Floor friction: 0.5 (standard) · Idealised sensor models · No real-world calibration',
+      dot: 'var(--border2)',
+      anim: 'none'
+    },
+    real: {
+      label: 'Real-world calibrated',
+      color: 'var(--sage3)',
+      bg: 'var(--sage-tint)',
+      border: 'var(--sage-tint2)',
+      detail: 'Floor friction: 0.72 (measured) · LiDAR noise σ=0.008m · IMU drift: 0.003°/s · 847h Fleet telemetry',
+      dot: 'var(--sage)',
+      anim: 'lrb-pulse 2.4s ease-in-out infinite'
+    },
+    real2: {
+      label: 'Real-world calibrated',
+      color: 'var(--sage3)',
+      bg: 'var(--sage-tint)',
+      border: 'var(--sage-tint2)',
+      detail: 'Floor friction: 0.61 (concrete) · Higher vibration noise · 312h Fleet telemetry · Factory floor profile',
+      dot: 'var(--sage)',
+      anim: 'lrb-pulse 2.4s ease-in-out infinite'
+    },
+    real3: {
+      label: 'Real-world calibrated',
+      color: 'var(--sage3)',
+      bg: 'var(--sage-tint)',
+      border: 'var(--sage-tint2)',
+      detail: 'Mixed surfaces · High pedestrian density · 129h Fleet telemetry · Logistics hub profile',
+      dot: 'var(--sage)',
+      anim: 'lrb-pulse 2.4s ease-in-out infinite'
+    },
+  };
+  var p = profiles[val] || profiles.generic;
+  badge.style.background = p.bg;
+  badge.style.borderColor = p.border;
+  badge.innerHTML = '<div style="width:7px;height:7px;border-radius:50%;background:'+p.dot+';flex-shrink:0;animation:'+p.anim+'"></div>'
+    + '<div><span style="color:'+p.color+';font-weight:500">'+p.label+'</span>'
+    + '<span style="color:var(--ink4)"> · '+p.detail+'</span></div>';
+}
+
+
+function updatePanelOffsets(){
+  var off = document.body.classList.contains('sidebar-open')?'56px':'0px';
+  var fp=document.getElementById('focus-panel');
+  var sp=document.getElementById('split-panel');
+  if(fp&&fp.style.display==='flex') fp.style.left=off;
+  if(sp&&sp.style.display==='flex') sp.style.left=off;
+}
+
+
+// ── Module container resolver — works across Focus, Split, and legacy wins ──
+function getModuleEl(id) {
+  // 1. Focus mode — active tab is rendered in focus-content
+  if (viewMode === 'focus' && activeFocusTab === id) {
+    var fc = document.getElementById('focus-content');
+    if (fc) return fc;
+  }
+  // 2. Split mode — find which cell contains this module
+  var cells = ['a','b','c'];
+  for (var ci = 0; ci < cells.length; ci++) {
+    if (splitCells[cells[ci]] === id) {
+      var sc = document.getElementById('split-' + cells[ci] + '-content');
+      if (sc) return sc;
+    }
+  }
+  // 3. DOM marker fallback — searches ALL rendered containers
+  // Handles focus mode tab switches and any viewMode/splitCells drift
+  var MARKERS = {
+    code:       '.codearea',
+    hardware:   '.lrb-bom-tbody',
+    studio:     '.sp-panel',
+    simulation: '.lrb-sim-banner',
+    fleet:      '.lrb-fleet-topics',
+    ai:         '.lrb-ai-context'
+  };
+  var marker = MARKERS[id];
+  if (marker) {
+    var containers = [
+      document.getElementById('focus-content'),
+      document.getElementById('split-a-content'),
+      document.getElementById('split-b-content'),
+      document.getElementById('split-c-content')
+    ];
+    for (var i = 0; i < containers.length; i++) {
+      if (containers[i] && containers[i].querySelector(marker)) return containers[i];
+    }
+  }
+  return null;
+}
+
+
+function copyCode(btn){
+  var pre = btn.previousSibling || btn.parentElement;
+  var text = (pre.textContent||pre.innerText||'').replace(/^Copy$/m,'').trim();
+  try{
+    navigator.clipboard.writeText(text).then(function(){
+      btn.textContent='Copied!';
+      setTimeout(function(){btn.textContent='Copy';},1500);
+    });
+  }catch(e){
+    // Fallback
+    var ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy';},1500);
+  }
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown',function(e){
+  // Space to open launcher (when not in input)
+  if(e.code==='Space' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)){
+    e.preventDefault();
+    if(document.getElementById('launcher').style.display==='flex') hideLauncher();
+    else showLauncher();
+  }
+  // Escape to hide launcher
+  if(e.code==='Escape'){
+    hideLauncher();
+    document.querySelectorAll('.split-module-picker').forEach(function(el){el.remove();});
+  }
+  // Cmd/Ctrl+1/2/3 to switch modes
+  if((e.metaKey||e.ctrlKey)&&e.code==='Digit1'&&!e.shiftKey){e.preventDefault();setViewMode('focus');}
+  if((e.metaKey||e.ctrlKey)&&e.code==='Digit2'&&!e.shiftKey){e.preventDefault();setViewMode('split');}
+});
+
 // ═══ INIT ═══
 
 
@@ -1540,8 +3440,18 @@ function buildStudio3DPage(){
         <div class="sp-part-row" onclick="toggleRobotPart('wheels',this)"><span class="sp-part-label">Drive wheels</span><div class="sp-check on"></div></div>
       </div>
       <div class="sp-section"><div class="sp-section-title">Sensors</div>
-        <div class="sp-part-row" onclick="toggleRobotPart('lidar',this)"><span class="sp-part-label">LiDAR</span><div class="sp-check on"></div></div>
-        <div class="sp-part-row" onclick="toggleRobotPart('sensors',this)"><span class="sp-part-label">IMU &amp; Camera</span><div class="sp-check on"></div></div>
+        ${Object.entries(lrb.sensors).map(([k,s])=>`<div class="sp-part-row" onclick="studioTogglePart('${k}',this)" id="sp-row-${k}"><span class="sp-part-label">${{lidar:'LiDAR',imu:'IMU',camera:'Camera',ultrasonic:'Ultrasonic',gps:'GPS',encoder:'Encoder'}[k]||k}</span><div class="sp-check ${s.active?'on':''}"></div></div>`).join('')}
+      </div>
+      <div class="sp-section"><div class="sp-section-title">Joints &amp; Actuators</div>
+        ${Object.entries(lrb.joints||{}).map(([k,j])=>`
+        <div style="padding:3px 0;border-bottom:0.5px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+            <span style="font-size:10px;color:var(--ink3)">${j.name}</span>
+            <span style="font-size:9px;font-family:var(--mono);color:var(--sage3)" id="jval-${k}">${j.torque}Nm</span>
+          </div>
+          <input type="range" class="sp-slider" min="0.1" max="10" step="0.1" value="${j.torque}"
+            oninput="lrb.joints['${k}'].torque=parseFloat(this.value);document.getElementById('jval-${k}').textContent=this.value+'Nm';lrbSyncJoint('${k}')">
+        </div>`).join('')}
       </div>
       <div class="sp-section"><div class="sp-section-title">Dimensions</div>
         <div class="sp-slider-row"><span class="sp-slider-label">Body width</span><input type="range" class="sp-slider" min="55" max="130" value="88" oninput="document.getElementById('sv-bw').textContent=this.value+'mm'"><span class="sp-slider-val" id="sv-bw">88mm</span></div>
@@ -1570,6 +3480,16 @@ function buildStudio3DPage(){
         <button class="btn bs bsm" style="width:100%;justify-content:center;margin-bottom:5px" onclick="startRender3D()">Render &amp; Download</button>
         <button class="btn bg bsm" style="width:100%;justify-content:center" onclick="openModule('robot-share')">Export URDF / CAD</button>
       </div>
+      <!-- Live Blueprint JSON — reactive to sensor toggles -->
+      <div class="sp-section">
+        <div class="sp-section-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>Live Blueprint</span>
+          <span data-lrb-studio-version style="font-size:9px;color:var(--sage);font-family:var(--mono)">v${lrb.version.toFixed(1)}</span>
+        </div>
+        <div data-panel="lrb" style="border-radius:4px;overflow:hidden">
+          <div class="codearea" style="font-size:9px;padding:4px;min-height:36px;max-height:90px;overflow:auto"></div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="studio-canvas-wrap">
@@ -1583,7 +3503,7 @@ function buildStudio3DPage(){
       <button class="cv-btn" onclick="studioZoom(-0.15)">−</button>
       <button class="cv-btn" onclick="setStudioView('iso')">⊙</button>
       <div style="flex:1"></div>
-      <span style="font-size:10px;font-family:var(--mono);color:var(--ink4)">LRB <strong style="color:var(--sage)">v4.1</strong> · 6 joints · <span style="color:var(--sage)">●</span> Live</span>
+      <span style="font-size:10px;font-family:var(--mono);color:var(--ink4)">LRB <strong style="color:var(--sage)" data-lrb-studio-version>v${lrb.version.toFixed(1)}</strong> · ${Object.keys(lrb.joints||{}).length} joints · <span style="color:var(--sage)">●</span> Live</span>
     </div>
     <div class="canvas-bg" id="studio-canvas">
       <div class="canvas-grid-lines"></div>
@@ -1765,23 +3685,23 @@ ${mgb("studio","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='4'/><path d='M
 <div class="tpanel" data-panel="builder" style="display:flex;flex-direction:row;flex:1;overflow:hidden">
 
   <!-- Left: Tools panel -->
-  <div style="width:200px;flex-shrink:0;border-right:0.5px solid var(--border);background:var(--white);display:flex;flex-direction:column;overflow:hidden">
+  <div style="width:200px;flex-shrink:0;border-right:0.5px solid var(--border);background:var(--white);display:flex;flex-direction:column;min-height:0">
     <div style="padding:8px 10px 6px;border-bottom:0.5px solid var(--border);font-size:10px;font-weight:500;color:var(--ink4);text-transform:uppercase;letter-spacing:.05em;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
       Parts <button class="btn bg bsm" onclick="openModule('component-picker')">+ Add</button>
     </div>
     <div style="flex:1;overflow-y:auto;padding:8px">
       <!-- Structure section -->
-      <div style="font-size:9px;font-weight:500;color:var(--ink4);text-transform:uppercase;letter-spacing:.05em;padding:4px 4px 2px">Structure</div>
+      <div style="font-size:9px;font-weight:500;color:var(--ink4);text-transform:uppercase;letter-spacing:.05em;padding:4px 4px 1px">Structure</div>
       ${[['Head / Housing','head',true],['Antenna','antenna',true],['Arms & grippers','arms',true],['Drive wheels','wheels',true]].map(([n,id,on])=>`
-      <div style="display:flex;align-items:center;gap:7px;padding:6px 4px;border-radius:6px;cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--pearl)'" onmouseout="this.style.background=''" onclick="studioTogglePart('${id}',this)">
+      <div style="display:flex;align-items:center;gap:7px;padding:4px 4px;border-radius:6px;cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--pearl)'" onmouseout="this.style.background=''" onclick="studioTogglePart('${id}',this)">
         <div style="width:18px;height:18px;border-radius:50%;background:${on?'var(--sage)':'var(--border2)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s" id="stp-${id}">
           ${on?'<svg viewBox="0 0 10 10" style="width:8px;height:8px;stroke:#fff;fill:none;stroke-width:2"><path d="M2 5l2.5 2.5L8 2.5"/></svg>':''}
         </div>
         <span style="font-size:11px;color:var(--ink3)">${n}</span>
       </div>`).join('')}
       <!-- Sensors section -->
-      <div style="font-size:9px;font-weight:500;color:var(--ink4);text-transform:uppercase;letter-spacing:.05em;padding:10px 4px 2px">Sensors</div>
-      ${[['LiDAR','lidar',true],['IMU','imu',true],['Camera','camera',true]].map(([n,id,on])=>`
+      <div style="font-size:9px;font-weight:500;color:var(--ink4);text-transform:uppercase;letter-spacing:.05em;padding:6px 4px 1px">Sensors</div>
+      ${[['LiDAR','lidar',lrb.sensors.lidar.active],['IMU','imu',lrb.sensors.imu.active],['Camera','camera',lrb.sensors.camera.active],['Ultrasonic','ultrasonic',lrb.sensors.ultrasonic.active],['GPS','gps',lrb.sensors.gps.active],['Encoder','encoder',lrb.sensors.encoder.active]].map(([n,id,on])=>`
       <div style="display:flex;align-items:center;gap:7px;padding:6px 4px;border-radius:6px;cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--pearl)'" onmouseout="this.style.background=''" onclick="studioTogglePart('${id}',this)">
         <div style="width:18px;height:18px;border-radius:50%;background:${on?'var(--sage)':'var(--border2)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s" id="stp-${id}">
           ${on?'<svg viewBox="0 0 10 10" style="width:8px;height:8px;stroke:#fff;fill:none;stroke-width:2"><path d="M2 5l2.5 2.5L8 2.5"/></svg>':''}
@@ -1789,12 +3709,16 @@ ${mgb("studio","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='4'/><path d='M
         <span style="font-size:11px;color:var(--ink3)">${n}</span>
       </div>`).join('')}
       <!-- Dimensions -->
-      <div style="font-size:9px;font-weight:500;color:var(--ink4);text-transform:uppercase;letter-spacing:.05em;padding:10px 4px 4px">Dimensions</div>
+      <div style="font-size:9px;font-weight:500;color:var(--ink4);text-transform:uppercase;letter-spacing:.05em;padding:8px 4px 4px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="var d=document.getElementById('dims-panel');d.style.display=d.style.display==='none'?'block':'none'">
+        Dimensions <span style="font-size:9px;color:var(--ink4)">▾</span>
+      </div>
+      <div id="dims-panel">
       ${[['Body width','bw','90','mm'],['Body height','bh','60','mm'],['Arm length','al','48','mm'],['Wheel dia.','wd','22','mm']].map(([n,id,v,u])=>`
-      <div style="padding:4px;margin-bottom:2px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:10px;color:var(--ink3)">${n}</span><span style="font-size:10px;font-family:var(--mono);color:var(--ink)" id="sdim-${id}">${v}${u}</span></div>
+      <div style="padding:3px 4px;margin-bottom:1px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-size:10px;color:var(--ink3)">${n}</span><span style="font-size:10px;font-family:var(--mono);color:var(--ink)" id="sdim-${id}">${v}${u}</span></div>
         <input type="range" style="width:100%;accent-color:var(--sage);height:3px" min="40" max="140" value="${v}" oninput="document.getElementById('sdim-${id}').textContent=this.value+'${u}'">
       </div>`).join('')}
+      </div>
       <!-- Color -->
       <div style="font-size:9px;font-weight:500;color:var(--ink4);text-transform:uppercase;letter-spacing:.05em;padding:10px 4px 6px">Body colour</div>
       <div style="display:flex;gap:5px;flex-wrap:wrap;padding:0 4px">
@@ -1976,7 +3900,7 @@ ${mgb("code","<svg viewBox='0 0 16 16'><path d='M4 5l-3 3 3 3M12 5l3 3-3 3M9 3l-
   </div>
   <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
     <div style="border-bottom:0.5px solid var(--border);padding:5px 11px;font-family:var(--mono);font-size:11px;color:var(--ink4);background:var(--pearl);display:flex;align-items:center;gap:7px">
-      <span style="color:var(--amber)">imu_driver.cpp</span><span>· auto-generated by LRB</span>
+      <span style="color:var(--amber)">robot_sdk.py</span><span data-lrb-label style="transition:color 0.5s">· auto-generated by LRB v4.1</span>
       <div class="f1"></div><button class="btn bg bsm" onclick="openModule('ai')">Ask AI</button><button class="btn bg bsm" onclick="openModule('code-search')">Search</button><button class="btn bg bsm" onclick="openModule('env-config')">Env</button>
     </div>
     <div class="codearea" style="flex:1">
@@ -2117,7 +4041,7 @@ case 'simulation':return`
   <div class="wt" onclick="openModule('sim-results')">Results ↗</div>
   <div class="wt" onclick="openModule('sim-scenarios')">Scenarios ↗</div>
 </div>
-${mgb("simulation","<svg viewBox='0 0 16 16'><polygon points='8,2 14,14 2,14'/></svg>","Vanika Sim — run 1,000 scenarios overnight in the cloud","Bullet3 physics engine, zero local GPU needed. Pick a scenario, set fault injections (IMU noise, LiDAR dropout, wheel slip), batch to 5,000 runs and wake up to a pass-rate distribution. Every result feeds the AI flywheel.",[["Choose a scenario","openModule('sim-scenarios')"],["Configure fault injection","openModule('sim-run-config')"],["View last run results","openModule('sim-results')"]],"Sim always uses the latest LRB geometry — change a joint limit in Studio and the next sim run picks it up automatically.")}
+${mgb("simulation","<svg viewBox='0 0 16 16'><polygon points='8,2 14,14 2,14'/></svg>","Vanika Sim — run 1,000 scenarios overnight in the cloud","Bullet3 physics engine running in the cloud — zero local GPU needed. Pick a scenario, choose between generic defaults or a real-world calibrated environment profile (derived from Fleet telemetry collected from deployed robots). Every sim run feeds the dual AI flywheel: synthetic + real-world data compounding together.",[["Choose a scenario","openModule('sim-scenarios')"],["Configure fault injection","openModule('sim-run-config')"],["View last run results","openModule('sim-results')"]],"Sim always uses the latest LRB geometry — change a joint limit in Studio and the next sim run picks it up automatically.")}
 <div class="tpanel" data-panel="run">
 <div class="mod">
   <div class="sh"><div class="sh-l"><div class="sh-title">New Simulation Run</div><div class="sh-sub">Config from LRB v4.1</div></div></div>
@@ -2125,20 +4049,70 @@ ${mgb("simulation","<svg viewBox='0 0 16 16'><polygon points='8,2 14,14 2,14'/><
     <div class="inpg"><div class="inpl">Scenario</div><select class="inp"><option>Warehouse navigation</option><option>E-Stop recovery</option><option>Dynamic obstacle</option><option>Narrow corridor</option></select></div>
     <div class="inpg"><div class="inpl">Duration</div><select class="inp"><option>5 minutes</option><option>10 minutes</option><option>30 minutes</option></select></div>
     <div class="inpg"><div class="inpl">Physics engine</div><select class="inp"><option>Bullet3 (default)</option><option>ODE</option><option>MuJoCo</option></select></div>
-    <div class="inpg"><div class="inpl">Compute</div><select class="inp"><option>Standard (2 vCPU)</option><option>High (8 vCPU)</option><option>GPU accelerated</option></select></div>
+    <div class="inpg"><div class="inpl">Compute</div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex:1">
+        <select class="inp" id="sim-compute-select" onchange="updateComputeHint(this.value)">
+          <option value="standard">Standard (2 vCPU)</option>
+          <option value="high">High (8 vCPU)</option>
+          <option value="gpu">GPU accelerated</option>
+        </select>
+        <div id="sim-compute-hint" style="font-size:10px;color:var(--ink4);line-height:1.4"></div>
+      </div></div>
   </div>
-  <div style="background:var(--sage-tint);border:0.5px solid var(--sage-tint2);border-radius:var(--radius);padding:9px;font-size:11px;color:var(--sage3);margin-bottom:11px"><strong>LRB synced:</strong> Kiran-3 v4.1 · 6 joints · 5 sensors · IMU included</div>
-  <div class="sg sg3">
-    <div class="stat"><div class="slbl">Last run</div><div class="sval" style="font-size:16px">94%</div><div class="sdelta sup">Pass rate</div></div>
-    <div class="stat"><div class="slbl">Avg duration</div><div class="sval" style="font-size:16px">2.4m</div></div>
-    <div class="stat" style="cursor:pointer" onclick="openModule('sim-results')"><div class="slbl">Last result</div><div class="sval" style="font-size:16px">Pass</div><div class="sdelta sup">Run #47 →</div></div>
+
+  <!-- Environment profile — real-world calibration (new in bible v2) -->
+  <div style="margin-bottom:11px">
+    <div class="inpg" style="margin-bottom:6px">
+      <div class="inpl">Environment profile</div>
+      <select class="inp" id="sim-env-profile" onchange="updateSimEnvProfile(this.value)">
+        <option value="generic">Generic — Bullet3 defaults</option>
+        <option value="real" selected>Real-world calibrated — Warehouse (847h telemetry)</option>
+        <option value="real2">Real-world calibrated — Factory floor (312h telemetry)</option>
+        <option value="real3">Real-world calibrated — Logistics hub (129h telemetry)</option>
+      </select>
+    </div>
+    <div id="sim-env-badge" style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--sage-tint);border:0.5px solid var(--sage-tint2);border-radius:var(--radius);font-size:11px">
+      <div style="width:7px;height:7px;border-radius:50%;background:var(--sage);flex-shrink:0;animation:lrb-pulse 2.4s ease-in-out infinite"></div>
+      <div>
+        <span style="color:var(--sage3);font-weight:500">Real-world calibrated</span>
+        <span style="color:var(--ink4)"> · Floor friction: 0.72 (measured) · LiDAR noise σ=0.008m · IMU drift: 0.003°/s · 847h Fleet telemetry</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="lrb-sim-banner" style="background:var(--sage-tint);border:0.5px solid var(--sage-tint2);border-radius:var(--radius);padding:9px;font-size:11px;color:var(--sage3);margin-bottom:11px;transition:all 0.4s"><strong>LRB v4.1 synced:</strong> Kiran-3 · 4 sensors active · LiDAR fault injection available</div>
+  <div class="lrb-fault-panel" style="display:flex;gap:7px;margin-bottom:11px;flex-wrap:wrap">
+    <div data-fault="lidar" style="background:var(--white);border:0.5px solid var(--border);border-radius:var(--radius);padding:6px 10px;font-size:11px;display:flex;align-items:center;gap:6px;opacity:${lrb.sensors.lidar.active?'1':'0.4'}"><span style="color:var(--sage)">◆</span> LiDAR fault inject</div>
+    <div data-fault="imu" style="background:var(--white);border:0.5px solid var(--border);border-radius:var(--radius);padding:6px 10px;font-size:11px;display:flex;align-items:center;gap:6px;opacity:${lrb.sensors.imu.active?'1':'0.4'}"><span style="color:var(--sage)">◈</span> IMU drift inject</div>
+    <div data-fault="camera" style="background:var(--white);border:0.5px solid var(--border);border-radius:var(--radius);padding:6px 10px;font-size:11px;display:flex;align-items:center;gap:6px;opacity:${lrb.sensors.camera.active?'1':'0.4'}"><span style="color:var(--sage)">◻</span> Camera occlusion</div>
+  </div>
+  <button class="btn bs" style="width:100%;margin-bottom:11px" onclick="startSimRun(this)">▶ Run simulation</button>
+  <div id="sim-run-progress" style="display:none;margin-bottom:11px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+      <span id="sim-run-stage" style="font-size:11px;color:var(--ink3)">Initialising physics engine…</span>
+      <span id="sim-run-pct" style="font-size:11px;font-family:var(--mono);color:var(--sage)">0%</span>
+    </div>
+    <div style="height:4px;background:var(--pearl);border-radius:2px;overflow:hidden">
+      <div id="sim-run-bar" style="height:100%;background:var(--sage);width:0%;transition:width 0.4s ease;border-radius:2px"></div>
+    </div>
+    <div id="sim-run-log" style="margin-top:7px;font-family:var(--mono);font-size:10px;color:var(--ink4);line-height:1.7"></div>
+  </div>
+  <div class="sg sg3" id="sim-last-stats">
+    <div class="stat"><div class="slbl">Last run</div><div class="sval" style="font-size:16px" id="sim-stat-pass">94%</div><div class="sdelta sup">Pass rate</div></div>
+    <div class="stat"><div class="slbl">Avg time</div><div class="sval" style="font-size:16px" id="sim-stat-time">2.4m</div></div>
+    <div class="stat" style="cursor:pointer" onclick="openModule('sim-results')"><div class="slbl">Run #</div><div class="sval" style="font-size:16px" id="sim-stat-run">47</div><div class="sdelta sup">View results →</div></div>
   </div>
 </div>
 </div>`;
 
 case 'sim-results':return`
 <div class="mod">
-  <div class="sh"><div class="sh-l"><div class="sh-title">Sim Results · Run #47</div><div class="sh-sub">Warehouse navigation · 2m 18s</div></div><div class="sh-r"><span class="badge bg-g">Pass</span></div></div>
+  <div class="sh"><div class="sh-l"><div class="sh-title">Sim Results · Run #47</div><div class="sh-sub">Warehouse navigation · 2m 18s</div></div><div class="sh-r" style="display:flex;gap:6px;align-items:center"><span style="font-size:10px;background:rgba(45,106,79,0.12);color:var(--sage3);padding:2px 8px;border-radius:10px;font-weight:500">Real-world calibrated</span><span class="badge bg-g">Pass</span></div></div>
+  <div style="display:flex;align-items:center;gap:7px;padding:6px 9px;background:var(--sage-tint);border-radius:var(--radius);margin-bottom:9px;font-size:10px;color:var(--sage3)">
+    <div style="width:5px;height:5px;border-radius:50%;background:var(--sage);flex-shrink:0"></div>
+    Physics calibrated from 847h Fleet telemetry · Floor: 0.72 friction · LiDAR noise: σ=0.008m · IMU drift: 0.003°/s
+    <span style="margin-left:auto;color:var(--ink4);cursor:pointer" onclick="openModule('fleet')">→ Fleet data</span>
+  </div>
   <div class="sg sg4"><div class="stat"><div class="slbl">Pass rate</div><div class="sval">94%</div></div><div class="stat"><div class="slbl">Distance</div><div class="sval">87m</div></div><div class="stat"><div class="slbl">Obstacles</div><div class="sval">12</div><div class="sdelta sup">0 collisions</div></div><div class="stat"><div class="slbl">E-Stop events</div><div class="sval">0</div></div></div>
   <div style="font-size:10px;color:var(--ink4);text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px">Velocity over time</div>
   <div class="cbars" style="height:55px;margin-bottom:3px">${[55,70,80,75,90,85,60,40,70,80,75,85,90,80,70,60,50,40,30,20].map(h=>`<div class="cb" style="height:${h}%"></div>`).join('')}</div>
@@ -2172,13 +4146,10 @@ case 'hardware':return`
 ${mgb("hardware","<svg viewBox='0 0 16 16'><rect x='2' y='5' width='12' height='7' rx='2'/><path d='M5 5V3.5a2 2 0 014 0V5'/></svg>","Vanika Hardware — your URDF becomes a live costed BOM","Every sensor and actuator in your URDF is mapped to a real component with live Octopart pricing from Mouser, Digi-Key and RS. Lead times update every 4 hours. AI swap recommendations appear when a part is out of stock or over budget.",[["Review AI swap recommendations","openModule('bom-item-detail')"],["Check lead times","toast('Lead times','Refreshing Octopart data…')"],["Export BOM to Excel","toast('Export','BOM exported to Excel.')"],["Send to manufacture","openModule('manufacture')"]],"BOM auto-updates whenever the LRB sensor or actuator list changes — add a sensor in Studio, it appears here in seconds.")}
 <div class="tpanel" data-panel="bom">
 <div class="mod">
-  <div class="sh"><div class="sh-l"><div class="sh-title">BOM · Kiran-3</div><div class="sh-sub">Derived from LRB v4.1 · 1 item needs attention</div></div><div class="sh-r"><span class="badge bg-a">₹1,22,450 total</span></div></div>
+  <div class="sh"><div class="sh-l"><div class="sh-title">BOM · Kiran-3</div><div class="sh-sub">Derived from LRB v4.1 · 1 item needs attention</div></div><div class="sh-r"><span class="badge bg-a lrb-bom-total">₹1,22,450 total</span></div></div>
   <table class="tbl">
     <thead><tr><th>Component</th><th>Qty</th><th>Unit cost</th><th>Supplier</th><th>Status</th><th></th></tr></thead>
-    <tbody>
-      ${[['Lidar RPLiDAR A1',1,'₹6,200','Cytron','In stock',''],['Drive motors 12V DC',2,'₹2,800','Robu.in','In stock',''],['IMU MPU-9250',1,'₹480','Robu.in','Backordered','swap'],['Chassis aluminium',1,'₹14,500','Custom','Quote pending','quote'],['LiPo 24V 20Ah',1,'₹18,000','Maxamps','In stock','']].map(([n,q,c,s,st,a])=>`
-      <tr class="cr" onclick="openModule('bom-item-detail')"><td><strong style="font-weight:500">${n}</strong></td><td style="font-family:var(--mono)">${q}</td><td style="font-family:var(--mono)">${c}</td><td style="color:var(--ink3)">${s}</td><td><span class="badge bg-${st==='In stock'?'g':st==='Backordered'?'r':'a'}">${st}</span></td><td>${a==='swap'?`<button class="btn bo bsm" onclick="toast('Swap','Alternatives found.')">Swap</button>`:a==='quote'?`<button class="btn bg bsm" onclick="toast('Quote','Request sent.')">Quote</button>`:''}</td></tr>`).join('')}
-    </tbody>
+    <tbody class="lrb-bom-tbody"></tbody>
   </table>
   <div style="margin-top:9px;background:var(--sage-tint);border:0.5px solid var(--sage-tint2);border-radius:var(--radius);padding:9px;font-size:11px;color:var(--sage3)"><strong>IMU backordered.</strong> Vanika AI found 2 compatible alternatives — <a onclick="openModule('ai')" style="cursor:pointer;text-decoration:underline">view in AI →</a></div>
 </div>
@@ -2198,7 +4169,7 @@ case 'fleet':return`
   <div class="wt" onclick="openModule('fleet-ota')">OTA History ↗</div>
   <div class="wt" onclick="openModule('fleet-alerts')">Alerts <span class="tbadge">2</span></div>
 </div>
-${mgb("fleet","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='5'/><path d='M8 3v5l3 2'/></svg>","Vanika Fleet — deploy firmware and monitor robots in the field","A Rust edge agent (<2MB) runs on each robot and streams CPU, battery, velocity and error logs at 10Hz. Push firmware OTA from the Code module — the agent validates SHA256, applies atomically and rolls back on failure. No physical access needed.",[["Deploy firmware OTA","openModule('deploy-pipeline')"],["View live telemetry","openModule('fleet-robot')"],["Set alert rules","openModule('alert-rules')"],["Assign a mission","openModule('assign-mission')"]],"Fleet pulls the latest firmware build directly from the Code pipeline — one click from IDE to physical robot.")}
+${mgb("fleet","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='5'/><path d='M8 3v5l3 2'/></svg>","Vanika Fleet — deploy firmware and monitor robots in the field","A Rust edge agent (<2MB) runs on each robot publishing two telemetry streams: operational health at 10Hz (CPU, battery, velocity, error logs) and environment data at 1Hz (LiDAR scans, floor classification, path deviation, near-miss events). Environment telemetry feeds back into Sim to calibrate physics models against real-world conditions — closing the sim-to-real loop.",[["Deploy firmware OTA","openModule('deploy-pipeline')"],["View live telemetry","openModule('fleet-robot')"],["Set alert rules","openModule('alert-rules')"],["Assign a mission","openModule('assign-mission')"]],"Fleet pulls the latest firmware build directly from the Code pipeline — one click from IDE to physical robot.")}
 <div class="tpanel" data-panel="live" style="flex-direction:row">
   <div style="flex:1;display:flex;flex-direction:column">
     <div class="fmap" style="flex:1;margin:9px 9px 0;min-height:180px">
@@ -2217,6 +4188,39 @@ ${mgb("fleet","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='5'/><path d='M8
   </div>
   <div style="width:205px;flex-shrink:0;border-left:0.5px solid var(--border);overflow-y:auto;padding:9px 7px">
     <div class="sbsect">5 Online · 0 Offline</div>
+
+    <!-- Operational telemetry stream -->
+    <div style="font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);padding:6px 0 3px;display:flex;align-items:center;gap:5px">
+      <div style="width:5px;height:5px;border-radius:50%;background:var(--sage)"></div>Operational · 10Hz
+    </div>
+    <div class="lrb-fleet-topics" style="margin-bottom:6px;max-height:90px;overflow-y:auto"></div>
+
+    <!-- Environment telemetry stream (new — bible v2) -->
+    <div style="font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);padding:6px 0 3px;display:flex;align-items:center;gap:5px">
+      <div style="width:5px;height:5px;border-radius:50%;background:var(--sage);animation:lrb-pulse 2.4s ease-in-out infinite"></div>Environment · 1Hz
+    </div>
+    <div style="margin-bottom:6px">
+      ${[
+        ['/vanika/telemetry/{id}/env','scan_sample','LiDAR point cloud · 1Hz'],
+        ['/vanika/telemetry/{id}/env','floor_class','Surface classification'],
+        ['/vanika/telemetry/{id}/env','path_deviation','vs planned trajectory'],
+        ['/vanika/telemetry/{id}/env','near_miss_events','Obstacles < 0.5m'],
+        ['/vanika/telemetry/{id}/env','env_hash','Environment fingerprint'],
+      ].map(([topic,field,desc])=>`
+      <div style="padding:3px 0;border-bottom:0.5px solid var(--border);font-size:10px">
+        <div style="display:flex;align-items:center;gap:5px">
+          <div style="width:5px;height:5px;border-radius:50%;background:var(--sage3);flex-shrink:0"></div>
+          <span style="font-family:var(--mono);color:var(--sage3);font-size:9px">${field}</span>
+        </div>
+        <div style="font-size:9px;color:var(--ink4);padding-left:10px">${desc}</div>
+      </div>`).join('')}
+    </div>
+    <div style="font-size:9px;color:var(--ink4);padding:4px 0 6px;border-bottom:0.5px solid var(--border);margin-bottom:6px">
+      ↳ Feeds Sim calibration · <span style="color:var(--sage3);cursor:pointer" onclick="openModule('simulation')">847h warehouse data →</span>
+    </div>
+
+    <div class="sbsect lrb-fleet-topics-header" style="color:var(--ink4)">ROS2 topics · LRB v${lrb.version.toFixed(1)}</div>
+    <div class="sbsect">Robots</div>
     ${[['K3-001','Navigating · Mission 14','g'],['K3-002','Idle · Docked','g'],['K3-003','Charging · 68%','g'],['DA-012','Low battery · 12%','a'],['DA-013','Navigating · Mission 15','g']].map(([id,s,c])=>`
     <div class="sbitem" onclick="openModule('fleet-robot')"><div style="width:6px;height:6px;border-radius:50%;background:${c==='g'?'var(--sage)':'var(--amber)'}"></div><div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:500;color:var(--ink)">${id}</div><div style="font-size:10px;color:var(--ink4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s}</div></div></div>`).join('')}
   </div>
@@ -2333,25 +4337,64 @@ ${mgb("analytics","<svg viewBox='0 0 16 16'><path d='M2 12l3-4 3 3 4-6 2 3'/></s
 </div>`;
 
 case 'ai':return`
-${mgb("ai","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='5'/><path d='M5.5 8l2 2 3-3'/></svg>","Vanika AI — a robotics copilot that already knows your robot","Every AI response is grounded in your Live Robot Blueprint. The AI knows your sensor names, joint limits, ROS2 distro, and last sim results before you type a word. Ask it to write a ROS2 node, debug a trajectory, explain a sim failure, or generate a complete package — it answers with your robot in mind, not a generic one.",[["Generate a ROS2 node","toast('AI','Opening code generation…')"],["Debug a sim failure","openModule('sim-results')"],["Review robot design","openModule('studio')"],["Explore AI history","openModule('ai-history')"]],'The AI context window always includes the current LRB snapshot — your robot model is injected into every prompt automatically.')}
+${mgb("ai","<svg viewBox='0 0 16 16'><path d='M8 2a6 6 0 100 12A6 6 0 008 2z'/><path d='M5 8.5c.8 1.5 4.2 1.5 5 0'/><circle cx='6' cy='6.5' r='1'/><circle cx='10' cy='6.5' r='1'/></svg>","Vanika AI Core — intelligence across your entire robot project","Not a coding assistant. An engineering intelligence layer that reads Studio geometry, Sim results, Hardware BOM, Fleet telemetry and Code — all at once. It finds problems you haven't noticed, suggests optimisations across modules, and reasons about your robot as a whole system.",
+[["Why is my sim pass rate low?","sendAI('Why is my simulation pass rate low and what should I change?')"],["Review my full robot design","sendAI('Do a full design review of Kiran-3 and flag any issues')"],["Optimise my BOM for cost","sendAI('Review my hardware BOM and suggest cost optimisations')"],["What should I fix next?","sendAI('Given everything — LRB, sim results, BOM — what should I work on next?')"]],"Vanika AI reads from every module simultaneously. The Code IDE has its own copilot for writing firmware — this is for reasoning across your whole project.")}
 
-<div class="wtabs"><div class="wt active">Chat</div><div class="wt" onclick="openModule('ai-history')">History ↗</div></div>
+<div class="wtabs">
+  <div class="wt active">Intelligence</div>
+  <div class="wt" onclick="openModule('ai-history')">History ↗</div>
+  <div class="wt" onclick="openModule('ai-settings')">Settings ↗</div>
+</div>
 <div style="flex:1;display:flex;overflow:hidden">
-  <div class="chatarea f1" id="ai-chat-area">${(()=>`<div class="chatmsg"><div class="cavatar ai">V</div><div><div style="font-size:10px;color:var(--ink4);margin-bottom:2px">Vanika AI · Kiran-3 LRB v4.1</div><div class="bubble">Hi Kisshhan! I have your full Kiran-3 Live Robot Blueprint loaded. I noticed the IMU MPU-9250 is backordered — want me to find alternatives?</div></div></div><div class="chatmsg u"><div class="cavatar u">A</div><div class="bubble">Yes, show me alternatives for the IMU</div></div><div class="chatmsg"><div class="cavatar ai">V</div><div class="bubble">Based on your LRB config (I2C, 9-axis, topic: /imu/data), here are 2 drop-in alternatives:<br><br><strong>1. ICM-20689</strong> — InvenSense, ₹520, in stock at Robu.in. Same pinout.<br><strong>2. LSM9DS1</strong> — ST, ₹440, in stock. Minor driver change needed — I can generate it.<div class="codesnip">// Auto-generated for LSM9DS1<br>#include "sensors/lsm9ds1.hpp"<br>// topic: /imu/data — unchanged</div></div></div>`)()}</div>
-  <div style="width:170px;flex-shrink:0;border-left:0.5px solid var(--border);padding:9px 7px;overflow-y:auto;background:var(--pearl)">
-    <div class="sbsect">Context</div>
-    <div style="font-size:11px;color:var(--ink3);padding:3px 0;line-height:1.6">
-      <div class="row" style="gap:4px;margin-bottom:3px"><div style="width:5px;height:5px;border-radius:50%;background:var(--sage)"></div>Kiran-3 LRB v4.1</div>
-      <div class="row" style="gap:4px;margin-bottom:3px"><div style="width:5px;height:5px;border-radius:50%;background:var(--sage)"></div>5 sensors loaded</div>
-      <div class="row" style="gap:4px"><div style="width:5px;height:5px;border-radius:50%;background:var(--sage)"></div>BOM loaded</div>
+  <div class="chatarea f1" id="ai-chat-area">${buildAIOpeningMsg()}</div>
+
+  <div style="width:175px;flex-shrink:0;border-left:0.5px solid var(--border);padding:9px 8px;overflow-y:auto;background:var(--pearl);display:flex;flex-direction:column;gap:0">
+
+    <div class="sbsect">Modules in context</div>
+    ${[
+      ['Studio',  'studio',     'LRB v'+lrb.version.toFixed(1)+' · '+Object.keys(lrb.sensors).filter(k=>lrb.sensors[k].active).length+' sensors'],
+      ['Code',    'code',       'robot_sdk.py · ROS2 '+lrb.ros_distro],
+      ['Sim',     'simulation', 'Last run: 94% pass'],
+      ['Hardware','hardware',   '₹'+(Object.keys(lrb.sensors).filter(k=>lrb.sensors[k].active).reduce((s,k)=>s+lrb.sensors[k].price,18000+5600)).toLocaleString('en-IN')+' BOM'],
+      ['Fleet',   'fleet',      '5 robots online'],
+    ].map(([n,id,sub])=>`
+    <div style="padding:6px 4px;border-bottom:0.5px solid var(--border);cursor:pointer" onclick="openModule('${id}')"
+         onmouseover="this.style.background='var(--sage-tint)'" onmouseout="this.style.background=''">
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:1px">
+        <div style="width:5px;height:5px;border-radius:50%;background:var(--sage);flex-shrink:0"></div>
+        <span style="font-size:11px;font-weight:500;color:var(--ink)">${n}</span>
+        <svg viewBox="0 0 10 10" style="width:8px;height:8px;stroke:var(--ink4);fill:none;margin-left:auto"><path d="M2 5h6M6 3l2 2-2 2" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </div>
+      <div style="font-size:10px;color:var(--ink4);padding-left:10px">${sub}</div>
+    </div>`).join('')}
+
+    <div class="sbsect" style="margin-top:10px">Ask about</div>
+    ${[
+      ['Why is sim pass rate 94%?',           'Why is my simulation pass rate 94% and what would improve it?'],
+      ['Design review — flag all issues',      'Do a complete design review of Kiran-3 and list every issue you find'],
+      ['Optimise BOM cost',                    'Review my hardware BOM and find cost savings without compromising specs'],
+      ['IMU backordered — what do I do?',      'The IMU MPU-9250 is backordered. What are my options and what breaks if I wait?'],
+      ['Is Kiran-3 ready for pilot batch?',    'Given the current state of the project, is Kiran-3 ready for a pilot manufacturing batch?'],
+      ['Compare active vs inactive sensors',   'What am I missing by not having GPS and Ultrasonic active on Kiran-3?'],
+      ['Suggest next 3 engineering tasks',     'Given the full project state, what are the 3 most important engineering tasks right now?'],
+      ['Fleet deployment risk?',               'What is the risk of deploying the current firmware to all 5 fleet robots?'],
+    ].map(([label, prompt])=>`
+    <div class="sbitem" style="font-size:10px;line-height:1.45" onclick="sendAI('${prompt}')">${label}</div>`).join('')}
+
+    <div class="lrb-ai-context" style="margin-top:8px;font-size:10px;color:var(--ink4);padding:6px 4px;line-height:1.6;transition:background 0.4s;border-radius:6px;border-top:0.5px solid var(--border)">
+      <div style="font-weight:500;color:var(--ink3);margin-bottom:3px">Live context</div>
     </div>
-    <div class="sbsect" style="margin-top:8px">Quick prompts</div>
-    ${['Review joint limits','Check sensor overlap','Write nav node','Debug sim failure','Suggest next steps'].map(p=>`<div class="sbitem" style="font-size:10px;line-height:1.4" onclick="sendAI('${p}')">${p}</div>`).join('')}
-    <div class="sbsect" style="margin-top:7px"><span onclick="openModule('ai-settings')" style="cursor:pointer;text-decoration:underline">AI Settings</span></div><div class="sbsect" style="margin-top:0">Modules</div>
-    ${[['Studio','studio'],['Code','code'],['Hardware','hardware']].map(([n,i])=>`<div class="sbitem" onclick="openModule('${i}')"><svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M9 4l3 3-3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>${n}</div>`).join('')}
   </div>
 </div>
-<div class="vanika-thinking" id="vanika-thinking"><div class="vt-orb"><div class="vt-petal"></div><div class="vt-petal"></div><div class="vt-petal"></div><div class="vt-petal"></div></div><span class="vt-label">Vanika AI is thinking</span><div class="vt-dots"><div class="vt-dot"></div><div class="vt-dot"></div><div class="vt-dot"></div></div></div><div class="cirow"><input class="inp f1" id="ai-inp" placeholder="Ask anything about Kiran-3…" onkeydown="if(event.key==='Enter')sendAI(this.value)"><button class="btn bs bsm" onclick="sendAI(document.getElementById('ai-inp').value)">Send</button></div>`;
+<div class="vanika-thinking" id="vanika-thinking">
+  <div class="vt-orb"><div class="vt-petal"></div><div class="vt-petal"></div><div class="vt-petal"></div><div class="vt-petal"></div></div>
+  <span class="vt-label">Vanika AI is thinking</span>
+  <div class="vt-dots"><div class="vt-dot"></div><div class="vt-dot"></div><div class="vt-dot"></div></div>
+</div>
+<div class="cirow">
+  <input class="inp f1" id="ai-inp" placeholder="Ask about your robot project — design, sim, hardware, fleet…" onkeydown="if(event.key==='Enter')sendAI(this.value)">
+  <button class="btn bs bsm" onclick="sendAI(document.getElementById('ai-inp').value)">Ask</button>
+</div>`;
 
 case 'ai-history':return`
 <div class="sbar"><svg viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="4.5" stroke-width="1.3"/><path d="M10 10l3 3" stroke-width="1.3" stroke-linecap="round"/></svg><input placeholder="Search conversations…"></div>
@@ -4145,9 +6188,153 @@ ${mgb("robot-render","<svg viewBox='0 0 16 16'><rect x='2' y='4' width='12' heig
 </div>
 `;
 
+
+
 default:return`<div class="mod empty"><svg viewBox="0 0 28 28"><rect x="2" y="2" width="24" height="24" rx="5" stroke-width="1.5"/></svg><div class="empty-t">${id}</div><div class="empty-s">Module ready.</div></div>`;
 }}
 
+
+// ── Popout initialisation — GLOBAL SCOPE ──
+if(window._POPOUT_MODULE){
+  (function(){
+    var moduleId = window._POPOUT_MODULE;
+
+    // ── Listen for lrb updates from primary window via postMessage ──
+    window.addEventListener('message', function(e) {
+      if (!e.data) return;
+      if (e.data.type === 'vanika-lrb') {
+        _applyLRBMessage(e.data);
+      }
+    });
+
+    // ── Get initial lrb state ──
+    // 1. Try window.opener directly (same-origin Chrome)
+    var gotState = false;
+    try {
+      if (window.opener && window.opener.lrb && window.opener.lrb.sensors) {
+        Object.keys(window.opener.lrb.sensors).forEach(function(k) {
+          if (lrb.sensors[k]) lrb.sensors[k].active = window.opener.lrb.sensors[k].active;
+        });
+        lrb.version = window.opener.lrb.version || lrb.version;
+        gotState = true;
+      }
+    } catch(e) {}
+
+    // 2. Try localStorage (Chrome file://)
+    if (!gotState) {
+      try {
+        var s = localStorage.getItem('vanika-lrb-sync');
+        if (s) {
+          var d = JSON.parse(s);
+          if (d && d.lrb) {
+            Object.keys(d.lrb.sensors||{}).forEach(function(k){ if(lrb.sensors[k]) lrb.sensors[k].active=d.lrb.sensors[k].active; });
+            lrb.version = d.lrb.version || lrb.version;
+            gotState = true;
+          }
+        }
+      } catch(e) {}
+    }
+
+    // 3. Request state from primary via postMessage (works cross-origin)
+    try {
+      if (window.opener) window.opener.postMessage({type:'vanika-ready'}, '*');
+    } catch(e) {}
+
+    // ── Render the module ──
+    var fp = document.getElementById('focus-panel');
+    if (fp) fp.style.cssText = 'display:flex;flex-direction:column;position:fixed;left:0;top:40px;right:0;bottom:0;overflow:hidden;z-index:500';
+    viewMode = 'focus';
+    focusTabs = [{id:moduleId, title:(MODS[moduleId]||{title:moduleId}).title, mod:moduleId}];
+    activeFocusTab = moduleId;
+    renderFocusModebar();
+    renderFocusContent(moduleId);
+
+    // ── Update LRB badge ──
+    var b = document.getElementById('lrb-badge');
+    if (b) b.textContent = 'LRB v' + lrb.version.toFixed(1);
+
+    // ── PING-PONG LIVE SYNC ──
+    // Popout pings primary every 300ms via postMessage
+    // Primary responds with current lrb state
+    // postMessage works across ALL origins and browsers — the only reliable method
+    setInterval(function() {
+      try {
+        if (window.opener && !window.opener.closed) {
+          window.opener.postMessage({type:'vanika-ping'}, '*');
+        }
+      } catch(e) {}
+    }, 300);
+
+  })();
+}
+
+
+
+// ── Popout initialisation — global scope, runs after all vars/fns defined ──
+if(window._POPOUT_MODULE){
+  (function(){
+    var moduleId = window._POPOUT_MODULE;
+
+    // Sync LRB state from primary window
+    try{
+      var saved = localStorage.getItem('vanika-lrb-sync');
+      if(saved){
+        var d = JSON.parse(saved);
+        if(d && d.lrb){
+          Object.keys(d.lrb.sensors||{}).forEach(function(k){
+            if(lrb.sensors[k]) lrb.sensors[k].active = d.lrb.sensors[k].active;
+          });
+          lrb.version = d.lrb.version || lrb.version;
+        }
+      }
+    }catch(e){}
+
+    // Show focus panel with target module
+    var fp = document.getElementById('focus-panel');
+    if(fp) fp.style.cssText = 'display:flex;flex-direction:column;position:fixed;left:0;top:40px;right:0;bottom:0;overflow:hidden;z-index:500';
+
+    viewMode = 'focus';
+    focusTabs = [{id:moduleId, title:(MODS[moduleId]||{title:moduleId}).title, mod:moduleId}];
+    activeFocusTab = moduleId;
+    renderFocusModebar();
+    renderFocusContent(moduleId);
+
+    // LRB-reactive refreshes
+    setTimeout(function(){
+      if(moduleId==='hardware')  refreshHardwareBOM();
+      if(moduleId==='code')      refreshCodeIDE();
+      if(moduleId==='simulation')refreshSimLRB();
+      if(moduleId==='fleet')     refreshFleetLRB();
+      if(moduleId==='ai')        refreshAIContext();
+      if(moduleId==='studio')    { initStudio3D('focus-content'); refreshStudioLRB(); }
+    }, 80);
+
+    // Update LRB badge
+    var badge = document.getElementById('lrb-badge');
+    if(badge) badge.textContent = 'LRB v' + lrb.version.toFixed(1);
+
+    // Listen for LRB changes from primary window via localStorage
+    window.addEventListener('storage', function(e){
+      if(e.key === 'vanika-lrb-sync' && e.newValue){
+        try{
+          var data = JSON.parse(e.newValue);
+          if(data && data.lrb){
+            Object.keys(data.lrb.sensors||{}).forEach(function(k){
+              if(lrb.sensors[k]) lrb.sensors[k].active = data.lrb.sensors[k].active;
+            });
+            lrb.version = data.lrb.version || lrb.version;
+            refreshCodeIDE(); refreshHardwareBOM();
+            refreshSimLRB(); refreshFleetLRB(); refreshAIContext();
+            var b2 = document.getElementById('lrb-badge');
+            if(b2) b2.textContent = 'LRB v' + lrb.version.toFixed(1);
+          }
+        }catch(err){}
+      }
+    });
+
+    toast('Synced', moduleId + ' — LRB v' + lrb.version.toFixed(1) + ' loaded');
+  })();
+}
 </script>
 </body>
 </html>
