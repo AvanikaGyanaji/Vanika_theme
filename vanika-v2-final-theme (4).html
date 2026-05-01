@@ -1104,7 +1104,7 @@ body.sidebar-open #focus-panel,body.sidebar-open #split-panel{left:56px}
       <div class="inpg"><div class="inpl">Starting template</div><select class="inp"><option>Blank</option><option>Differential drive base</option><option>6-DOF arm</option><option>AMR warehouse</option></select></div>
       <div class="inpg"><div class="inpl">Description</div><textarea class="inp" rows="2" placeholder="What does this robot do?"></textarea></div>
     </div>
-    <div class="modal-foot"><button class="btn bg" onclick="closeModal('modal-newrobot')">Cancel</button><button class="btn bs" onclick="createNewRobot()">Create robot</button></div>
+    <div class="modal-foot"><button class="btn bg" onclick="closeModal('modal-newrobot')">Cancel</button><button class="btn bs" onclick="closeModal('modal-newrobot');toast('Robot created','Opening in Studio…');setTimeout(()=>openModule('studio'),400)">Create robot</button></div>
   </div>
 </div>
 
@@ -1162,7 +1162,7 @@ body.sidebar-open #focus-panel,body.sidebar-open #split-panel{left:56px}
   }
 })();
 
-var wins={},zTop=10,activeWin=null,ctxTarget=null,drag=null,rsz=null;
+let wins={},zTop=10,activeWin=null,ctxTarget=null,drag=null,rsz=null;
 // ── View mode state ──
 var viewMode='focus'; // 'focus' | 'split'
 var focusTabs=[];     // [{id, title, mod}]
@@ -1396,7 +1396,7 @@ var PAGE_TO_MODULE = {
   dashboard:'dashboard', analytics:'analytics'
 };
 
-var MODS={
+const MODS={
   dashboard:{title:'Dashboard \u00b7 Kiran-3',w:700,h:520},
   projects:{title:'All Projects',w:660,h:440},
   studio:{title:'Studio \u00b7 Kiran-3',w:800,h:560},
@@ -2196,40 +2196,35 @@ function _downloadBlob(data, filename, mime) {
   setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
 }
 
-// ── Export modal: shows all CAD formats ─────────────────────────────
+// ── Export modal: shows 3 options ─────────────────────────────────
 function exportLRBasURDF() {
   var old = document.getElementById('vanika-export-modal');
   if (old) old.remove();
   var m = document.createElement('div');
   m.id = 'vanika-export-modal';
   m.style.cssText = 'position:fixed;inset:0;background:rgba(13,13,12,.6);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)';
-  var fmts = [
-    {fn:'exportDoURDF',icon:'&#x25CE;',label:'URDF File (.urdf)',sub:'ROS2-ready &middot; Gazebo &middot; RViz &middot; Isaac Sim &middot; '+Object.keys(lrb.sensors).filter(function(k){return lrb.sensors[k].active;}).length+' sensors'},
-    {fn:'exportDoSTEP',icon:'&#x25A1;',label:'STEP File (.step)',sub:'ISO 10303 AP214 B-Rep solid &middot; SolidWorks &middot; Fusion 360 &middot; FreeCAD'},
-    {fn:'exportDoSTL', icon:'&#x25B3;',label:'STL Mesh (.stl)',  sub:'Watertight mesh &middot; 3D printing &middot; Bullet3 &middot; Gazebo sim'},
-    {fn:'exportDoDXF', icon:'&#x25C8;',label:'DXF Drawing (.dxf)',sub:'AutoCAD R14 &middot; 3 projection views &middot; Front &middot; Side &middot; Top'},
-    {fn:'exportDoGLB', icon:'&#x25C9;',label:'GLB Scene (.glb)',  sub:'WebGL binary &middot; PBR materials &middot; Three.js &middot; Babylon.js'},
-    {fn:'exportDoPDF', icon:'&#x1F4CF;',label:'Technical Drawing (.pdf)',sub:'Dimensioned views &middot; printable engineering drawing'},
-    {fn:'exportDoJSON',icon:'&#x1F4C4;',label:'LRB Snapshot (.json)',sub:'Full config &middot; sensors &middot; chassis &middot; joints &middot; motion'},
-  ];
   m.innerHTML =
-    '<div style="background:var(--white);border-radius:14px;padding:24px;width:480px;max-width:94vw;max-height:88vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.3)">'
-   +'<div style="font-size:15px;font-weight:600;color:var(--ink1);margin-bottom:2px">Export Design</div>'
-   +'<div style="font-size:11px;color:var(--ink4);margin-bottom:6px">'+lrb.name+' &middot; LRB v'+lrb.version.toFixed(1)+'</div>'
-   +'<div style="font-size:10px;color:var(--sage3);background:var(--sage-tint);border-radius:6px;padding:6px 10px;margin-bottom:14px">Powered by build123d + OpenCASCADE B-Rep kernel &middot; same as CATIA &amp; FreeCAD &middot; &plusmn;0.001mm tolerance</div>'
-   +'<div style="display:flex;flex-direction:column;gap:7px">'
-   +fmts.map(function(f){
-     return '<div onclick="'+f.fn+'();_closeExportModal()" style="display:flex;gap:14px;align-items:center;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:.12s" onmouseover="this.style.borderColor=\'var(--sage)\';this.style.background=\'var(--sage-tint)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'\'">'
-           +'<div style="font-size:22px;flex-shrink:0">'+f.icon+'</div>'
-           +'<div><div style="font-size:12px;font-weight:600;color:var(--ink2)">'+f.label+'</div>'
-           +'<div style="font-size:11px;color:var(--ink4);margin-top:1px">'+f.sub+'</div></div></div>';
-   }).join('')
-   +'<div onclick="exportDoAllCAD();_closeExportModal()" style="display:flex;gap:14px;align-items:center;padding:12px 14px;border:1.5px solid var(--sage);border-radius:10px;cursor:pointer;background:var(--sage-tint);transition:.12s" onmouseover="this.style.background=\'var(--sage-tint2)\'" onmouseout="this.style.background=\'var(--sage-tint)\'">'
-   +'<div style="font-size:22px;flex-shrink:0">&#x1F4E6;</div>'
-   +'<div><div style="font-size:12px;font-weight:600;color:var(--sage)">Download All Formats (.zip)</div>'
-   +'<div style="font-size:11px;color:var(--sage3);margin-top:1px">URDF + STEP + STL + DXF + GLB + JSON in one package</div></div></div>'
-   +'</div>'
-   +'<div style="display:flex;justify-content:flex-end;margin-top:14px">'
+    '<div style="background:var(--white);border-radius:14px;padding:24px;width:440px;max-width:92vw;box-shadow:0 24px 64px rgba(0,0,0,.3)">'
+   +'<div style="font-size:15px;font-weight:600;color:var(--ink1);margin-bottom:4px">Export Design</div>'
+   +'<div style="font-size:11px;color:var(--ink4);margin-bottom:18px">'+lrb.name+' &middot; LRB v'+lrb.version.toFixed(1)+'</div>'
+   +'<div style="display:flex;flex-direction:column;gap:8px">'
+
+   +'<div onclick="exportDoURDF();_closeExportModal()" style="display:flex;gap:14px;align-items:center;padding:14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer" onmouseover="this.style.borderColor=\'var(--sage)\';this.style.background=\'var(--sage-tint)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'\'">'
+   +'<div style="font-size:24px">&#x1F916;</div>'
+   +'<div><div style="font-size:12px;font-weight:600;color:var(--ink2)">URDF File (.urdf)</div>'
+   +'<div style="font-size:11px;color:var(--ink4);margin-top:2px">ROS2-ready &middot; Gazebo &middot; RViz &middot; Isaac Sim</div></div></div>'
+
+   +'<div onclick="exportDoPDF();_closeExportModal()" style="display:flex;gap:14px;align-items:center;padding:14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer" onmouseover="this.style.borderColor=\'var(--sage)\';this.style.background=\'var(--sage-tint)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'\'">'
+   +'<div style="font-size:24px">&#x1F4CF;</div>'
+   +'<div><div style="font-size:12px;font-weight:600;color:var(--ink2)">Technical Drawing (.pdf)</div>'
+   +'<div style="font-size:11px;color:var(--ink4);margin-top:2px">Front &middot; Side &middot; Top views with all dimensions</div></div></div>'
+
+   +'<div onclick="exportDoJSON();_closeExportModal()" style="display:flex;gap:14px;align-items:center;padding:14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer" onmouseover="this.style.borderColor=\'var(--sage)\';this.style.background=\'var(--sage-tint)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'\'">'
+   +'<div style="font-size:24px">&#x1F4C4;</div>'
+   +'<div><div style="font-size:12px;font-weight:600;color:var(--ink2)">LRB Snapshot (.json)</div>'
+   +'<div style="font-size:11px;color:var(--ink4);margin-top:2px">Full config &middot; sensors &middot; chassis &middot; joints &middot; motion</div></div></div>'
+
+   +'</div><div style="display:flex;justify-content:flex-end;margin-top:16px">'
    +'<button class="btn bg" onclick="_closeExportModal()" style="font-size:12px">Cancel</button></div></div>';
   document.body.appendChild(m);
   m.addEventListener('click', function(e){ if(e.target===m) _closeExportModal(); });
@@ -2276,513 +2271,6 @@ function exportDoPDF() {
   exportDesignPDF();
 }
 
-// ── Export STEP ────────────────────────────────────────────────────
-function exportDoSTEP() {
-  var c = lrb.chassis, name = lrb.name.replace(/\s+/g,'_');
-  var bx=(c.width_mm||88), by=(c.height_mm||58), bz=(c.length_mm||120);
-  var active = Object.keys(lrb.sensors).filter(function(k){return lrb.sensors[k].active;});
-  var step = 'ISO-10303-21;\nHEADER;\nFILE_DESCRIPTION(\'Vanika Studio · '+lrb.name+' · LRB v'+lrb.version.toFixed(1)+'\',\'2;1\');\n'
-    +'FILE_NAME(\''+name+'.step\',\''+new Date().toISOString()+'\',(\'\'),(\'\'),\'Vanika Studio\',\'build123d 0.7.0 + OCP 7.7.2\',\'\');\n'
-    +'FILE_SCHEMA((\'AUTOMOTIVE_DESIGN { 1 0 10303 214 3 1 1 1 }\'));\nENDSEC;\nDATA;\n'
-    +'/* Robot: '+lrb.name+' · Chassis '+bx+'×'+bz+'×'+by+'mm · Mass: '+(lrb.mass_kg||12)+'kg */\n'
-    +'/* Active sensors: '+active.join(', ')+' */\n'
-    +'/* Generated by Vanika Studio · Tolerance ±0.001mm · ISO 10303 AP214 */\n'
-    +'#1=PRODUCT(\''+name+'\',\''+lrb.name+'\',\'Robot body\',(#2));\n'
-    +'#2=PRODUCT_CONTEXT(\'\',#3,\'mechanical\');\n'
-    +'#3=APPLICATION_CONTEXT(\'automotive design and manufacturing\');\n'
-    +'/* B-Rep solid body · base_link '+bx+'×'+bz+'×'+by+'mm */\n'
-    +'ENDSEC;\nEND-ISO-10303-21;\n';
-  _downloadBlob(step, name+'_v'+lrb.version.toFixed(1)+'.step', 'text/plain');
-  toast('STEP exported', name+' · ISO 10303 AP214 · B-Rep solid');
-}
-
-// ── Export STL ────────────────────────────────────────────────────
-function exportDoSTL() {
-  var c = lrb.chassis, name = lrb.name.replace(/\s+/g,'_');
-  var bx=(c.width_mm||280)/1000, by=(c.height_mm||180)/1000, bz=(c.length_mm||380)/1000;
-  var wr=(c.wheel_dia_mm||120)/2/1000, ww=0.04;
-  var wb=(c.wheelbase_mm||280)/1000;
-  var tris = [];
-
-  // Helper: box triangles (12 tris)
-  function boxTris(cx,cy,cz,sx,sy,sz){
-    var hx=sx/2,hy=sy/2,hz=sz/2;
-    var v=[
-      [cx-hx,cy-hy,cz-hz],[cx+hx,cy-hy,cz-hz],[cx+hx,cy+hy,cz-hz],[cx-hx,cy+hy,cz-hz],
-      [cx-hx,cy-hy,cz+hz],[cx+hx,cy-hy,cz+hz],[cx+hx,cy+hy,cz+hz],[cx-hx,cy+hy,cz+hz]
-    ];
-    var faces=[[0,1,2,0,0,-1],[0,2,3,0,0,-1],[4,6,5,0,0,1],[4,7,6,0,0,1],
-               [0,4,5,0,-1,0],[0,5,1,0,-1,0],[2,6,7,0,1,0],[2,7,3,0,1,0],
-               [0,3,7,-1,0,0],[0,7,4,-1,0,0],[1,5,6,1,0,0],[1,6,2,1,0,0]];
-    faces.forEach(function(f){tris.push({v:[v[f[0]],v[f[1]],v[f[2]]],n:[f[3],f[4],f[5]]});});
-  }
-
-  // Helper: cylinder triangles (16 slices each cap + side = 64 tris)
-  function cylTris(cx,cy,cz,r,h,axis){
-    var N=16;
-    for(var i=0;i<N;i++){
-      var a0=i*2*Math.PI/N, a1=(i+1)*2*Math.PI/N;
-      var c0=Math.cos(a0),s0=Math.sin(a0),c1=Math.cos(a1),s1=Math.sin(a1);
-      var p;
-      if(axis==='x'){
-        // x-axis cylinder: radius in y-z plane
-        p=[[cx-h/2,cy+r*s0,cz+r*c0],[cx-h/2,cy+r*s1,cz+r*c1],
-           [cx+h/2,cy+r*s1,cz+r*c1],[cx+h/2,cy+r*s0,cz+r*c0],
-           [cx-h/2,cy,cz],[cx+h/2,cy,cz]];
-        tris.push({v:[p[0],p[1],p[2]],n:[0,s0,c0]});
-        tris.push({v:[p[0],p[2],p[3]],n:[0,s0,c0]});
-        tris.push({v:[p[4],p[1],p[0]],n:[-1,0,0]});
-        tris.push({v:[p[5],p[3],p[2]],n:[1,0,0]});
-      } else {
-        p=[[cx+r*c0,cy-h/2,cz+r*s0],[cx+r*c1,cy-h/2,cz+r*s1],
-           [cx+r*c1,cy+h/2,cz+r*s1],[cx+r*c0,cy+h/2,cz+r*s0],
-           [cx,cy-h/2,cz],[cx,cy+h/2,cz]];
-        tris.push({v:[p[0],p[1],p[2]],n:[c0,0,s0]});
-        tris.push({v:[p[0],p[2],p[3]],n:[c0,0,s0]});
-        tris.push({v:[p[4],p[0],p[1]],n:[0,-1,0]});
-        tris.push({v:[p[5],p[2],p[3]],n:[0,1,0]});
-      }
-    }
-  }
-
-  // Chassis body
-  boxTris(0, by/2, 0, bx, by, bz);
-  // Left & right wheels
-  cylTris(-bx/2-ww/2, wr, -wb/2, wr, ww, 'x');
-  cylTris( bx/2+ww/2, wr, -wb/2, wr, ww, 'x');
-  cylTris(-bx/2-ww/2, wr,  wb/2, wr, ww, 'x');
-  cylTris( bx/2+ww/2, wr,  wb/2, wr, ww, 'x');
-
-  var stl = 'solid '+name+'\n';
-  tris.forEach(function(t){
-    stl+='  facet normal '+t.n[0].toFixed(4)+' '+t.n[1].toFixed(4)+' '+t.n[2].toFixed(4)+'\n    outer loop\n';
-    t.v.forEach(function(v){stl+='      vertex '+v[0].toFixed(6)+' '+v[1].toFixed(6)+' '+v[2].toFixed(6)+'\n';});
-    stl+='    endloop\n  endfacet\n';
-  });
-  stl+='endsolid '+name+'\n';
-  _downloadBlob(stl, name+'_v'+lrb.version.toFixed(1)+'.stl', 'application/octet-stream');
-  toast('STL exported', name+' \u00b7 '+tris.length+' triangles \u00b7 chassis + 4 wheels \u00b7 watertight');
-}
-
-// ── Export DXF ────────────────────────────────────────────────────
-function exportDoDXF() {
-  var c = lrb.chassis, name = lrb.name.replace(/\s+/g,'_');
-  var W=c.width_mm||280, L=c.length_mm||380, H=c.height_mm||180;
-  var WD=c.wheel_dia_mm||120, WB=c.wheelbase_mm||280;
-  var gap=60; // spacing between views
-  // View origins: TOP at (0,0), FRONT at (0, W+gap), SIDE at (L+gap, 0)
-  var ox1=0, oy1=0;           // top view
-  var ox2=0, oy2=W+gap;       // front view
-  var ox3=L+gap, oy3=0;       // side view
-  function rect(lyr, x,y,w,h){
-    return '  0\nLWPOLYLINE\n  8\n'+lyr+'\n 90\n4\n 70\n1\n'
-      +'  10\n'+x+'\n  20\n'+y+'\n'
-      +'  10\n'+(x+w)+'\n  20\n'+y+'\n'
-      +'  10\n'+(x+w)+'\n  20\n'+(y+h)+'\n'
-      +'  10\n'+x+'\n  20\n'+(y+h)+'\n';
-  }
-  function circle(lyr,cx,cy,r){
-    return '  0\nCIRCLE\n  8\n'+lyr+'\n  10\n'+cx+'\n  20\n'+cy+'\n  40\n'+r+'\n';
-  }
-  function txt(lyr,x,y,h,str){
-    return '  0\nTEXT\n  8\n'+lyr+'\n  10\n'+x+'\n  20\n'+y+'\n  40\n'+h+'\n  1\n'+str+'\n';
-  }
-  function dim(lyr,x1,y1,x2,y2,val){
-    // simple linear dimension line
-    return '  0\nLINE\n  8\n'+lyr+'\n  10\n'+x1+'\n  20\n'+y1+'\n  11\n'+x2+'\n  21\n'+y2+'\n'
-      +txt(lyr,(x1+x2)/2,(y1+y2)/2-8,7,val);
-  }
-  var entities =
-    // TOP VIEW (x-z plane: width × length)
-    rect('TOP_VIEW',ox1,oy1,L,W)
-    // wheel positions in top view
-    +circle('TOP_VIEW',ox1+L*0.15, oy1+W*0.1, WD/2)
-    +circle('TOP_VIEW',ox1+L*0.15, oy1+W*0.9, WD/2)
-    +circle('TOP_VIEW',ox1+L*0.85, oy1+W*0.1, WD/2)
-    +circle('TOP_VIEW',ox1+L*0.85, oy1+W*0.9, WD/2)
-    +txt('LABELS',ox1+L/2,oy1-18,10,'TOP VIEW')
-    +dim('DIMS',ox1,oy1-30,ox1+L,oy1-30,'L='+L+'mm')
-    +dim('DIMS',ox1-30,oy1,ox1-30,oy1+W,'W='+W+'mm')
-    // FRONT VIEW (z-y plane: length × height)
-    +rect('FRONT_VIEW',ox2,oy2,L,H)
-    +txt('LABELS',ox2+L/2,oy2-18,10,'FRONT VIEW')
-    +dim('DIMS',ox2,oy2-30,ox2+L,oy2-30,'L='+L+'mm')
-    +dim('DIMS',ox2-30,oy2,ox2-30,oy2+H,'H='+H+'mm')
-    // SIDE VIEW (x-y plane: width × height)
-    +rect('SIDE_VIEW',ox3,oy3,W,H)
-    +txt('LABELS',ox3+W/2,oy3-18,10,'SIDE VIEW')
-    +dim('DIMS',ox3,oy3-30,ox3+W,oy3-30,'W='+W+'mm')
-    // Sensors in front view
-    +txt('SENSORS',ox2+L*0.15,oy2+H-20,8,'LiDAR')
-    +txt('SENSORS',ox2+L/2,oy2+H*0.6,8,'Camera')
-    // Title block
-    +rect('TITLE',0,-(gap*2+60),L+W+gap,50)
-    +txt('TITLE',10,-(gap*2+20),14,'Vanika Studio \u00b7 '+lrb.name)
-    +txt('TITLE',10,-(gap*2+38),9,'LRB v'+lrb.version.toFixed(1)+' \u00b7 Mass: '+(lrb.mass_kg||12)+'kg \u00b7 Drive: '+(c.drive_type||lrb.drive_type||'differential'))
-    +txt('TITLE',10,-(gap*2+54),8,'Generated: '+new Date().toLocaleDateString()+' \u00b7 ROS2 '+( lrb.ros_distro||'humble')+' \u00b7 build123d+OCP \u00b7 AutoCAD R14');
-  var dxf = '  0\nSECTION\n  2\nHEADER\n  9\n$ACADVER\n  1\nAC1014\n  9\n$INSUNITS\n 70\n4\n  0\nENDSEC\n'
-    +'  0\nSECTION\n  2\nENTITIES\n'+entities+'  0\nENDSEC\n  0\nEOF\n';
-  _downloadBlob(dxf, name+'_v'+lrb.version.toFixed(1)+'.dxf', 'text/plain');
-  toast('DXF exported', name+' \u00b7 3 views \u00b7 dimensions \u00b7 AutoCAD R14');
-}
-
-// ── Export GLB ────────────────────────────────────────────────────
-function exportDoGLB() {
-  // Minimal GLB with JSON chunk describing the robot mesh (PBR material)
-  var name = lrb.name;
-  var c = lrb.chassis;
-  var sx=(c.width_mm||88)/1000, sy=(c.height_mm||58)/1000, sz=(c.length_mm||120)/1000;
-  var gltf = {
-    asset:{version:'2.0',generator:'Vanika Studio · build123d 0.7.0'},
-    scene:0,scenes:[{nodes:[0]}],
-    nodes:[{name:name,mesh:0,extras:{vanika_lrb_version:lrb.version,ros_distro:lrb.ros_distro}}],
-    meshes:[{name:name+'_body',primitives:[{attributes:{POSITION:0},material:0}]}],
-    materials:[{name:'robot_body_pbr',pbrMetallicRoughness:{baseColorFactor:[0.85,0.85,0.82,1.0],metallicFactor:0.1,roughnessFactor:0.7}}],
-    accessors:[{componentType:5126,count:8,type:'VEC3',min:[-sx/2,-sy/2,-sz/2],max:[sx/2,sy/2,sz/2]}],
-    extensionsUsed:['KHR_materials_pbr_specular_glossiness']
-  };
-  var json = JSON.stringify(gltf);
-  var jsonBytes = new TextEncoder().encode(json);
-  var padLen = (4 - (jsonBytes.length % 4)) % 4;
-  var padded = new Uint8Array(jsonBytes.length + padLen);
-  padded.set(jsonBytes);
-  for(var i=0;i<padLen;i++) padded[jsonBytes.length+i]=0x20;
-  var totalLen = 12 + 8 + padded.length;
-  var buf = new ArrayBuffer(totalLen);
-  var view = new DataView(buf);
-  view.setUint32(0,0x46546C67,true); // magic 'glTF'
-  view.setUint32(4,2,true);           // version
-  view.setUint32(8,totalLen,true);
-  view.setUint32(12,padded.length,true);
-  view.setUint32(16,0x4E4F534A,true); // chunk type JSON
-  var u8 = new Uint8Array(buf);
-  u8.set(padded,20);
-  var blob = new Blob([buf],{type:'model/gltf-binary'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href=url; a.download=name.replace(/\s+/g,'_')+'_v'+lrb.version.toFixed(1)+'.glb';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(function(){URL.revokeObjectURL(url);},1000);
-  toast('GLB exported', name+' · PBR WebGL binary · Three.js / Babylon.js ready');
-}
-
-// ── Export All CAD Formats ────────────────────────────────────────
-function exportDoAllCAD() {
-  exportDoURDF();
-  setTimeout(function(){exportDoSTEP();},300);
-  setTimeout(function(){exportDoSTL();},600);
-  setTimeout(function(){exportDoDXF();},900);
-  setTimeout(function(){exportDoGLB();},1200);
-  setTimeout(function(){exportDoJSON();},1500);
-  toast('All formats downloading', 'URDF · STEP · STL · DXF · GLB · JSON — 6 files');
-}
-
-// ── Text-to-CAD: real Claude API generation ───────────────────────
-function textToCADGenerate() {
-  var inp = document.getElementById('ttcad-input');
-  if (!inp) return;
-  var prompt = inp.value.trim();
-  if (!prompt) { toast('Enter a description', 'e.g. warehouse AMR, 15kg, VLP-16 LiDAR'); return; }
-
-  var btn    = document.getElementById('ttcad-btn');
-  var stepEl = document.getElementById('ttcad-step');
-  var prog   = document.getElementById('ttcad-progress');
-  if (btn)  { btn.disabled=true; btn.textContent='Generating...'; }
-  if (prog) { prog.style.display='block'; prog.style.width='8%'; }
-
-  var steps = [
-    'Parsing robot description...',
-    'Resolving joint hierarchy...',
-    'Computing link geometry (build123d)...',
-    'Validating URDF schema...',
-    'Running Studio Agent design review...',
-    'Generating STEP solid model...',
-    'Exporting STL mesh geometry...',
-    'Building GLB PBR scene...',
-    'Writing DXF projection views...',
-    'All exports ready \u2713'
-  ];
-  var stepIdx = 0;
-  var stepIv = setInterval(function(){
-    if (stepEl) stepEl.textContent = steps[Math.min(stepIdx, steps.length-1)];
-    if (prog)   prog.style.width   = Math.round(Math.min(stepIdx+1,9)/10*85)+'%';
-    stepIdx++;
-    if (stepIdx >= 9) clearInterval(stepIv);
-  }, 420);
-
-  function _finish(config, source) {
-    clearInterval(stepIv);
-    if (stepEl) stepEl.textContent = steps[9];
-    if (prog)   prog.style.width   = '100%';
-
-    if (config) {
-      if (config.sensors) Object.keys(lrb.sensors).forEach(function(k){
-        if (config.sensors[k]!==undefined) lrb.sensors[k].active = !!config.sensors[k];
-      });
-      if (config.chassis)    Object.assign(lrb.chassis, config.chassis);
-      if (config.mass_kg)    lrb.mass_kg    = config.mass_kg;
-      if (config.name)       lrb.name       = config.name;
-      if (config.robot_type) lrb.robot_type = config.robot_type;
-      if (config.payload_kg) lrb.payload_kg = config.payload_kg;
-      if (config.battery_wh) lrb.battery_wh = config.battery_wh;
-      if (config.ros_distro) lrb.ros_distro = config.ros_distro;
-      if (config.joints) {
-        // Claude may return array or object — normalise to object keyed by name
-        if (Array.isArray(config.joints)) {
-          var jObj = {};
-          config.joints.forEach(function(j,i){ jObj[j.name||('joint_'+i)] = j; });
-          lrb.joints = jObj;
-        } else {
-          lrb.joints = config.joints;
-        }
-      }
-      if (config.sensor_origins) {
-        Object.keys(config.sensor_origins).forEach(function(k){
-          if (lrb.sensors[k]) lrb.sensors[k].origin_xyz = config.sensor_origins[k];
-        });
-      }
-    }
-    lrb.robot_designed      = true;
-    lrb.ttcad_prompt        = prompt;
-    lrb.ttcad_exports_ready = true;
-    lrb.ttcad_source        = source || 'fallback';
-    lrbSync('ttcad', true);
-
-    setTimeout(function(){
-      if (btn) { btn.disabled=false; btn.textContent='Generate'; }
-      renderFocusContent('studio');
-      setTimeout(function(){
-        initStudio3D('focus-content');
-        refreshStudioLRB();
-        // Draw the link graph on top of / replacing the plain 3D canvas
-        _drawLinkGraph(config, source);
-      }, 120);
-      var src = source==='claude' ? '\u2713 Claude AI' : 'Smart defaults';
-      toast('Text-to-CAD complete', lrb.name+' \u00b7 '+src+' \u00b7 URDF \u00b7 STEP \u00b7 STL \u00b7 DXF \u00b7 GLB');
-    }, 300);
-  }
-
-  // ── Link graph drawn on the Studio canvas after generation ────────
-  function _drawLinkGraph(config, source) {
-    var cvs = document.getElementById('studio-canvas');
-    if (!cvs) {
-      // Try to find or create a canvas overlay in the canvas-bg
-      var bg = document.querySelector('.canvas-bg');
-      if (!bg) return;
-      cvs = document.createElement('canvas');
-      cvs.id = 'ttcad-link-graph';
-      cvs.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5';
-      bg.appendChild(cvs);
-    }
-    var W = cvs.offsetWidth || 500, H = cvs.offsetHeight || 360;
-    cvs.width = W; cvs.height = H;
-    var ctx = cvs.getContext('2d');
-    if (!ctx) return;
-    ctx.clearRect(0,0,W,H);
-
-    // Build link nodes from config
-    var activeSensors = Object.keys(lrb.sensors).filter(function(k){ return lrb.sensors[k].active; });
-    var c = lrb.chassis;
-    var bW=(c.width_mm||280)/1000, bL=(c.length_mm||380)/1000, bH=(c.height_mm||180)/1000;
-    var mass = lrb.mass_kg||12;
-
-    // Node layout: base_link at centre, wheels around it, sensors above
-    var cx=W/2, cy=H*0.52;
-    var sensorColors   = {lidar:'#D97706',imu:'#6D28D9',camera:'#0D9488',ultrasonic:'#1D4ED8',gps:'#059669',encoder:'#64748B'};
-    var sensorIcons    = {lidar:'⬟',imu:'◈',camera:'◉',ultrasonic:'⊕',gps:'△',encoder:'◎'};
-
-    var nodes = [
-      { id:'base_link', label:'base_link', x:cx, y:cy, r:26, color:'#52B788', mass:mass*0.6, type:'base' },
-      { id:'left_wheel',  label:'L.wheel', x:cx-(bW*0.7*W/2.2), y:cy+(bH*0.4*H/1.8), r:14, color:'#1D4ED8', mass:mass*0.08, type:'wheel' },
-      { id:'right_wheel', label:'R.wheel', x:cx+(bW*0.7*W/2.2), y:cy+(bH*0.4*H/1.8), r:14, color:'#1D4ED8', mass:mass*0.08, type:'wheel' },
-      { id:'caster',      label:'caster',  x:cx, y:cy+(bH*0.55*H/1.8), r:10, color:'#8B949E', mass:mass*0.04, type:'wheel' },
-    ];
-    var sensorY = cy - bH*0.55*H/1.4;
-    activeSensors.forEach(function(k, i){
-      var spread = (activeSensors.length-1)*0.5;
-      var sx = cx + (i - spread) * (W*0.18);
-      nodes.push({ id:k+'_link', label:sensorIcons[k]||'○', sublabel:k, x:sx, y:sensorY, r:11, color:sensorColors[k]||'#52B788', mass:0.05+Math.random()*0.1, type:'sensor' });
-    });
-    var edges = nodes.slice(1).map(function(n){ return {from:'base_link', to:n.id}; });
-
-    // Draw grid
-    ctx.strokeStyle='rgba(45,106,79,0.07)'; ctx.lineWidth=0.7;
-    for(var gx=0;gx<W;gx+=28){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke();}
-    for(var gy=0;gy<H;gy+=28){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();}
-
-    // Draw ground plane hints
-    ctx.strokeStyle='rgba(82,183,136,0.13)'; ctx.lineWidth=0.9;
-    for(var gi=-5;gi<=5;gi++){
-      ctx.beginPath();ctx.moveTo(W/2+gi*36-120,H-55);ctx.lineTo(W/2+gi*36+60,H-28);ctx.stroke();
-    }
-
-    // CoM indicator
-    var comX=0, comY=0, comM=0;
-    nodes.forEach(function(n){comX+=n.x*n.mass;comY+=n.y*n.mass;comM+=n.mass;});
-    comX/=comM; comY/=comM;
-    ctx.strokeStyle='#D97706'; ctx.lineWidth=1.2;
-    ctx.setLineDash([3,3]);
-    ctx.beginPath();ctx.moveTo(comX-10,comY);ctx.lineTo(comX+10,comY);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(comX,comY-10);ctx.lineTo(comX,comY+10);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.font='8px monospace'; ctx.fillStyle='#D97706'; ctx.fillText('CoM',comX+5,comY-4);
-
-    // Draw edges
-    var nodeMap = {};
-    nodes.forEach(function(n){ nodeMap[n.id]=n; });
-    edges.forEach(function(e){
-      var a=nodeMap[e.from], b=nodeMap[e.to]; if(!a||!b) return;
-      ctx.strokeStyle='rgba(82,183,136,0.35)'; ctx.lineWidth=1;
-      ctx.setLineDash([4,3]);
-      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
-      ctx.setLineDash([]);
-    });
-
-    // Draw nodes
-    nodes.forEach(function(n){
-      // Glow
-      var gr=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*2.2);
-      gr.addColorStop(0,n.color+'30'); gr.addColorStop(1,'transparent');
-      ctx.fillStyle=gr; ctx.beginPath(); ctx.arc(n.x,n.y,n.r*2.2,0,Math.PI*2); ctx.fill();
-      // Fill
-      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
-      ctx.fillStyle=n.color+'28'; ctx.fill();
-      ctx.strokeStyle=n.color; ctx.lineWidth=n.type==='base'?2:1.4; ctx.stroke();
-      // Label
-      ctx.font=(n.type==='base'?'bold ':'')+Math.max(8,n.r*0.55)+'px monospace';
-      ctx.fillStyle=n.type==='sensor'?n.color:'#fff';
-      ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText(n.label, n.x, n.y);
-      if (n.sublabel) {
-        ctx.font='8px monospace'; ctx.fillStyle=n.color;
-        ctx.fillText(n.sublabel, n.x, n.y+n.r+11);
-      } else {
-        ctx.font='7.5px monospace'; ctx.fillStyle='rgba(139,148,158,0.8)';
-        ctx.fillText(n.mass.toFixed(2)+'kg', n.x, n.y+n.r+11);
-      }
-    });
-
-    // Source badge
-    var badgeColor = source==='claude'?'#52B788':'#8B949E';
-    var badgeTxt   = source==='claude'?'\u2726 Claude AI':'Smart defaults';
-    ctx.fillStyle=badgeColor+'22'; ctx.strokeStyle=badgeColor; ctx.lineWidth=0.8;
-    var bw=90;
-    roundRect(ctx, W-bw-8, 8, bw, 20, 5);
-    ctx.font='bold 8.5px monospace'; ctx.fillStyle=badgeColor; ctx.textAlign='center';
-    ctx.fillText(badgeTxt, W-bw/2-8, 20);
-
-    // Robot name + dims
-    ctx.font='bold 11px monospace'; ctx.fillStyle='rgba(255,255,255,0.9)'; ctx.textAlign='left';
-    ctx.fillText(lrb.name, 10, 22);
-    ctx.font='8.5px monospace'; ctx.fillStyle='rgba(139,148,158,0.7)';
-    ctx.fillText(bW*1000+'×'+bL*1000+'×'+bH*1000+'mm \u00b7 '+mass+'kg \u00b7 '+activeSensors.length+' sensors', 10, 35);
-
-    function roundRect(c,x,y,w,h,r){
-      c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.arcTo(x+w,y,x+w,y+h,r);
-      c.lineTo(x+w,y+h-r);c.arcTo(x+w,y+h,x,y+h,r);c.lineTo(x+r,y+h);
-      c.arcTo(x,y+h,x,y,r);c.lineTo(x,y+r);c.arcTo(x,y,x+w,y,r);c.closePath();
-      c.fill();c.stroke();
-    }
-  }
-
-  function _fallback() {
-    var p = prompt.toLowerCase();
-    var config = {
-      name: prompt.split(',')[0].replace(/^\s+|\s+$/g,'').replace(/\b\w/g,function(c){return c.toUpperCase();}),
-      robot_type: /arm|6.?dof|manipulat/i.test(p)?'arm':/drone|uav|fly/i.test(p)?'drone':'amr',
-      ros_distro: /iron/i.test(p)?'iron':/jazzy/i.test(p)?'jazzy':'humble',
-      sensors: {
-        lidar:     /lidar|vlp|rplidar|laser/i.test(p),
-        camera:    /camera|realsense|rgb|depth|stereo/i.test(p),
-        imu:       !/no imu/i.test(p),
-        ultrasonic:/ultrasonic|sonar|bumper/i.test(p),
-        gps:       /gps|outdoor|field/i.test(p),
-        encoder:   true
-      },
-      chassis: {
-        width_mm:   ((/(\d+)\s*mm\s*wide/i.exec(p)||[])[1]||(/small|mini|compact/i.test(p)?180:/heavy|large/i.test(p)?600:280))*1,
-        length_mm:  ((/(\d+)\s*mm\s*long/i.exec(p)||[])[1]||(/small|mini|compact/i.test(p)?220:/heavy|large/i.test(p)?800:380))*1,
-        height_mm:  ((/(\d+)\s*mm\s*tall/i.exec(p)||[])[1]||(/flat|low|platform/i.test(p)?80:180))*1,
-        wheel_dia_mm:  /small|mini|compact/i.test(p)?80:/heavy|outdoor/i.test(p)?200:120,
-        wheelbase_mm:  /small|mini|compact/i.test(p)?160:/heavy/i.test(p)?450:280,
-        material:      /carbon|cf/i.test(p)?'carbon_fibre':/steel/i.test(p)?'steel':'aluminium',
-        ground_clearance_mm: /outdoor|rough|field/i.test(p)?60:25
-      },
-      mass_kg:    (((/(\d+(?:\.\d+)?)\s*kg/i.exec(p)||[])[1])||12)*1,
-      payload_kg: (((/payload[:\s]+(\d+)/i.exec(p)||[])[1])||5)*1
-    };
-    config.sensor_origins = {
-      lidar:  '0.0 0.0 '+(config.chassis.height_mm/1000+0.05).toFixed(3),
-      camera: '0.08 0.0 '+(config.chassis.height_mm/1000*0.8).toFixed(3),
-      imu:    '0.0 0.0 '+(config.chassis.height_mm/1000/2).toFixed(3)
-    };
-    _finish(config, 'fallback');
-  }
-
-  var key = vanikaGetKey();
-  if (!key) {
-    toast('No API key', 'Using smart defaults \u2014 add key in AI panel for live Claude generation');
-    _fallback();
-    return;
-  }
-
-  var systemPrompt = 'You are a robotics hardware configurator for Vanika Studio. Return ONLY valid JSON, no markdown, no commentary.\n'
-    +'{"name":"Short Robot Name","robot_type":"amr","ros_distro":"humble","mass_kg":12,"payload_kg":5,"battery_wh":400,'
-    +'"sensors":{"lidar":true,"imu":true,"camera":false,"ultrasonic":false,"gps":false,"encoder":true},'
-    +'"sensor_origins":{"lidar":"0 0 0.32","camera":"0.08 0 0.28","imu":"0 0 0.12"},'
-    +'"chassis":{"width_mm":280,"length_mm":380,"height_mm":180,"wheel_dia_mm":120,"wheelbase_mm":280,'
-    +'"track_width_mm":260,"ground_clearance_mm":25,"material":"aluminium","num_wheels":4},'
-    +'"joints":[{"name":"left_wheel","type":"continuous","torque":4.5,"axis":"0 1 0"},{"name":"right_wheel","type":"continuous","torque":4.5,"axis":"0 1 0"}]}\n'
-    +'sensor_origins in metres as "x y z". Chassis in mm. Pick specs that make engineering sense.';
-
-  fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type':'application/json',
-      'x-api-key': key,
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-access':'true'
-    },
-    body: JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:900,
-      system: systemPrompt,
-      messages:[{role:'user', content:'Design this robot: '+prompt}]
-    })
-  })
-  .then(function(r){
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    return r.json();
-  })
-  .then(function(data){
-    // Surface API errors visibly instead of silent fallback
-    if (data.error) {
-      toast('Claude API error', data.error.message||'Check your API key');
-      _fallback(); return;
-    }
-    var text = (data.content||[]).map(function(b){return b.text||'';}).join('').trim();
-    text = text.replace(/```json?\n?/g,'').replace(/```/g,'').trim();
-    var m = text.match(/\{[\s\S]+\}/);
-    if (m) text = m[0];
-    try {
-      var config = JSON.parse(text);
-      _finish(config, 'claude');
-    } catch(e) {
-      toast('Parse error', 'Claude returned unexpected format, using smart defaults');
-      _fallback();
-    }
-  })
-  .catch(function(err){
-    var msg = err && err.message ? err.message : 'Network error';
-    // CORS when opening from file:// → guide the user
-    if (msg.indexOf('Failed to fetch')>-1 || msg.indexOf('NetworkError')>-1) {
-      toast('Connection blocked', 'Open via localhost:8080 or VS Code Live Server for live Claude calls');
-    } else {
-      toast('API error: '+msg, 'Using smart defaults');
-    }
-    _fallback();
-  });
-}
 
 // ── AI Generate LRB ──
 function aiGenerateLRB() {
@@ -3407,90 +2895,6 @@ function updatePanelOffsets(){
 }
 
 function enterApp(){
-  // Show profiling screen on first signup, skip for sign-in demo
-  var formUp = document.getElementById('auth-form-up');
-  var isSignup = formUp && formUp.style.display !== 'none';
-  if(isSignup){
-    showProfilingScreen();
-    return;
-  }
-  _enterAppFinal();
-}
-
-function showProfilingScreen(){
-  var overlay = document.getElementById('auth-overlay');
-  if(!overlay) return;
-  // Replace auth card content with profiling
-  var card = overlay.querySelector('.auth-card');
-  if(!card) { _enterAppFinal(); return; }
-  card.innerHTML = `
-    <div style="font-family:var(--serif);font-size:20px;color:var(--ink);margin-bottom:4px;letter-spacing:-.01em">One quick question</div>
-    <div style="font-size:13px;color:var(--ink3);margin-bottom:24px">So we can tailor your workspace to how you build robots.</div>
-
-    <div style="font-size:11px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Who are you?</div>
-    <div id="prof-role" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px">
-      ${[['🎓','Student','Learning robotics'],['⚙️','Roboticist','Independent engineer'],['🚀','Startup','1–20 person team'],['🏢','Enterprise','Large organisation']].map(([ic,role,desc])=>`
-      <div class="prof-tile" onclick="selectProfRole(this,'${role}')" style="border:1.5px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:.15s;background:var(--white)">
-        <div style="font-size:20px;margin-bottom:6px">${ic}</div>
-        <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px">${role}</div>
-        <div style="font-size:11px;color:var(--ink3)">${desc}</div>
-      </div>`).join('')}
-    </div>
-
-    <div style="font-size:11px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Primary robot type?</div>
-    <div id="prof-type" style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
-      ${[['AMR','Mobile'],['ARM','Manipulator'],['DRONE','Aerial'],['HUMANOID','Biped']].map(([t,label])=>`
-      <div class="prof-tile" onclick="selectProfType(this,'${t}')" style="border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;cursor:pointer;transition:.15s;background:var(--white);font-size:12px;font-weight:600;color:var(--ink);text-align:center">
-        <div>${t}</div><div style="font-size:10px;color:var(--ink3);font-weight:400;margin-top:2px">${label}</div>
-      </div>`).join('')}
-    </div>
-
-    <div style="font-size:11px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Experience level?</div>
-    <div id="prof-exp" style="display:flex;gap:8px;margin-bottom:28px">
-      ${[['Beginner','First robot'],['Intermediate','Built a few'],['Expert','Production systems']].map(([e,desc])=>`
-      <div class="prof-tile" onclick="selectProfExp(this,'${e}')" style="flex:1;border:1.5px solid var(--border);border-radius:8px;padding:8px;cursor:pointer;transition:.15s;background:var(--white);font-size:11px;font-weight:600;color:var(--ink);text-align:center">
-        <div>${e}</div><div style="font-size:10px;color:var(--ink3);font-weight:400;margin-top:1px">${desc}</div>
-      </div>`).join('')}
-    </div>
-
-    <button class="auth-submit" onclick="completeProfile()" style="width:100%">Build my workspace →</button>
-    <div style="text-align:center;margin-top:12px">
-      <span style="font-size:11px;color:var(--ink4);cursor:pointer" onclick="_enterAppFinal()">Skip for now</span>
-    </div>
-  `;
-}
-
-var _userProfile = { role: '', robot_type: '', experience: '' };
-
-function selectProfRole(el, role){
-  document.querySelectorAll('#prof-role .prof-tile').forEach(function(t){
-    t.style.border='1.5px solid var(--border)';t.style.background='var(--white)';
-  });
-  el.style.border='1.5px solid var(--sage)';el.style.background='var(--sage-tint)';
-  _userProfile.role = role;
-}
-function selectProfType(el, type){
-  document.querySelectorAll('#prof-type .prof-tile').forEach(function(t){
-    t.style.border='1.5px solid var(--border)';t.style.background='var(--white)';t.style.color='var(--ink)';
-  });
-  el.style.border='1.5px solid var(--sage)';el.style.background='var(--sage-tint)';el.style.color='var(--sage2)';
-  _userProfile.robot_type = type;
-}
-function selectProfExp(el, exp){
-  document.querySelectorAll('#prof-exp .prof-tile').forEach(function(t){
-    t.style.border='1.5px solid var(--border)';t.style.background='var(--white)';
-  });
-  el.style.border='1.5px solid var(--sage)';el.style.background='var(--sage-tint)';
-  _userProfile.experience = exp;
-}
-function completeProfile(){
-  // Profile captured — write to LRB and enter
-  if(_userProfile.robot_type){ lrb.robot_type = _userProfile.robot_type.toLowerCase(); }
-  toast('Workspace ready', 'Profile saved · '+(_userProfile.role||'Roboticist')+' · '+(_userProfile.robot_type||'AMR')+' · '+(_userProfile.experience||'Expert'));
-  _enterAppFinal();
-}
-
-function _enterAppFinal(){
   var sb=document.getElementById('int-sidebar');if(sb)sb.style.display='flex';
   document.body.classList.add('sidebar-open');
   var overlay=document.getElementById('auth-overlay');if(!overlay)return;
@@ -3915,225 +3319,6 @@ document.addEventListener('keydown',function(e){
 // ═══ STUDIO 3D BUILDER ═══
 var studioMouseDown=false,studioLastX=0,studioLastY=0,studioScale=1.0;
 
-// ── build123d Python source generator ─────────────────────────────
-function _genBuild123dSource() {
-  var c = lrb.chassis, name = lrb.name, nLow = name.replace(/\s+/g,'_').toLowerCase();
-  var sensors = Object.keys(lrb.sensors).filter(function(k){return lrb.sensors[k].active;});
-  var sensorLinks = sensors.map(function(k){
-    var s = lrb.sensors[k];
-    var xyz = (s.origin_xyz||'0 0 0').split(' ').map(Number);
-    return '    @cad['+k+'_link/mount_face]  # '+k+' at ('+xyz.map(function(v){return v.toFixed(3);}).join(', ')+') m';
-  }).join('\n');
-  var sensorGeom = sensors.map(function(k){
-    var s = lrb.sensors[k];
-    var xyz = (s.origin_xyz||'0 0 0').split(' ').map(Number);
-    var xmm=(xyz[0]*1000).toFixed(1), ymm=(xyz[1]*1000).toFixed(1), zmm=(xyz[2]*1000).toFixed(1);
-    if(k==='lidar') return '    lidar_body = Cylinder(radius=28, height=28)\\\n        .move(Location(('+xmm+', '+ymm+', '+(parseFloat(zmm)+c.height_mm/2).toFixed(1)+')))';
-    if(k==='camera') return '    camera_body = Box(42, 28, 24)\\\n        .move(Location(('+xmm+', '+(c.length_mm/2).toFixed(1)+', '+(c.height_mm*0.55).toFixed(1)+')))';
-    return '    '+k+'_body = Box(22, 22, 8).move(Location(('+xmm+', '+ymm+', '+zmm+')))';
-  }).join('\n');
-  var joints = Object.values(lrb.joints||{}).map(function(j){
-    return '    # '+(j.name||'joint')+' · type='+(j.type||'continuous')+' · torque='+(j.torque||'N/A')+'Nm';
-  }).join('\n');
-
-  var src = '# Generated by Vanika Studio \u00b7 Text-to-CAD \u00b7 build123d 0.7.0\n'
-    +'# Robot: '+name+' \u00b7 LRB v'+lrb.version.toFixed(1)+'\n'
-    +'# ROS2 distro: '+(lrb.ros_distro||'humble')+' \u00b7 Type: '+(lrb.robot_type||'amr')+'\n'
-    +'# Generated: '+new Date().toISOString().substr(0,10)+'\n'
-    +'\nfrom build123d import *\nfrom build123d import export_step, export_stl\n'
-    +'\n# \u2500\u2500 Parameters \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'
-    +'robot_name      = "'+name+'"\n'
-    +'chassis_length  = '+(c.length_mm||380)+'   # mm  @cad[base_link/length]\n'
-    +'chassis_width   = '+(c.width_mm||280)+'   # mm  @cad[base_link/width]\n'
-    +'chassis_height  = '+(c.height_mm||180)+'   # mm  @cad[base_link/height]\n'
-    +'wall_thickness  = 4.0      # mm\n'
-    +'ground_clearance= '+(c.ground_clearance_mm||25)+'   # mm\n'
-    +'\nwheel_radius    = '+((c.wheel_dia_mm||120)/2).toFixed(1)+'   # mm  @cad[left_wheel_link/radius]\n'
-    +'wheel_width     = '+(c.wheel_width_mm||40)+'    # mm\n'
-    +'wheelbase       = '+(c.wheelbase_mm||280)+'   # mm  (front-to-rear axle)\n'
-    +'track_width     = '+(c.track_width_mm||260)+'   # mm  (left-to-right axle)\n'
-    +'\ntotal_mass      = '+(lrb.mass_kg||12)+' # kg\n'
-    +'payload_mass    = '+(lrb.payload_kg||5)+'  # kg\n'
-    +'battery_wh      = '+(lrb.battery_wh||400)+' # Wh\n'
-    +'material        = "'+(c.material||'aluminium')+'"\n'
-    +'\n# \u2500\u2500 Chassis geometry \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'
-    +'def gen_step():\n'
-    +'    """B-Rep solid for '+name+'.\n'
-    +(sensorLinks ? '    Sensor links:\n'+sensorLinks+'\n' : '')
-    +'    """\n'
-    +'    # Hollow chassis shell\n'
-    +'    outer = Box(chassis_length, chassis_width, chassis_height)\n'
-    +'    inner = Box(\n'
-    +'        chassis_length - wall_thickness * 2,\n'
-    +'        chassis_width  - wall_thickness * 2,\n'
-    +'        chassis_height - wall_thickness\n'
-    +'    ).move(Location((0, 0, wall_thickness / 2)))\n'
-    +'    body = outer - inner\n'
-    +'\n    # Base skid plate\n'
-    +'    skid = Box(chassis_length + 10, chassis_width + 10, wall_thickness * 1.5)\\\n'
-    +'        .move(Location((0, 0, -chassis_height / 2 - wall_thickness * 0.75)))\n'
-    +'\n    # Wheel arch cutouts\n'
-    +'    arch_r = wheel_radius + 5\n'
-    +'    for side in [-1, 1]:\n'
-    +'        for fore in [-1, 1]:\n'
-    +'            arch = Cylinder(radius=arch_r, height=wall_thickness + 10)\\\n'
-    +'                .rotate(Axis.Z, 90)\\\n'
-    +'                .move(Location((\n'
-    +'                    side * (chassis_width / 2 + arch_r * 0.4),\n'
-    +'                    fore * (wheelbase / 2),\n'
-    +'                    -chassis_height / 2 + arch_r * 0.6\n'
-    +'                )))\n'
-    +'            body = body - arch\n'
-    +'\n    # Sensor platform (top)\n'
-    +'    sensor_plate = Box(\n'
-    +'        chassis_length * 0.65, chassis_width * 0.65, wall_thickness\n'
-    +'    ).move(Location((0, 0, chassis_height / 2 + wall_thickness / 2)))\n'
-    +'\n    # Sensor mounts\n'
-    +(sensorGeom || '    # (no sensors active)')
-    +'\n\n    chassis = body + skid + sensor_plate\n'
-    +'    return chassis  # @cad[base_link]\n'
-    +'\n# \u2500\u2500 Wheel geometry \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'
-    +'def _gen_wheel():\n'
-    +'    """Drive wheel with hub + spokes. @cad[wheel/tire], @cad[wheel/hub]"""\n'
-    +'    tire = Cylinder(radius=wheel_radius, height=wheel_width)\n'
-    +'    hub  = Cylinder(radius=wheel_radius * 0.32, height=wheel_width + 2)\n'
-    +'    spokes = [\n'
-    +'        Box(wheel_radius * 0.85, wheel_radius * 0.1, wheel_width - 2)\n'
-    +'            .rotate(Axis.Z, i * 45)\n'
-    +'        for i in range(4)\n'
-    +'    ]\n'
-    +'    wheel = tire\n'
-    +'    for s in spokes:\n'
-    +'        wheel = wheel + s\n'
-    +'    return wheel  # @cad[left_wheel_link], @cad[right_wheel_link]\n'
-    +'\n# \u2500\u2500 Joints \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'
-    +'# Joint configuration (ROS2 URDF):\n'
-    +(joints || '    # left_wheel_joint  · continuous · axis: 0 0 1\n'
-              +'    # right_wheel_joint · continuous · axis: 0 0 1')
-    +'\n\n# \u2500\u2500 URDF generation \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'
-    +'def gen_urdf():\n'
-    +'    """ROS2 URDF for '+name+'.\n'
-    +'    Links:  base_link, left_wheel_link, right_wheel_link\n'
-    +'            '+(sensors.map(function(k){return k+'_link';}).join(', ') || '(no sensors active)')+'\n'
-    +'    Joints: left_wheel_joint (continuous), right_wheel_joint (continuous)\n'
-    +'    """\n'
-    +'    pass  # Implemented by Vanika URDF Skill\n'
-    +'\n# \u2500\u2500 Export \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'
-    +'if __name__ == "__main__":\n'
-    +'    part = gen_step()\n'
-    +'    export_step(part, "'+nLow+'.step")\n'
-    +'    export_stl(part,  "'+nLow+'.stl")\n'
-    +'    print(f"\u2713 '+name+' exported to STEP + STL")\n';
-  return src.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-// ── @cad geometry refs HTML ────────────────────────────────────────
-function _genCADRefsHTML() {
-  var c = lrb.chassis;
-  var sensors = Object.keys(lrb.sensors).filter(function(k){return lrb.sensors[k].active;});
-  var joints  = lrb.joints || [];
-  var sensorColors = {lidar:'#D97706',imu:'#6D28D9',camera:'#0D9488',ultrasonic:'#1D4ED8',gps:'#059669',encoder:'#64748B'};
-
-  // Build ref groups
-  var groups = [
-    { label: 'Chassis · base_link', color:'#52B788', refs:[
-      {ref:'@cad[base_link/top_face]',     desc:'Top surface · '+c.length_mm+'×'+c.width_mm+'mm'},
-      {ref:'@cad[base_link/front_face]',   desc:'Front panel · '+c.width_mm+'×'+c.height_mm+'mm'},
-      {ref:'@cad[base_link/side_face_l]',  desc:'Left side face'},
-      {ref:'@cad[base_link/bottom_face]',  desc:'Skid plate · ground clearance '+c.ground_clearance_mm+'mm'},
-      {ref:'@cad[base_link/sensor_plate]', desc:'Sensor mounting platform (top)'},
-    ]},
-    { label: 'Drive Wheels', color:'#1D4ED8', refs:[
-      {ref:'@cad[left_wheel_link/tire]',   desc:'Left tire · r='+((c.wheel_dia_mm||120)/2)+'mm'},
-      {ref:'@cad[left_wheel_link/hub]',    desc:'Left hub face'},
-      {ref:'@cad[right_wheel_link/tire]',  desc:'Right tire · r='+((c.wheel_dia_mm||120)/2)+'mm'},
-      {ref:'@cad[right_wheel_link/hub]',   desc:'Right hub face'},
-    ]},
-  ];
-
-  sensors.forEach(function(k){
-    var s = lrb.sensors[k];
-    var xyz = (s.origin_xyz||'0 0 0').split(' ').map(Number);
-    groups.push({ label: k+' · '+k+'_link', color: sensorColors[k]||'#52B788', refs:[
-      {ref:'@cad['+k+'_link/mount_face]',   desc:'Mounting base at ('+xyz.map(function(v){return v.toFixed(3);}).join(', ')+') m'},
-      {ref:'@cad['+k+'_link/body]',         desc:k+' housing body'},
-      {ref:'@cad['+k+'_link/origin]',       desc:'Sensor origin point · '+k+'_joint'},
-    ]});
-  });
-
-  Object.values(lrb.joints||{}).slice(0,4).forEach(function(j){
-    groups.push({ label: (j.name||'joint')+' · joint', color:'#8B949E', refs:[
-      {ref:'@cad['+(j.name||'joint')+'/axis]',        desc:'Joint rotation axis · '+(j.type||'continuous')+' · '+(j.torque||'?')+'Nm'},
-      {ref:'@cad['+(j.name||'joint')+'/parent_face]', desc:'Parent link attachment face'},
-    ]});
-  });
-
-  var html = '<div style="display:flex;flex-direction:column;gap:14px">';
-  groups.forEach(function(g){
-    html += '<div>';
-    html += '<div style="font-size:9px;font-weight:700;color:'+g.color+';text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">'+g.label+'</div>';
-    html += '<div style="display:flex;flex-direction:column;gap:4px">';
-    g.refs.forEach(function(r){
-      var escapedRef = r.ref.replace(/\x27/g, "\\'");
-      html += '<div onclick="studioCopyRef(\''+escapedRef+'\')" style="display:flex;align-items:center;gap:10px;padding:6px 10px;border:0.5px solid var(--border);border-radius:7px;cursor:pointer;background:var(--white);transition:.12s" onmouseover="this.style.borderColor=\''+g.color+'\';this.style.background=\'var(--sage-tint)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'var(--white)\'">'
-           +  '<code style="font-size:10px;color:'+g.color+';font-family:var(--mono);flex-shrink:0">'+r.ref+'</code>'
-           +  '<span style="font-size:10px;color:var(--ink4);flex:1">'+r.desc+'</span>'
-           +  '<span style="font-size:9px;color:var(--ink5)">&#x2398;</span>'
-           + '</div>';
-    });
-    html += '</div></div>';
-  });
-  html += '</div>';
-  return html;
-}
-
-// ── Copy source code ───────────────────────────────────────────────
-function studioCopySource() {
-  var pre = document.getElementById('studio-source-pre');
-  if (!pre) return;
-  var text = pre.textContent || pre.innerText;
-  // Decode HTML entities back to plain text
-  text = text.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(function(){
-      toast('Source copied', 'model.py \u00b7 build123d · paste into your project');
-    });
-  }
-}
-
-// ── Copy @cad ref to clipboard ─────────────────────────────────────
-function studioCopyRef(ref) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(ref).then(function(){
-      toast('Copied', ref+' \u00b7 paste into prompt bar');
-      var inp = document.getElementById('cadref-input');
-      if (inp && !inp.value) inp.value = ref + ' — ';
-    });
-  }
-}
-
-// ── Follow-up @cad edit via Claude API ────────────────────────────
-function studioCADRefEdit() {
-  var inp = document.getElementById('cadref-input');
-  if (!inp || !inp.value.trim()) return;
-  var prompt = inp.value.trim();
-  // Pre-fill the ttcad input and regenerate
-  var ttcadInp = document.getElementById('ttcad-input');
-  // Navigate to canvas tab and trigger generation
-  var wt = document.querySelector('.studio-tab-body [data-tab="canvas"]') ||
-           document.querySelector('[data-tab="canvas"]');
-  if (wt) studioSwitchTab(wt, 'canvas');
-  setTimeout(function(){
-    var ttInp = document.getElementById('ttcad-input');
-    if (ttInp) {
-      ttInp.value = prompt + ' · keep current robot config: '+lrb.name;
-      textToCADGenerate();
-    } else {
-      toast('Ref edit', 'Go to welcome screen to regenerate with this prompt');
-    }
-  }, 100);
-}
-
 function buildStudio3DPage(){
   // ── WELCOME SCREEN ──────────────────────────────────────────
   if(!lrb.robot_designed){
@@ -4144,71 +3329,11 @@ function buildStudio3DPage(){
   </div>
   <div style="flex:1;display:flex;align-items:flex-start;justify-content:center;padding:28px 20px;overflow:auto">
     <div style="width:100%;max-width:680px">
-      <div style="text-align:center;margin-bottom:20px">
+      <div style="text-align:center;margin-bottom:28px">
         <div style="font-size:32px;margin-bottom:8px">&#x2B21;</div>
         <div style="font-size:20px;font-weight:600;color:var(--ink1);margin-bottom:6px">Design your robot from scratch</div>
-        <div style="font-size:12px;color:var(--ink4)">Describe it in plain language — AI generates URDF + STEP + STL + DXF + GLB exports instantly</div>
+        <div style="font-size:12px;color:var(--ink4)">Pick a starting point — AI will help you configure, or build piece by piece</div>
       </div>
-      <!-- ── TEXT-TO-CAD PROMPT BAR ─────────────────────── -->
-      <div style="background:var(--sage-tint);border:1.5px solid var(--sage);border-radius:12px;padding:16px;margin-bottom:20px">
-        <div style="font-size:11px;font-weight:600;color:var(--sage3);margin-bottom:8px;display:flex;align-items:center;gap:6px">
-          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" style="width:11px;height:11px"><path d="M2 6h8M6 2l4 4-4 4"/></svg>
-          Text-to-CAD — powered by build123d + OpenCASCADE
-        </div>
-        <div style="display:flex;gap:6px;margin-bottom:8px">
-          ${[['AMR','📦','Mobile'],['ARM','🦾','Manipulator'],['DRONE','🚁','Aerial'],['HUMANOID','🤖','Biped']].map(function(a){return(
-            '<div onclick="ttcadSelectType(this,\''+a[0]+'\')" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:5px 4px;cursor:pointer;text-align:center;background:var(--white);transition:.12s" '+
-            'onmouseover="if(!this.classList.contains(\'ttcad-type-active\'))this.style.borderColor=\'var(--sage)\'" '+
-            'onmouseout="if(!this.classList.contains(\'ttcad-type-active\'))this.style.borderColor=\'var(--border)\'">' +
-            '<div style="font-size:14px">'+a[1]+'</div>' +
-            '<div style="font-size:9px;font-weight:600;color:var(--ink2)">'+a[0]+'</div>' +
-            '<div style="font-size:9px;color:var(--ink4)">'+a[2]+'</div></div>'
-          );}).join('')}
-        </div>
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <input id="ttcad-input" type="text" placeholder="e.g. warehouse AMR, 15kg, differential drive, VLP-16 LiDAR, front camera, ROS2 Humble"
-            style="flex:1;border:1px solid var(--border2);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--ink1);background:var(--white);outline:none"
-            onfocus="this.style.borderColor='var(--sage)'" onblur="this.style.borderColor='var(--border2)'"
-            onkeydown="if(event.key==='Enter')textToCADGenerate()"/>
-          <button id="ttcad-btn" onclick="textToCADGenerate()" style="background:var(--sage);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">Generate</button>
-        </div>
-        <div id="ttcad-step" style="font-size:11px;color:var(--sage3);min-height:14px"></div>
-        <div style="background:var(--border2);border-radius:3px;height:3px;margin-top:6px;overflow:hidden">
-          <div id="ttcad-progress" style="height:3px;background:var(--sage);width:0%;transition:width .45s;display:none"></div>
-        </div>
-        <div style="font-size:10px;color:var(--ink4);margin-top:8px">Exports: <span style="color:var(--sage3);font-weight:500">URDF</span> · <span style="color:var(--sage3);font-weight:500">STEP</span> · <span style="color:var(--sage3);font-weight:500">STL</span> · <span style="color:var(--sage3);font-weight:500">DXF</span> · <span style="color:var(--sage3);font-weight:500">GLB</span> — ready to download after generation</div>
-      </div>
-
-      <!-- Compute board selector -->
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px">
-        <div style="font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:10px;display:flex;align-items:center;gap:6px">
-          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" style="width:11px;height:11px"><rect x="1" y="3" width="10" height="7" rx="1.5"/><path d="M4 3V1.5M8 3V1.5M2.5 6h7M4 8.5h4"/></svg>
-          Compute Board
-          <span style="font-size:10px;color:var(--ink4);font-weight:400;margin-left:2px">· select &#x26; position in 3D canvas</span>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
-          ${[
-            ['Jetson Orin NX','NVIDIA','1024-core Ampere · 16GB · 25W','AI inference on robot','#7C3AED'],
-            ['Jetson AGX Orin','NVIDIA','2048-core · 64GB · 60W','Complex AI / humanoid','#7C3AED'],
-            ['Raspberry Pi 5','Raspberry Pi','Cortex-A76 · 8GB · 12W','AMR / general','#2D6A4F'],
-            ['Intel NUC 13 Pro','Intel','Core i7 · 64GB · 64W','Industrial / high compute','#1D4ED8'],
-            ['Arduino Mega','Arduino','ATmega2560 · 8KB · 0.25W','Motor I/O co-processor','#EA580C'],
-            ['Custom board','—','Specify model manually','Any edge compute','#6B7280'],
-          ].map(function(b){ return (
-            '<div onclick="selectComputeBoard(this,\''+b[0]+'\')" style="border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;cursor:pointer;transition:.12s;background:var(--white)" '+
-            'onmouseover="if(!this.classList.contains(\'compute-active\'))this.style.borderColor=\''+b[4]+'\'" '+
-            'onmouseout="if(!this.classList.contains(\'compute-active\'))this.style.borderColor=\'var(--border)\'">' +
-            '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px">' +
-            '<div style="font-size:11px;font-weight:600;color:var(--ink)">'+b[0]+'</div>' +
-            '<span style="font-size:9px;color:'+b[4]+';background:'+b[4]+'18;padding:1px 5px;border-radius:4px;font-weight:600">'+b[1]+'</span></div>' +
-            '<div style="font-size:10px;color:var(--ink4);margin-bottom:2px">'+b[2]+'</div>' +
-            '<div style="font-size:10px;color:var(--ink3)">'+b[3]+'</div>' +
-            '</div>'
-          );}).join('')}
-        </div>
-        <div id="compute-selected" style="font-size:10px;color:var(--sage3);margin-top:8px;min-height:12px"></div>
-      </div>
-
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px">
         <div onclick="studioStartBlank()" style="border:1.5px solid var(--border);border-radius:10px;padding:16px 12px;cursor:pointer;text-align:center;background:var(--white);transition:.15s" onmouseover="this.style.borderColor='var(--sage)';this.style.background='var(--sage-tint)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--white)'">
           <div style="font-size:24px;margin-bottom:6px">&#x270F;</div>
@@ -4250,8 +3375,6 @@ function buildStudio3DPage(){
     <div class="wt"        data-tab="dims"     onclick="studioSwitchTab(this,'dims')">Dimensions</div>
     <div class="wt"        data-tab="joints"   onclick="studioSwitchTab(this,'joints')">Joints</div>
     <div class="wt"        data-tab="lrb"      onclick="studioSwitchTab(this,'lrb')">LRB JSON</div>
-    ${lrb.ttcad_source ? '<div class="wt" data-tab="source" onclick="studioSwitchTab(this,\'source\')" style="color:var(--sage3);font-weight:600">&#x27E8;/&#x27E9; Source</div>' : ''}
-    ${lrb.ttcad_source ? '<div class="wt" data-tab="cadrefs" onclick="studioSwitchTab(this,\'cadrefs\')" style="color:var(--sage3);font-weight:600">@cad Refs</div>' : ''}
     <div style="flex:1"></div>
     <button class="btn bg bsm" style="margin:4px 4px 4px 0;font-size:10px" onclick="studioSaveDesign()">&#x1F4BE; Save</button>
     <button class="btn bg bsm" style="margin:4px 4px 4px 0;font-size:10px" onclick="lrb.robot_designed=false;renderFocusContent('studio')">&#x2190; Back</button>
@@ -4319,9 +3442,8 @@ function buildStudio3DPage(){
       <div style="height:28px;border-top:0.5px solid var(--border);background:var(--white);display:flex;align-items:center;padding:0 10px;gap:6px;flex-shrink:0">
         <span style="font-size:10px;font-family:var(--mono);color:var(--ink4)">${lrb.name} · ${lrb.drive_type||'diff'} · ${allActiveSensors} sensors · LRB v${lrb.version.toFixed(1)}</span>
         <div style="flex:1"></div>
-        <button class="btn bg bsm" onclick="studioView('iso')" style="font-size:9px" title="Isometric">&#x29BF;</button><button class="btn bg bsm" onclick="studioView('front')" style="font-size:9px" title="Front">F</button><button class="btn bg bsm" onclick="studioView('side')" style="font-size:9px" title="Side">S</button><button class="btn bg bsm" onclick="studioView('top')" style="font-size:9px" title="Top">T</button><button class="btn bs bsm" onclick="startStudioRender()" style="font-size:10px">&#x25B6; Render</button>
+        <button class="btn bs bsm" onclick="startStudioRender()" style="font-size:10px">&#x25B6; Render</button>
         <button class="btn bg bsm" onclick="exportDoPDF()" style="font-size:10px">&#x1F4CF; Drawing</button>
-        <button class="btn bs bsm" onclick="exportLRBasURDF()" style="font-size:10px;color:var(--sage)" title="Export URDF · STEP · STL · DXF · GLB">&#x2193; CAD Exports</button>
         <button class="btn bo bsm" onclick="openModule('robot-config')" style="font-size:10px">Joints</button>
       </div>
     </div>
@@ -4423,25 +3545,6 @@ function buildStudio3DPage(){
     <div class="mod">
       <div class="sh"><div class="sh-l"><div class="sh-title">Joints & Actuators</div><div class="sh-sub">Configure joint limits, torque, velocity</div></div></div>
       ${Object.entries(lrb.joints||{}).map(function(e){var k=e[0],j=e[1];return '<div style="background:var(--white);border:0.5px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong style="font-size:12px">'+j.name+'</strong><span class="badge bg-g" style="font-size:9px">'+j.type+'</span></div><div style="display:flex;gap:12px"><div style="flex:1"><div style="font-size:10px;color:var(--ink4);margin-bottom:3px">Torque <span id="jval-'+k+'" style="color:var(--ink2);font-family:var(--mono)">'+j.torque+'Nm</span></div><input type="range" class="sp-slider" min="0.1" max="50" step="0.1" value="'+j.torque+'" oninput="lrb.joints[\''+k+'\'].torque=parseFloat(this.value);var _jv=document.getElementById(\'jval-'+k+'\');if(_jv)_jv.textContent=this.value+\'Nm\';lrbSyncJoint(\''+k+'\',\'torque\',parseFloat(this.value))"></div><div style="flex:1"><div style="font-size:10px;color:var(--ink4);margin-bottom:3px">Velocity limit</div><input type="range" class="sp-slider" min="0.1" max="50" step="0.1" value="'+j.vel+'"></div></div></div>';}).join('')}
-      <!-- Part Isolation & Lock -->
-      <div style="margin-top:16px;padding-top:14px;border-top:0.5px solid var(--border)">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div style="font-size:12px;font-weight:600;color:var(--ink2)">Component Isolation</div>
-          <span style="font-size:10px;color:var(--ink4)">Lock parts to protect them from edits &#x26; agents</span>
-        </div>
-        <div style="background:var(--sage-tint);border:0.5px solid var(--sage);border-radius:8px;padding:10px;margin-bottom:10px;font-size:11px;color:var(--ink4)">
-          🔒 Locked components return <code style="background:rgba(0,0,0,.1);padding:1px 4px;border-radius:3px;font-size:10px">423 LOCKED</code> on any write attempt — enforced server-side.
-        </div>
-        ${['base_link','left_wheel_link','right_wheel_link','lidar_link','camera_link','imu_link'].map(function(link){return(
-          '<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border:0.5px solid var(--border);border-radius:7px;margin-bottom:5px;background:var(--white)">'+
-          '<div><div style="font-size:11px;color:var(--ink2);font-family:var(--mono)">'+link+'</div>'+
-          '<div style="font-size:10px;color:var(--ink4);margin-top:1px">Click to toggle protection</div></div>'+
-          '<button onclick="toggleLockComponent(\''+link+'\',this)" title="Lock this component" '+
-          'style="background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:13px;color:var(--ink4);transition:.12s" '+
-          'onmouseover="this.style.borderColor=\'var(--amber)\'" onmouseout="if(!this.textContent.includes(\'🔒\'))this.style.borderColor=\'var(--border)\'">🔓</button>'+
-          '</div>'
-        );}).join('')}
-      </div>
     </div>
   </div>
 
@@ -4450,48 +3553,6 @@ function buildStudio3DPage(){
     <div class="mod" style="height:100%">
       <div class="sh"><div class="sh-l"><div class="sh-title">Live Robot Blueprint</div><div class="sh-sub">v${lrb.version.toFixed(1)} · auto-updates on every change</div></div></div>
       <div class="codearea" style="height:calc(100% - 60px);overflow:auto"></div>
-    </div>
-  </div>
-
-  <!-- SOURCE TAB — build123d parametric Python -->
-  <div id="studio-tab-source" class="studio-tab">
-    <div style="display:flex;flex-direction:column;height:100%;background:#0D1117;overflow:hidden">
-      <div style="padding:8px 14px;border-bottom:0.5px solid #30363D;display:flex;align-items:center;gap:10px;flex-shrink:0;background:#161B22">
-        <div style="font-size:10px;font-weight:600;color:#52B788;letter-spacing:.04em">build123d · OpenCASCADE · model.py</div>
-        <div style="flex:1"></div>
-        <span style="font-size:9px;color:#8B949E">${lrb.name.replace(/\s+/g,'_').toLowerCase()}.py</span>
-        <button onclick="studioCopySource()" style="background:#21262D;color:#52B788;border:0.5px solid #30363D;border-radius:5px;padding:3px 10px;font-size:10px;cursor:pointer">&#x2398; Copy</button>
-        <button onclick="exportDoAllCAD()" style="background:#2D6A4F;color:#fff;border:none;border-radius:5px;padding:3px 10px;font-size:10px;cursor:pointer">&#x2193; Export All</button>
-      </div>
-      <div style="flex:1;overflow:auto;padding:0">
-        <pre id="studio-source-pre" style="margin:0;padding:16px;font-family:'JetBrains Mono',Menlo,Monaco,monospace;font-size:11px;line-height:1.7;color:#E6EDF3;white-space:pre;background:transparent">${_genBuild123dSource()}</pre>
-      </div>
-      <div style="padding:8px 14px;border-top:0.5px solid #30363D;background:#161B22;flex-shrink:0">
-        <div style="font-size:9.5px;color:#8B949E">&#x2726; Generated by Claude · build123d 0.7.0 · OCP 7.7.2 · MIT license · Edit parameters → re-run <code style="color:#52B788">python model.py</code> to regenerate exports</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- @CAD REFS TAB -->
-  <div id="studio-tab-cadrefs" class="studio-tab">
-    <div style="display:flex;flex-direction:column;height:100%;overflow:hidden">
-      <div style="padding:10px 14px;border-bottom:0.5px solid var(--border);background:var(--white);flex-shrink:0">
-        <div style="font-size:12px;font-weight:600;color:var(--ink1);margin-bottom:2px">Geometry References · @cad[...]</div>
-        <div style="font-size:10px;color:var(--ink4)">Click any reference to copy · Paste into the prompt bar to make precise geometry-aware follow-up edits</div>
-      </div>
-      <div style="flex:1;overflow:auto;padding:12px 14px">
-        ${_genCADRefsHTML()}
-        <div style="margin-top:20px;padding:12px;background:var(--sage-tint);border-radius:8px;border:0.5px solid var(--sage)">
-          <div style="font-size:10px;font-weight:600;color:var(--sage3);margin-bottom:6px">&#x2726; Follow-up Edit</div>
-          <div style="font-size:10px;color:var(--ink4);margin-bottom:8px">Copy a ref above, then describe the change below</div>
-          <div style="display:flex;gap:8px">
-            <input id="cadref-input" type="text" placeholder="e.g. @cad[base_link/top_face] — add a 4mm LiDAR mounting hole at centre"
-              style="flex:1;border:1px solid var(--border2);border-radius:6px;padding:6px 10px;font-size:11px;font-family:var(--mono);color:var(--ink1);background:var(--white);outline:none"
-              onfocus="this.style.borderColor='var(--sage)'" onblur="this.style.borderColor='var(--border2)'"/>
-            <button onclick="studioCADRefEdit()" style="background:var(--sage);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">Edit</button>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -4855,86 +3916,66 @@ function buildRobotMesh(group, THREE) {
 
   var c = lrb.chassis;
   // Convert mm to metres for Three.js
-  var W  = (c.width_mm    || 280) / 1000;   // body width
-  var L  = (c.length_mm   || 380) / 1000;   // body length
-  var H  = (c.height_mm   || 180) / 1000;   // body height
-  var WR = (c.wheel_dia_mm|| 120) / 2000;   // wheel radius
+  var W  = (c.width_mm    || 88)  / 1000;   // body width
+  var L  = (c.length_mm   || 120) / 1000;   // body length
+  var H  = (c.height_mm   || 58)  / 1000;   // body height
+  var WR = (c.wheel_dia_mm|| 100) / 2000;   // wheel radius
   var WB = (c.wheelbase_mm|| 280) / 1000;   // wheelbase (front-back)
-  var WT = Math.max(0.035, W * 0.14);        // wheel thickness
+  var WT = Math.min(W * 0.2, 0.04);          // wheel thickness
 
-  // ── Materials (Phong for specular highlights) ─────────────────
-  var bodyMat  = new THREE.MeshPhongMaterial({ color:0xEFF5F2, specular:0x8ABAAB, shininess:40 });
-  var bodyEdge = new THREE.MeshPhongMaterial({ color:0x2D6A4F, specular:0x52B788, shininess:60 });
-  var accentMat= new THREE.MeshPhongMaterial({ color:0x1E4D39, specular:0x2D6A4F, shininess:80 });
-  var hubMat   = new THREE.MeshPhongMaterial({ color:0x243B30, specular:0x52B788, shininess:70 });
-  var darkMat  = new THREE.MeshPhongMaterial({ color:0x1A2820, specular:0x243B30, shininess:30 });
-  var glassMat = new THREE.MeshPhongMaterial({ color:0x85C1E9, specular:0xFFFFFF, shininess:120, transparent:true, opacity:0.75 });
-  var ledMat   = new THREE.MeshPhongMaterial({ color:0x00FF88, emissive:0x00AA44, emissiveIntensity:0.8 });
-  var rubberMat= new THREE.MeshPhongMaterial({ color:0x1A1A1A, specular:0x333333, shininess:20 });
+  // Materials
+  var bodyMat  = new THREE.MeshLambertMaterial({ color: 0xEFF5F2 });
+  var bodyEdge = new THREE.MeshLambertMaterial({ color: 0x2D6A4F });
 
-  // ── Chassis base skid plate ─────────────────────────────────────
-  var skid = new THREE.Mesh(new THREE.BoxGeometry(W+0.008, H*0.06, L+0.008), accentMat);
-  skid.position.y = H*0.03;
-  skid.castShadow = true; skid.receiveShadow = true;
-  group.add(skid);
+  var hubMat   = new THREE.MeshLambertMaterial({ color: 0x2D6A4F });
+  var darkMat  = new THREE.MeshLambertMaterial({ color: 0x243B30 });
+  var glassMat = new THREE.MeshLambertMaterial({ color: 0x85C1E9, transparent:true, opacity:0.7 });
 
-  // ── Main body (layered for depth) ─────────────────────────────
-  var body = new THREE.Mesh(new THREE.BoxGeometry(W*0.92, H*0.80, L*0.88), bodyMat);
-  body.position.y = H*0.06 + H*0.40;
-  body.castShadow = true; body.receiveShadow = true;
+  // ── Chassis base ──────────────────────────────────────────────
+  var chassisGeo = new THREE.BoxGeometry(W, H*0.18, L);
+  var chassis = new THREE.Mesh(chassisGeo, bodyEdge);
+  chassis.position.y = H*0.09;
+  chassis.castShadow = true;
+  chassis.receiveShadow = true;
+  group.add(chassis);
+
+  // ── Body (main box) ───────────────────────────────────────────
+  var bodyGeo = new THREE.BoxGeometry(W*0.88, H*0.75, L*0.82);
+  var body = new THREE.Mesh(bodyGeo, bodyMat);
+  body.position.y = H*0.18 + H*0.75/2;
+  body.castShadow = true;
   group.add(body);
 
-  // Body edge trim (darker outline for CAD-like appearance)
-  var bodyTrim = new THREE.Mesh(new THREE.BoxGeometry(W*0.93, H*0.81, L*0.89),
-    new THREE.MeshPhongMaterial({color:0xCCDDD4, transparent:true, opacity:0.25, side:THREE.BackSide}));
-  bodyTrim.position.copy(body.position);
-  group.add(bodyTrim);
+  // Body edge outline (slightly larger, darker)
+  var bodyOutGeo = new THREE.BoxGeometry(W*0.90, H*0.77, L*0.84);
+  var bodyOut = new THREE.Mesh(bodyOutGeo, new THREE.MeshLambertMaterial({color:0xCCDDD4, transparent:true, opacity:0.4, side:THREE.BackSide}));
+  bodyOut.position.y = body.position.y;
+  group.add(bodyOut);
 
-  // ── Side panel ribs (structural detail) ───────────────────────
-  for (var ri=0; ri<3; ri++) {
-    var ribZ = (ri-1) * L*0.22;
-    var ribL = new THREE.Mesh(new THREE.BoxGeometry(0.006, H*0.55, 0.012), accentMat);
-    ribL.position.set( W*0.46, body.position.y, ribZ);
-    group.add(ribL);
-    var ribR = ribL.clone();
-    ribR.position.x = -W*0.46;
-    group.add(ribR);
-  }
+  // ── Front panel with ventilation slots ───────────────────────
+  var panelGeo = new THREE.BoxGeometry(W*0.82, H*0.35, L*0.02);
+  var panel = new THREE.Mesh(panelGeo, bodyEdge);
+  panel.position.set(0, body.position.y + H*0.05, L*0.41+0.002);
+  panel.castShadow = true;
+  group.add(panel);
 
-  // ── Front sensor/bumper panel ──────────────────────────────────
-  var bumper = new THREE.Mesh(new THREE.BoxGeometry(W*0.96, H*0.22, 0.018), bodyEdge);
-  bumper.position.set(0, body.position.y - H*0.22, L*0.445);
-  group.add(bumper);
-
-  // Bumper rubber strip
-  var bumperRubber = new THREE.Mesh(new THREE.BoxGeometry(W*0.96, H*0.04, 0.014), rubberMat);
-  bumperRubber.position.set(0, bumper.position.y - H*0.13, L*0.447);
-  group.add(bumperRubber);
-
-  // ── Status LED strip ──────────────────────────────────────────
-  var led = new THREE.Mesh(new THREE.BoxGeometry(W*0.55, H*0.045, 0.006), ledMat);
-  led.position.set(0, body.position.y + H*0.32, L*0.445);
+  // ── Status LED strip ─────────────────────────────────────────
+  var ledGeo = new THREE.BoxGeometry(W*0.5, H*0.05, 0.006);
+  var ledMat = new THREE.MeshLambertMaterial({color: 0x00FF88, emissive: 0x00AA44, emissiveIntensity: 0.6});
+  var led = new THREE.Mesh(ledGeo, ledMat);
+  led.position.set(0, body.position.y + H*0.3, L*0.42);
   group.add(led);
 
-  // ── Top panel (sensor mounting plate) ─────────────────────────
-  var topPlate = new THREE.Mesh(new THREE.BoxGeometry(W*0.72, H*0.045, L*0.66), accentMat);
-  topPlate.position.set(0, body.position.y + H*0.40 + H*0.02, 0);
-  topPlate.castShadow = true;
-  group.add(topPlate);
+  // ── Wheels (4-wheel differential) ────────────────────────────
+  var wheelGeo = new THREE.CylinderGeometry(WR, WR, WT, 24);
+  var hubGeo   = new THREE.CylinderGeometry(WR*0.35, WR*0.35, WT+0.002, 12);
 
-  // Mounting rail left & right
-  var rail = new THREE.Mesh(new THREE.BoxGeometry(0.010, H*0.06, L*0.60), bodyEdge);
-  rail.position.set( W*0.30, body.position.y + H*0.42, 0); group.add(rail);
-  var railR = rail.clone(); railR.position.x = -W*0.30; group.add(railR);
-
-  // ── Wheels (detailed) ─────────────────────────────────────────
-  var wheelGeo = new THREE.CylinderGeometry(WR, WR, WT, 28);
-  var hubGeo   = new THREE.CylinderGeometry(WR*0.28, WR*0.28, WT+0.004, 16);
-  var rimGeo   = new THREE.CylinderGeometry(WR*0.82, WR*0.82, WT-0.008, 24);
-
+  // Validate wheel fit — wheels should be within chassis footprint
   var halfBodyZ = L / 2;
   var wheelReachZ = WB * 0.28;
   var wheelAttached = wheelReachZ <= halfBodyZ + 0.01;
+
+  // Flash warning overlay if wheels would be outside chassis
   var warnEl = document.getElementById('wheel-detach-warn');
   if (!wheelAttached) {
     if (!warnEl) {
@@ -4945,119 +3986,136 @@ function buildRobotMesh(group, THREE) {
       var cvParent = document.getElementById('studio-canvas');
       if (cvParent) cvParent.appendChild(warnEl);
     }
-  } else { if (warnEl) warnEl.remove(); }
+  } else {
+    if (warnEl) warnEl.remove();
+  }
+
+  // Clamp wheel z-position to always stay under body
   var safeWheelZ = Math.min(wheelReachZ, halfBodyZ * 0.85);
 
-  var wheelMat = new THREE.MeshPhongMaterial({color: wheelAttached?0x1A1A1A:0xC0392B, specular:0x333333, shininess:25});
-  var rimMat   = new THREE.MeshPhongMaterial({color: 0x2D6A4F,  specular:0x52B788, shininess:80});
-
-  [[W/2+WT/2, WR, -safeWheelZ], [-W/2-WT/2, WR, -safeWheelZ],
-   [W/2+WT/2, WR,  safeWheelZ], [-W/2-WT/2, WR,  safeWheelZ]].forEach(function(pos){
+  var wheelPositions = [
+    [ W/2+WT/2,  WR, -safeWheelZ],  // front-left
+    [-W/2-WT/2,  WR, -safeWheelZ],  // front-right
+    [ W/2+WT/2,  WR,  safeWheelZ],  // rear-left
+    [-W/2-WT/2,  WR,  safeWheelZ],  // rear-right
+  ];
+  // Wheel colour: red if detached, normal otherwise
+  var wheelMat = new THREE.MeshLambertMaterial({ color: wheelAttached ? 0x1A3A2A : 0xC0392B });
+  wheelPositions.forEach(function(pos) {
     var w = new THREE.Mesh(wheelGeo, wheelMat);
-    w.rotation.z = Math.PI/2; w.position.set(pos[0],pos[1],pos[2]); w.castShadow=true; group.add(w);
-    var rim = new THREE.Mesh(rimGeo, rimMat);
-    rim.rotation.z = Math.PI/2; rim.position.set(pos[0],pos[1],pos[2]); group.add(rim);
+    w.rotation.z = Math.PI/2;
+    w.position.set(pos[0], pos[1], pos[2]);
+    w.castShadow = true;
+    group.add(w);
     var hub = new THREE.Mesh(hubGeo, hubMat);
-    hub.rotation.z = Math.PI/2; hub.position.set(pos[0],pos[1],pos[2]); group.add(hub);
-    // 5 spokes with taper
-    for (var sp=0; sp<5; sp++) {
-      var spokeGeo = new THREE.BoxGeometry(WT*0.55, WR*0.75, 0.009);
-      var spoke = new THREE.Mesh(spokeGeo, rimMat);
-      spoke.rotation.z = Math.PI/2; spoke.rotation.y = sp*Math.PI/2.5;
-      spoke.position.set(pos[0],pos[1],pos[2]); group.add(spoke);
-    }
-    // Lug nuts
-    for (var ln=0; ln<5; ln++) {
-      var lugAngle = ln * Math.PI*2/5;
-      var lugX = pos[0] + (pos[0]>0?1:-1) * WT*0.51;
-      var lugY = pos[1] + WR*0.45*Math.sin(lugAngle);
-      var lugZ = pos[2] + WR*0.45*Math.cos(lugAngle);
-      var lug = new THREE.Mesh(new THREE.CylinderGeometry(0.005,0.005,0.005,8), hubMat);
-      lug.rotation.z = Math.PI/2; lug.position.set(lugX,lugY,lugZ); group.add(lug);
+    hub.rotation.z = Math.PI/2;
+    hub.position.set(pos[0], pos[1], pos[2]);
+    group.add(hub);
+    // Spoke details
+    for (var sp=0; sp<4; sp++) {
+      var spokeGeo = new THREE.BoxGeometry(WT*0.6, WR*0.8, 0.006);
+      var spoke = new THREE.Mesh(spokeGeo, hubMat);
+      spoke.rotation.z = Math.PI/2;
+      spoke.rotation.y = sp * Math.PI/4;
+      spoke.position.set(pos[0], pos[1], pos[2]);
+      group.add(spoke);
     }
   });
 
-  // ── Sensors (proper shaped housings) ─────────────────────────
+  // ── Sensors (placed at their origin_xyz) ──────────────────────
   var SENSOR_COLORS = {
-    lidar:0x1A5276, imu:0x6C3483, camera:0x2E4057, ultrasonic:0xE67E22, gps:0x1ABC9C, encoder:0x8E44AD
+    lidar:      0x1A5276,   // deep blue
+    imu:        0x8E44AD,   // purple
+    camera:     0x2E4057,   // dark slate
+    ultrasonic: 0xE67E22,   // orange
+    gps:        0x1ABC9C,   // teal
+    encoder:    0xC0392B,   // red
+  };
+
+  var SENSOR_SHAPES = {
+    lidar:      'cylinder',
+    camera:     'box',
+    imu:        'box',
+    ultrasonic: 'box',
+    gps:        'cylinder',
+    encoder:    'box',
   };
 
   Object.keys(lrb.sensors).forEach(function(key) {
     var s = lrb.sensors[key];
     if (!s.active) return;
-    var col = SENSOR_COLORS[key]||0x555555;
-    var mat = new THREE.MeshPhongMaterial({color:col, specular:0xFFFFFF, shininess:50, emissive:col, emissiveIntensity:0.12});
 
-    if (key==='lidar') {
-      // Velodyne-style flat cylinder with glass dome on top
-      var baseG  = new THREE.CylinderGeometry(0.030, 0.033, 0.022, 20);
-      var domeG  = new THREE.SphereGeometry(0.028, 16, 8, 0, Math.PI*2, 0, Math.PI/2);
-      var scanG  = new THREE.CylinderGeometry(0.024, 0.024, 0.006, 20);
-      var base = new THREE.Mesh(baseG, mat);
-      var dome = new THREE.Mesh(domeG, glassMat);
-      var scan = new THREE.Mesh(scanG, new THREE.MeshPhongMaterial({color:0x1A5276, emissive:0x1A5276, emissiveIntensity:0.4}));
-      var py = body.position.y + H*0.41 + H*0.022;
-      base.position.set(0, py, 0); dome.position.set(0, py+0.022, 0); scan.position.set(0, py+0.008, 0);
-      base.castShadow=true; group.add(base); group.add(dome); group.add(scan);
-      // Spinning ring
-      var ringG = new THREE.TorusGeometry(0.026, 0.002, 6, 24);
-      var ring  = new THREE.Mesh(ringG, new THREE.MeshPhongMaterial({color:0xE74C3C, emissive:0xC0392B, emissiveIntensity:0.6}));
-      ring.position.set(0, py+0.008, 0); ring.rotation.x = Math.PI/2;
-      group.add(ring); window._lidarRingMesh = ring; ring.userData.isLidarRing = true;
+    var color = SENSOR_COLORS[key] || 0x666666;
+    var mat = new THREE.MeshLambertMaterial({color: color, emissive: color, emissiveIntensity: 0.15});
+    var sensorMesh;
 
-    } else if (key==='camera') {
-      // RealSense-style wide body with lens
-      var camBody = new THREE.Mesh(new THREE.BoxGeometry(0.090, 0.025, 0.025),
-        new THREE.MeshPhongMaterial({color:0x2E4057, specular:0xFFFFFF, shininess:60}));
-      camBody.position.set(0, body.position.y+H*0.30, L*0.445);
-      group.add(camBody);
-      // Three lens apertures (RGB, IR, IR)
-      [-0.026, 0, 0.026].forEach(function(ox) {
-        var lensRing = new THREE.Mesh(new THREE.CylinderGeometry(0.0075,0.0075,0.004,14), mat);
-        lensRing.rotation.x = Math.PI/2;
-        lensRing.position.set(ox, body.position.y+H*0.30, L*0.447+0.012);
-        group.add(lensRing);
-        var lensG2 = new THREE.Mesh(new THREE.CylinderGeometry(0.005,0.005,0.003,14), glassMat);
-        lensG2.rotation.x = Math.PI/2;
-        lensG2.position.set(ox, body.position.y+H*0.30, L*0.447+0.013);
-        group.add(lensG2);
+    if (SENSOR_SHAPES[key] === 'cylinder') {
+      // LiDAR: flat cylinder on top
+      var sg = new THREE.CylinderGeometry(0.025, 0.025, 0.018, 16);
+      sensorMesh = new THREE.Mesh(sg, mat);
+    } else {
+      // Camera/IMU etc: small box
+      var sg2 = new THREE.BoxGeometry(0.032, 0.022, 0.018);
+      sensorMesh = new THREE.Mesh(sg2, mat);
+    }
+
+    // Parse origin_xyz
+    var xyz = (s.origin_xyz || '0 0 0').split(' ').map(Number);
+    // Position relative to body centre, scaled to chassis size
+    sensorMesh.position.set(
+      xyz[0] * W * 1.2,
+      body.position.y + H*0.4 + xyz[1] * H,
+      xyz[2] * L * 1.2
+    );
+    // Special placement for top-mounted sensors
+    if (key === 'lidar') {
+      sensorMesh.position.set(0, body.position.y + H*0.75 + 0.018, 0);
+    } else if (key === 'gps') {
+      sensorMesh.position.set(0, body.position.y + H*0.75 + 0.01, -L*0.2);
+    } else if (key === 'camera') {
+      sensorMesh.position.set(0, body.position.y + H*0.55, L*0.42+0.01);
+    } else if (key === 'imu') {
+      sensorMesh.position.set(W*0.1, body.position.y + H*0.3, 0);
+    } else if (key === 'ultrasonic') {
+      // Front-facing array
+      [-0.02,0,0.02].forEach(function(xoff, i) {
+        var ug = new THREE.CylinderGeometry(0.008, 0.008, 0.018, 12);
+        var um = new THREE.Mesh(ug, mat);
+        um.rotation.x = Math.PI/2;
+        um.position.set(xoff, body.position.y + H*0.35, L*0.42+0.009);
+        um.castShadow = true;
+        group.add(um);
       });
+      return; // Skip adding sensorMesh below
+    } else if (key === 'encoder') {
+      sensorMesh.position.set(W*0.45+WT/2+0.005, WR, WB*0.28);
+    }
+    sensorMesh.castShadow = true;
+    group.add(sensorMesh);
 
-    } else if (key==='imu') {
-      // PCB-style flat box with component bumps
-      var pcb = new THREE.Mesh(new THREE.BoxGeometry(0.030, 0.004, 0.028),
-        new THREE.MeshPhongMaterial({color:0x1A5C2A, specular:0x52B788, shininess:80}));
-      pcb.position.set(W*0.12, body.position.y+H*0.28, 0); group.add(pcb);
-      var ic  = new THREE.Mesh(new THREE.BoxGeometry(0.010, 0.005, 0.010),
-        new THREE.MeshPhongMaterial({color:0x888888, specular:0xFFFFFF, shininess:100}));
-      ic.position.set(W*0.12, body.position.y+H*0.285, 0); group.add(ic);
+    // LiDAR sweep ring animation mesh (rotating thin ring)
+    if (key === 'lidar') {
+      var ring = new THREE.Mesh(
+        new THREE.TorusGeometry(0.04, 0.002, 8, 32),
+        new THREE.MeshBasicMaterial({color:0x85C1E9, transparent:true, opacity:0.6})
+      );
+      ring.position.copy(sensorMesh.position);
+      ring.position.y += 0.01;
+      ring.userData.isLidarRing = true;
+      ring.rotation.x = Math.PI/2;
+      group.add(ring);
+    }
 
-    } else if (key==='ultrasonic') {
-      // Three sonar rings on front bumper
-      [-0.028, 0, 0.028].forEach(function(xoff) {
-        var sonar = new THREE.Mesh(new THREE.CylinderGeometry(0.010, 0.010, 0.016, 16), mat);
-        sonar.rotation.x = Math.PI/2;
-        sonar.position.set(xoff, body.position.y+H*0.12, L*0.445+0.008);
-        group.add(sonar);
-        var sonarLens = new THREE.Mesh(new THREE.CylinderGeometry(0.007,0.007,0.003,16), glassMat);
-        sonarLens.rotation.x = Math.PI/2;
-        sonarLens.position.set(xoff, body.position.y+H*0.12, L*0.447+0.014);
-        group.add(sonarLens);
-      });
-
-    } else if (key==='gps') {
-      // Patch antenna dome
-      var gpsPatch = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.024, 0.012, 16), mat);
-      gpsPatch.position.set(-W*0.18, body.position.y+H*0.42, -L*0.22); group.add(gpsPatch);
-      var gpsDome  = new THREE.Mesh(new THREE.SphereGeometry(0.020, 12, 6, 0, Math.PI*2, 0, Math.PI/2), glassMat);
-      gpsDome.position.set(-W*0.18, body.position.y+H*0.42+0.012, -L*0.22); group.add(gpsDome);
-
-    } else if (key==='encoder') {
-      // Rotary encoder disk on rear axle
-      var enc = new THREE.Mesh(new THREE.CylinderGeometry(WR*0.30, WR*0.30, 0.010, 20),
-        new THREE.MeshPhongMaterial({color:0x8E44AD, emissive:0x6C3483, emissiveIntensity:0.3}));
-      enc.rotation.z = Math.PI/2;
-      enc.position.set(W/2+WT+0.006, WR, safeWheelZ); group.add(enc);
+    // Camera lens detail
+    if (key === 'camera') {
+      var lens = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.008, 0.008, 0.008, 12),
+        glassMat
+      );
+      lens.rotation.x = Math.PI/2;
+      lens.position.copy(sensorMesh.position);
+      lens.position.z += 0.012;
+      group.add(lens);
     }
   });
 
@@ -5493,161 +4551,6 @@ var SECONDARY_CATALOG = {
 };
 
 
-// ═══════════════════════════════════════════════════════════════
-//  MISSING NAVIGATION & UI FUNCTIONS — wires up every onclick
-// ═══════════════════════════════════════════════════════════════
-
-// ── Auth overlay tab switching ──────────────────────────────────
-function authTab(tab) {
-  var panels = { 'in': 'auth-form-in', 'up': 'auth-form-up' };
-  var btnIds  = { 'in': 'auth-tab-in',  'up': 'auth-tab-up'  };
-  Object.keys(panels).forEach(function(k) {
-    var panel = document.getElementById(panels[k]);
-    var btn   = document.getElementById(btnIds[k]);
-    if (panel) panel.style.display = (k === tab) ? 'flex' : 'none';
-    if (btn)   { btn.classList.toggle('active', k === tab); }
-  });
-}
-
-// ── Modal open / close ──────────────────────────────────────────
-function showModal(id) {
-  var el = document.getElementById(id);
-  if (el) { el.classList.add('open'); el.style.display = 'flex'; }
-}
-function closeModal(id) {
-  var el = document.getElementById(id);
-  if (el) { el.classList.remove('open'); el.style.display = ''; }
-}
-
-// ── New-robot modal → create & open Studio ──────────────────────
-function createNewRobot() {
-  var nameInp  = document.querySelector('#modal-newrobot .inp');
-  var typeInp  = document.querySelectorAll('#modal-newrobot .inp')[1];
-  var tplInp   = document.querySelectorAll('#modal-newrobot .inp')[2];
-  var robotName = (nameInp && nameInp.value.trim()) || ('Robot-' + Date.now().toString().slice(-4));
-  var robotType = typeInp ? typeInp.value : 'Wheeled mobile robot';
-  var tplVal    = tplInp  ? tplInp.value  : 'Blank';
-
-  closeModal('modal-newrobot');
-
-  // Map template name → Studio template id
-  var tplMap = {
-    'Blank': null,
-    'Differential drive base': 'amr',
-    '6-DOF arm': 'arm',
-    'AMR warehouse': 'delivery'
-  };
-  var tplId = tplMap[tplVal] || null;
-
-  // Reset LRB with user-supplied name
-  lrb.name = robotName;
-  lrb.robot_designed = false;
-
-  if (tplId) {
-    studioLoadTemplate(tplId);
-    // Override name after template applies
-    setTimeout(function() { lrb.name = robotName; }, 100);
-  } else {
-    studioStartBlank();
-    lrb.name = robotName;
-  }
-  openInFocus('studio');
-  toast('Robot created', robotName + ' · opening Studio');
-}
-
-// ── Close floating window / panel ──────────────────────────────
-function closeWin(id) {
-  var el = document.getElementById(id);
-  if (el) { el.style.display = 'none'; el.remove && el.remove(); }
-}
-
-// ── Context-menu actions ────────────────────────────────────────
-function ctxDo(action) {
-  var ctx = document.getElementById('ctx-menu');
-  if (ctx) ctx.style.display = 'none';
-  var sbOff = document.body.classList.contains('sidebar-open') ? 56 : 0;
-  if (action === 'snap-left') {
-    setViewMode('split');
-  } else if (action === 'snap-right') {
-    setViewMode('split');
-  } else if (action === 'maximize') {
-    setViewMode('focus');
-  } else if (action === 'close') {
-    if (activeFocusTab) closeFocusTab(activeFocusTab);
-  }
-}
-
-// ── Studio 3D camera view presets ──────────────────────────────
-function studioView(angle) {
-  if (!window._studioCamera) return;
-  var cam = window._studioCamera;
-  var presets = {
-    iso:   { x: 0.6,  y: 0.5,  z: 0.8  },
-    front: { x: 0,    y: 0.1,  z: 1.2  },
-    side:  { x: 1.2,  y: 0.1,  z: 0    },
-    top:   { x: 0,    y: 1.5,  z: 0.01 },
-    back:  { x: 0,    y: 0.1,  z: -1.2 },
-  };
-  var p = presets[angle] || presets.iso;
-  cam.position.set(p.x, p.y, p.z);
-  cam.lookAt(0, 0.05, 0);
-  if (window._studioRenderer && window._studioScene)
-    window._studioRenderer.render(window._studioScene, cam);
-  toast('View: ' + angle, '');
-}
-
-// ── Studio render button (alias for startStudioRender) ──────────
-function studioRender() {
-  startStudioRender();
-}
-
-// ── Settings sidebar navigation ─────────────────────────────────
-function sbNav(module, section) {
-  // Highlight sidebar item
-  var container = document.querySelector('.sbleft, #sbleft');
-  if (container) {
-    container.querySelectorAll('.sbitem').forEach(function(el) {
-      el.classList.toggle('active', el.getAttribute('data-s') === section);
-    });
-  }
-  // Show correct sub-panel
-  var main = document.querySelector('.sbmain, #sbmain');
-  if (main) {
-    main.querySelectorAll('[data-spanel]').forEach(function(el) {
-      el.style.display = el.getAttribute('data-spanel') === section ? '' : 'none';
-    });
-  }
-}
-
-// ── Theme switching ─────────────────────────────────────────────
-function applyTheme(theme) {
-  var root = document.documentElement;
-  if (theme === 'dark') {
-    root.setAttribute('data-theme', 'dark');
-  } else if (theme === 'system') {
-    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    root.setAttribute('data-theme', prefersDark ? 'dark' : '');
-  } else {
-    root.removeAttribute('data-theme');
-  }
-  try { localStorage.setItem('vanika_theme', theme); } catch(e) {}
-  toast('Theme', theme.charAt(0).toUpperCase() + theme.slice(1) + ' theme applied');
-}
-
-// ── Pop out currently active module ─────────────────────────────
-function popOutActive() {
-  if (activeFocusTab) popOutModule(activeFocusTab);
-}
-
-// ── Restore theme on load ───────────────────────────────────────
-(function _restoreTheme() {
-  try {
-    var t = localStorage.getItem('vanika_theme');
-    if (t && t !== 'pearl') applyTheme(t);
-  } catch(e) {}
-}());
-
-
 // ── Module greeting banner ─────────────────────────────────────────
 // Used by all getPage() modules to render an intro/status strip
 function mgb(id, svg, title, desc, actions, lrbNote) {
@@ -5678,11 +4581,10 @@ function getPage(id){switch(id){
 case 'dashboard':return`
 <div class="wtabs">
   <div class="wt active" data-tab="overview" onclick="switchTab('dashboard','overview')">Overview</div>
-  <div class="wt" data-tab="agents" onclick="switchTab('dashboard','agents')">Agents <span class="tbadge" id="dash-pending-count">3</span></div>
   <div class="wt" data-tab="activity" onclick="switchTab('dashboard','activity')">Activity</div>
   <div class="wt" data-tab="team" onclick="switchTab('dashboard','team')">Team</div>
 </div>
-${mgb("dashboard","<svg viewBox='0 0 16 16'><rect x='1' y='1' width='6' height='6' rx='1.5'/><rect x='9' y='1' width='6' height='6' rx='1.5'/><rect x='1' y='9' width='6' height='6' rx='1.5'/><rect x='9' y='9' width='6' height='6' rx='1.5'/></svg>","Welcome to your Dashboard — the nerve centre of Kiran-3","Everything happening across Studio, Simulation, Code and Fleet surfaces here in real time. Watch your sim pass rate, build health, fleet status and BOM cost from one view. Any stat card you click opens the full module.",[["Review active sim runs","openModule('sim-results')"],["Check fleet health","openModule('fleet')"],["Open AI copilot","openModule('ai')"],["View agent actions","switchTab('dashboard','agents');"]],"Live Robot Blueprint v4.1 is synced — all six agents are watching Kiran-3 right now.")}
+${mgb("dashboard","<svg viewBox='0 0 16 16'><rect x='1' y='1' width='6' height='6' rx='1.5'/><rect x='9' y='1' width='6' height='6' rx='1.5'/><rect x='1' y='9' width='6' height='6' rx='1.5'/><rect x='9' y='9' width='6' height='6' rx='1.5'/></svg>","Welcome to your Dashboard — the nerve centre of Kiran-3","Everything happening across Studio, Simulation, Code and Fleet surfaces here in real time. Watch your sim pass rate, build health, fleet status and BOM cost from one view. Any stat card you click opens the full module.",[["Review active sim runs","openModule('sim-results')"],["Check fleet health","openModule('fleet')"],["Open AI copilot","openModule('ai')"]],"Live Robot Blueprint v4.1 is synced — all modules are reading the same Kiran-3 definition right now.")}
 <div class="tpanel" data-panel="overview">
 <div class="mod">
   <div class="sh"><div class="sh-l"><div class="sh-title">Kiran-3 Overview</div><div class="sh-sub">Differential drive AMR · v2.3.1 · Updated 2h ago</div></div><div class="sh-r"><span class="badge bg-g"><span class="bdot" style="background:var(--sage)"></span>LRB Live</span></div></div>
@@ -5692,34 +4594,6 @@ ${mgb("dashboard","<svg viewBox='0 0 16 16'><rect x='1' y='1' width='6' height='
     <div class="stat" style="cursor:pointer" onclick="openModule('code')"><div class="slbl">Build</div><div class="sval" style="font-size:16px">Passing</div><div class="sdelta sup">v2.3.1</div></div>
     <div class="stat" style="cursor:pointer" onclick="openModule('hardware')"><div class="slbl">BOM cost</div><div class="sval" style="font-size:16px">₹1.2L</div><div class="sdelta">5 pending</div></div>
   </div>
-
-  <!-- Agent Actions Inbox — T2 staged actions needing review -->
-  <div style="margin-bottom:11px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
-      <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3)">Agent Actions Inbox</div>
-      <button class="btn bg bsm" onclick="openModule('ai')">View all in AI →</button>
-    </div>
-    ${[
-      {tier:'T2',agent:'Code Agent',icon:'◈',color:'var(--blue,#1E40AF)',bg:'#EFF6FF',title:'Staged fix: velocity_controller.cpp',sub:'Sim run #47 failed at v>1.2m/s · Code Agent identified velocity clamping logic · diff ready for review',action:"openModule('code')"},
-      {tier:'T2',agent:'Hardware Agent',icon:'⬡',color:'var(--amber,#B45309)',bg:'var(--amber-tint,#FEF3C7)',title:'Swap staged: MPU-9250 → ICM-42688-P',sub:'IMU backordered at Robu.in · Same spec, ₹520 cheaper · Available in 3 days',action:"openModule('hardware')"},
-      {tier:'T1',agent:'Studio Agent',icon:'△',color:'var(--sage)',bg:'var(--sage-tint)',title:'Design flag: CoM shifted 8mm forward',sub:'VLP-16 LiDAR added yesterday. CoM projection is marginal — within 3mm of stability envelope.',action:"openModule('studio')"},
-    ].map(a=>`
-    <div style="background:${a.bg};border:0.5px solid var(--border);border-left:3px solid ${a.color};border-radius:var(--radius);padding:9px 11px;margin-bottom:6px;display:flex;gap:10px;align-items:flex-start;cursor:pointer" onclick="${a.action}">
-      <div style="flex-shrink:0;margin-top:1px">
-        <span style="font-size:14px;color:${a.color}">${a.icon}</span>
-      </div>
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-          <span style="font-size:10px;font-weight:600;background:${a.color};color:#fff;padding:1px 6px;border-radius:3px">${a.tier}</span>
-          <span style="font-size:10px;color:var(--ink4)">${a.agent}</span>
-        </div>
-        <div style="font-size:11px;font-weight:500;color:var(--ink2);margin-bottom:2px">${a.title}</div>
-        <div style="font-size:10px;color:var(--ink4);line-height:1.45">${a.sub}</div>
-      </div>
-      <svg viewBox="0 0 10 10" style="width:10px;height:10px;stroke:var(--ink4);fill:none;flex-shrink:0;margin-top:3px"><path d="M2 5h6M6 3l2 2-2 2" stroke-width="1.2" stroke-linecap="round"/></svg>
-    </div>`).join('')}
-  </div>
-
   <div class="g2" style="margin-bottom:11px">
     <div class="card" style="padding:11px">
       <div style="font-size:10px;color:var(--ink4);text-transform:uppercase;letter-spacing:.04em;margin-bottom:9px">Live Robot Blueprint</div>
@@ -5740,67 +4614,10 @@ ${mgb("dashboard","<svg viewBox='0 0 16 16'><rect x='1' y='1' width='6' height='
   <div class="dhint"><svg viewBox="0 0 16 16"><path d="M6 3L3 6l3 3M3 6h8M10 3l3 3-3 3" stroke-width="1.3" stroke-linecap="round"/></svg>Drag any window to a screen edge to snap it. Use Tile to auto-arrange all open modules for parallel work.</div>
 </div>
 </div>
-
-<!-- AGENTS TAB -->
-<div class="tpanel hidden" data-panel="agents">
-<div class="mod">
-  <div class="sh"><div class="sh-l"><div class="sh-title">Agent Status</div><div class="sh-sub">6 agents · 3 pending actions · Orchestrator goal active</div></div></div>
-
-  <!-- Orchestrator Goal -->
-  <div style="background:var(--sage-tint);border:1.5px solid var(--sage-tint2);border-radius:var(--radius-lg);padding:11px 13px;margin-bottom:11px">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-      <div style="width:22px;height:22px;border-radius:6px;background:var(--sage);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg viewBox="0 0 12 12" style="width:10px;height:10px;stroke:#fff;fill:none;stroke-width:1.5"><path d="M6 1l1.5 3.2L11 4.6l-2.5 2.4.6 3.4L6 8.9l-3.1 1.5.6-3.4L1 4.6l3.5-.4z" stroke-linejoin="round"/></svg>
-      </div>
-      <div>
-        <div style="font-size:12px;font-weight:600;color:var(--sage3)">Orchestrator — Active Goal</div>
-        <div style="font-size:10px;color:var(--ink4)">Coordinating all 6 agents toward this objective</div>
-      </div>
-      <button class="btn bg bsm" style="margin-left:auto" onclick="openModule('ai')">Open →</button>
-    </div>
-    <div style="font-size:12px;color:var(--ink2);font-weight:500;margin-bottom:4px">"Get Kiran-3 ready for a 50-robot pilot batch"</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap">
-      ${[['Studio','Design validated','g'],['Code','Fix staged — review needed','a'],['Sim','Re-run queued','g'],['Hardware','Swap staged — review needed','a'],['Fleet','5 robots healthy','g']].map(([n,s,c])=>`
-      <div style="background:var(--white);border:0.5px solid var(--border);border-radius:5px;padding:3px 8px;font-size:10px;display:flex;align-items:center;gap:4px">
-        <div style="width:5px;height:5px;border-radius:50%;background:${c==='g'?'var(--sage)':'var(--amber)'}"></div>
-        <span style="color:var(--ink3);font-weight:500">${n}</span>
-        <span style="color:var(--ink4)">${s}</span>
-      </div>`).join('')}
-    </div>
-  </div>
-
-  <!-- Six agent cards -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-  ${[
-    {name:'Studio Agent',icon:'△',state:'observing',color:'var(--sage)',desc:'Last validation: 2m ago · 1 flag (CoM shift)',action:'T1',mod:'studio'},
-    {name:'Code Agent',icon:'◈',state:'acting',color:'var(--blue,#1E40AF)',desc:'Fix staged for velocity_controller.cpp',action:'T2 — review',mod:'code'},
-    {name:'Sim Agent',icon:'⬟',state:'observing',color:'var(--purple,#6D28D9)',desc:'Failure taxonomy updated · Re-run queued',action:null,mod:'simulation'},
-    {name:'Hardware Agent',icon:'⬡',state:'acting',color:'var(--amber,#B45309)',desc:'Swap staged: MPU-9250 → ICM-42688-P',action:'T2 — review',mod:'hardware'},
-    {name:'Fleet Agent',icon:'◉',state:'observing',color:'var(--sage)',desc:'5/5 robots healthy · No anomalies',action:null,mod:'fleet'},
-    {name:'Orchestrator',icon:'✦',state:'coordinating',color:'var(--sage)',desc:'Goal active · 2 agents need review',action:null,mod:'ai'},
-  ].map(a=>`
-    <div style="background:var(--white);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:11px;cursor:pointer;transition:.12s" onclick="openModule('${a.mod}')" onmouseover="this.style.borderColor='var(--sage)'" onmouseout="this.style.borderColor='var(--border)'">
-      <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
-        <span style="font-size:16px;color:${a.color}">${a.icon}</span>
-        <div>
-          <div style="font-size:11px;font-weight:600;color:var(--ink2)">${a.name}</div>
-          <div style="display:flex;align-items:center;gap:3px">
-            <div style="width:5px;height:5px;border-radius:50%;background:${a.state==='acting'?'var(--amber)':a.state==='coordinating'?'var(--sage)':'var(--sage)'}${a.state==='acting'?';animation:lrb-pulse 1.5s ease-in-out infinite':''}"></div>
-            <span style="font-size:9px;color:var(--ink4);text-transform:capitalize">${a.state}</span>
-          </div>
-        </div>
-        ${a.action?`<span style="margin-left:auto;font-size:9px;background:var(--amber-tint,#FEF3C7);color:var(--amber,#B45309);border:0.5px solid var(--amber,#B45309);padding:2px 6px;border-radius:3px;font-weight:600">${a.action}</span>`:''}
-      </div>
-      <div style="font-size:10px;color:var(--ink4);line-height:1.45">${a.desc}</div>
-    </div>`).join('')}
-  </div>
-</div>
-</div>
-
 <div class="tpanel hidden" data-panel="activity">
 <div class="mod">
   <div class="sh"><div class="sh-l"><div class="sh-title">Activity</div></div></div>
-  ${[['Code Agent staged fix','velocity_controller.cpp · sim failure root cause','2m ago','a'],['Sim run #47 completed','94.2% pass · 2m 18s · 2 failures diagnosed','2h ago','g'],['Hardware Agent alert','MPU-9250 backordered · swap staged','2h ago','a'],['Build v2.3.1 passed','All 14 tests passing','3h ago','g'],['Studio Agent flag','CoM shifted 8mm after VLP-16 added','4h ago','a'],['IMU sensor added via LRB','SDK auto-regenerated · 3 scenarios stale','4h ago','g'],['Sim run #46 failed','Joint limit at t=42s · Code Agent notified','6h ago','r']].map(([n,s,t,c])=>`
+  ${[['Sim run #47 completed','94.2% pass · 2m 18s','2h ago','g','sim-results'],['Build v2.3.1 passed','All 14 tests passing','3h ago','g'],['IMU sensor added via LRB','SDK auto-regenerated','4h ago','g'],['Sim run #46 failed','Joint limit at t=42s','6h ago','r'],['K3-003 docked','Battery depleted','8h ago','a']].map(([n,s,t,c])=>`
   <div class="li"><div class="lii"><div style="width:7px;height:7px;border-radius:50%;background:${c==='g'?'var(--sage)':c==='r'?'var(--red)':'var(--amber)'}"></div></div><div class="lib"><div class="lin">${n}</div><div class="lis">${s}</div></div><span style="font-size:10px;color:var(--ink4)">${t}</span></div>`).join('')}
 </div>
 </div>
@@ -5810,7 +4627,8 @@ ${mgb("dashboard","<svg viewBox='0 0 16 16'><rect x='1' y='1' width='6' height='
   ${[['Kisshhan Psv','CTO & Co-Founder','KP'],['Dev Sharma','Lead Robotics','DS'],['Priya N.','Firmware','PN'],['Arjun M.','Simulation','AM']].map(([n,r,i])=>`
   <div class="li"><div style="width:30px;height:30px;border-radius:50%;background:var(--sage-tint2);border:1.5px solid var(--sage);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--sage3);flex-shrink:0">${i}</div><div class="lib"><div class="lin">${n}</div><div class="lis">${r}</div></div><button class="btn bg bsm">Message</button></div>`).join('')}
 </div>
-</div>`
+</div>`;
+
 case 'projects':return`
 <div class="sbar"><svg viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="4.5" stroke-width="1.3"/><path d="M10 10l3 3" stroke-width="1.3" stroke-linecap="round"/></svg><input placeholder="Search projects…"><button class="btn bs bsm" onclick="showModal('modal-newrobot')">New robot</button></div>
 <div class="mod">
@@ -6188,30 +5006,15 @@ case 'ros-graph':return`
 case 'simulation':return`
 <div class="wtabs">
   <div class="wt active" data-tab="run" onclick="switchTab('simulation','run')">Run</div>
-  <div class="wt" data-tab="agent" onclick="switchTab('simulation','agent')">Sim Agent <span class="tbadge">1</span></div>
   <div class="wt" onclick="openModule('sim-results')">Results ↗</div>
   <div class="wt" onclick="openModule('sim-scenarios')">Scenarios ↗</div>
 </div>
-${mgb("simulation","<svg viewBox='0 0 16 16'><polygon points='8,2 14,14 2,14'/></svg>","Vanika Sim — cloud physics + an agent that learns from every run","Bullet3 physics engine in the cloud — zero local GPU needed. The Sim Agent watches every run, diagnoses failures automatically, calibrates environment profiles from your deployed fleet's real-world telemetry, and generates new scenarios targeting your robot's specific failure modes.",
-[["Run with Sim Agent diagnosis","openModule('simulation')"],["View failure taxonomy","switchTab('simulation','agent');openModule('simulation')"],["View last run results","openModule('sim-results')"],["Configure fault injection","openModule('sim-run-config')"]],
-"The Sim Agent closes the sim-to-real gap: floor friction, sensor noise, and motor curves are calibrated from 847h of real warehouse telemetry — your simulations reflect reality, not defaults.")}
-
-<!-- RUN TAB -->
+${mgb("simulation","<svg viewBox='0 0 16 16'><polygon points='8,2 14,14 2,14'/></svg>","Vanika Sim — run 1,000 scenarios overnight in the cloud","Bullet3 physics engine running in the cloud — zero local GPU needed. Pick a scenario, choose between generic defaults or a real-world calibrated environment profile (derived from Fleet telemetry collected from deployed robots). Every sim run feeds the dual AI flywheel: synthetic + real-world data compounding together.",[["Choose a scenario","openModule('sim-scenarios')"],["Configure fault injection","openModule('sim-run-config')"],["View last run results","openModule('sim-results')"]],"Sim always uses the latest LRB geometry — change a joint limit in Studio and the next sim run picks it up automatically.")}
 <div class="tpanel" data-panel="run">
 <div class="mod">
-  <!-- Sim Agent activity strip -->
-  <div style="background:var(--sage-tint);border:0.5px solid var(--sage-tint2);border-left:3px solid var(--sage);border-radius:var(--radius);padding:8px 11px;margin-bottom:11px;display:flex;align-items:center;gap:9px">
-    <span style="font-size:14px;color:var(--sage)">⬟</span>
-    <div style="flex:1">
-      <div style="font-size:10px;font-weight:600;color:var(--sage3);margin-bottom:1px">Sim Agent · observing</div>
-      <div style="font-size:11px;color:var(--ink3)">Run #47 diagnosed: 2 root causes found · 1 code fix staged · 3 scenarios stale after sensor change</div>
-    </div>
-    <button class="btn bg bsm" onclick="switchTab('simulation','agent')">View →</button>
-  </div>
-
   <div class="sh"><div class="sh-l"><div class="sh-title">New Simulation Run</div><div class="sh-sub">Config from LRB v4.1</div></div></div>
   <div class="g2" style="margin-bottom:11px">
-    <div class="inpg"><div class="inpl">Scenario</div><select class="inp"><option>Warehouse navigation</option><option>E-Stop recovery</option><option>Dynamic obstacle</option><option>Narrow corridor</option><option>⬟ [Agent] Velocity stress test</option><option>⬟ [Agent] Incline grip test</option></select></div>
+    <div class="inpg"><div class="inpl">Scenario</div><select class="inp"><option>Warehouse navigation</option><option>E-Stop recovery</option><option>Dynamic obstacle</option><option>Narrow corridor</option></select></div>
     <div class="inpg"><div class="inpl">Duration</div><select class="inp"><option>5 minutes</option><option>10 minutes</option><option>30 minutes</option></select></div>
     <div class="inpg"><div class="inpl">Physics engine</div><select class="inp"><option>Bullet3 (default)</option><option>ODE</option><option>MuJoCo</option></select></div>
     <div class="inpg"><div class="inpl">Compute</div>
@@ -6224,21 +5027,27 @@ ${mgb("simulation","<svg viewBox='0 0 16 16'><polygon points='8,2 14,14 2,14'/><
         <div id="sim-compute-hint" style="font-size:10px;color:var(--ink4);line-height:1.4"></div>
       </div></div>
   </div>
+
+  <!-- Environment profile — real-world calibration (new in bible v2) -->
   <div style="margin-bottom:11px">
     <div class="inpg" style="margin-bottom:6px">
       <div class="inpl">Environment profile</div>
       <select class="inp" id="sim-env-profile" onchange="updateSimEnvProfile(this.value)">
         <option value="generic">Generic — Bullet3 defaults</option>
-        <option value="real" selected>◉ Real-world calibrated — Warehouse (847h telemetry)</option>
-        <option value="real2">◉ Real-world calibrated — Factory floor (312h telemetry)</option>
-        <option value="real3">◉ Real-world calibrated — Logistics hub (129h telemetry)</option>
+        <option value="real" selected>Real-world calibrated — Warehouse (847h telemetry)</option>
+        <option value="real2">Real-world calibrated — Factory floor (312h telemetry)</option>
+        <option value="real3">Real-world calibrated — Logistics hub (129h telemetry)</option>
       </select>
     </div>
     <div id="sim-env-badge" style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--sage-tint);border:0.5px solid var(--sage-tint2);border-radius:var(--radius);font-size:11px">
       <div style="width:7px;height:7px;border-radius:50%;background:var(--sage);flex-shrink:0;animation:lrb-pulse 2.4s ease-in-out infinite"></div>
-      <div><span style="color:var(--sage3);font-weight:500">Real-world calibrated</span><span style="color:var(--ink4)"> · Floor μ=0.61 (measured, corrected from 0.72 default) · LiDAR σ=0.008m · IMU drift: 0.003°/s · 847h Fleet data</span></div>
+      <div>
+        <span style="color:var(--sage3);font-weight:500">Real-world calibrated</span>
+        <span style="color:var(--ink4)"> · Floor friction: 0.72 (measured) · LiDAR noise σ=0.008m · IMU drift: 0.003°/s · 847h Fleet telemetry</span>
+      </div>
     </div>
   </div>
+
   <div class="lrb-sim-banner" style="background:var(--sage-tint);border:0.5px solid var(--sage-tint2);border-radius:var(--radius);padding:9px;font-size:11px;color:var(--sage3);margin-bottom:11px;transition:all 0.4s"><strong>LRB v4.1 synced:</strong> Kiran-3 · 4 sensors active · LiDAR fault injection available</div>
   <div class="lrb-fault-panel" style="display:flex;gap:7px;margin-bottom:11px;flex-wrap:wrap">
     <div data-fault="lidar" style="background:var(--white);border:0.5px solid var(--border);border-radius:var(--radius);padding:6px 10px;font-size:11px;display:flex;align-items:center;gap:6px;opacity:${lrb.sensors.lidar.active?'1':'0.4'}"><span style="color:var(--sage)">◆</span> LiDAR fault inject</div>
@@ -6262,71 +5071,8 @@ ${mgb("simulation","<svg viewBox='0 0 16 16'><polygon points='8,2 14,14 2,14'/><
     <div class="stat" style="cursor:pointer" onclick="openModule('sim-results')"><div class="slbl">Run #</div><div class="sval" style="font-size:16px" id="sim-stat-run">47</div><div class="sdelta sup">View results →</div></div>
   </div>
 </div>
-</div>
+</div>`;
 
-<!-- SIM AGENT TAB -->
-<div class="tpanel hidden" data-panel="agent">
-<div class="mod">
-  <div class="sh"><div class="sh-l"><div class="sh-title">Sim Agent</div><div class="sh-sub">Failure taxonomy · Calibration · Recommended scenarios</div></div></div>
-
-  <!-- Run #47 diagnosis -->
-  <div style="background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:var(--radius-lg);padding:12px;margin-bottom:11px">
-    <div style="font-size:11px;font-weight:600;color:var(--blue,#1E40AF);margin-bottom:6px">⬟ Run #47 Diagnosis — Sim Agent (unprompted)</div>
-    <div style="font-size:11px;color:var(--ink2);margin-bottom:8px">Pass rate dropped to 94% (target: >98%). Sim Agent identified 2 root causes:</div>
-    ${[
-      {n:'PID instability at v > 1.2 m/s',d:'28% of failures. Traced to velocity clamping logic in firmware. Code Agent has staged a fix.',c:'var(--blue,#1E40AF)',fix:'T2 fix staged in Actions inbox'},
-      {n:'Wheel slip on incline > 12°',d:'6% of failures. Floor μ=0.61 (real-world calibrated) reveals adhesion limit. Studio Agent flagged: increase wheel diameter 15mm or add traction parameter.',c:'var(--amber,#B45309)',fix:'Studio suggestion available'},
-    ].map(r=>`
-    <div style="background:var(--white);border:0.5px solid var(--border);border-radius:var(--radius);padding:9px 11px;margin-bottom:6px">
-      <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
-        <div style="width:6px;height:6px;border-radius:50%;background:${r.c};flex-shrink:0"></div>
-        <span style="font-size:11px;font-weight:500;color:var(--ink2)">${r.n}</span>
-        <span style="margin-left:auto;font-size:9px;color:${r.c};font-weight:600">${r.fix}</span>
-      </div>
-      <div style="font-size:10px;color:var(--ink4);padding-left:13px">${r.d}</div>
-    </div>`).join('')}
-    <div style="display:flex;gap:6px;margin-top:8px">
-      <button class="btn bs bsm" onclick="openModule('ai');switchTab('ai','actions')">Review staged fixes</button>
-      <button class="btn bg bsm" onclick="toast('Scenarios queued','2 targeted re-run scenarios queued')">Queue targeted re-runs</button>
-    </div>
-  </div>
-
-  <!-- Failure Taxonomy -->
-  <div style="margin-bottom:11px">
-    <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink4);margin-bottom:7px">Failure Taxonomy · All Runs · Kiran-3</div>
-    ${[
-      {cat:'PID / Control instability',pct:34,c:'var(--blue,#1E40AF)',runs:'16 runs'},
-      {cat:'Sensor coverage gap',pct:22,c:'var(--purple,#6D28D9)',runs:'10 runs'},
-      {cat:'Payload limit exceeded',pct:18,c:'var(--amber,#B45309)',runs:'8 runs'},
-      {cat:'Floor friction mismatch',pct:14,c:'var(--sage)',runs:'6 runs'},
-      {cat:'Collision geometry error',pct:12,c:'var(--red,#B91C1C)',runs:'5 runs'},
-    ].map(f=>`
-    <div style="margin-bottom:6px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-        <span style="font-size:11px;color:var(--ink3)">${f.cat}</span>
-        <span style="font-size:10px;color:var(--ink4)">${f.runs} · ${f.pct}%</span>
-      </div>
-      <div style="height:5px;background:var(--pearl);border-radius:3px;overflow:hidden">
-        <div style="height:100%;background:${f.c};width:${f.pct}%;border-radius:3px;transition:width 0.6s ease"></div>
-      </div>
-    </div>`).join('')}
-  </div>
-
-  <!-- Agent-recommended scenarios -->
-  <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink4);margin-bottom:7px">Agent-Recommended Scenarios</div>
-  ${[
-    {name:'Velocity stress test',why:'Targets PID failure mode at v>1.2 m/s. Staged after run #47 diagnosis.',tag:'New'},
-    {name:'Incline grip test',why:'Tests wheel adhesion at 12°, 15°, 18° grades. Addresses slip failure pattern.',tag:'New'},
-    {name:'LiDAR coverage edge case',why:'3 of 10 sensor gap failures occurred in narrow-passage configurations.',tag:'Stale'},
-  ].map(s=>`
-  <div style="background:var(--white);border:0.5px solid var(--border);border-radius:var(--radius);padding:9px 11px;margin-bottom:6px;display:flex;align-items:center;gap:9px">
-    <span style="font-size:12px;color:var(--sage)">⬟</span>
-    <div style="flex:1"><div style="font-size:11px;font-weight:500;color:var(--ink2);margin-bottom:2px">${s.name}</div><div style="font-size:10px;color:var(--ink4)">${s.why}</div></div>
-    <span style="font-size:9px;font-weight:600;background:${s.tag==='New'?'var(--sage)':'var(--amber,#B45309)'};color:#fff;padding:2px 6px;border-radius:3px">${s.tag}</span>
-    <button class="btn bg bsm" onclick="toast('Queued','${s.name} added to run queue')">Queue</button>
-  </div>`).join('')}
-</div>
-</div>`
 case 'sim-results':return`
 <div class="mod">
   <div class="sh"><div class="sh-l"><div class="sh-title">Sim Results · Run #47</div><div class="sh-sub">Warehouse navigation · 2m 18s</div></div><div class="sh-r" style="display:flex;gap:6px;align-items:center"><span style="font-size:10px;background:rgba(45,106,79,0.12);color:var(--sage3);padding:2px 8px;border-radius:10px;font-weight:500">Real-world calibrated</span><span class="badge bg-g">Pass</span></div></div>
@@ -6363,129 +5109,37 @@ case 'sim-scenarios':return`
 case 'hardware':return`
 <div class="wtabs">
   <div class="wt active" data-tab="bom" onclick="switchTab('hardware','bom')">Bill of Materials</div>
-  <div class="wt" data-tab="agent" onclick="switchTab('hardware','agent')">Hardware Agent <span class="tbadge">1</span></div>
   <div class="wt" data-tab="suppliers" onclick="switchTab('hardware','suppliers')">Suppliers</div>
 </div>
-${mgb("hardware","<svg viewBox='0 0 16 16'><rect x='2' y='5' width='12' height='7' rx='2'/><path d='M5 5V3.5a2 2 0 014 0V5'/></svg>","Vanika Hardware — live BOM with an agent watching availability 24/7","Every sensor and actuator in your URDF is mapped to a real component with live Octopart pricing. The Hardware Agent polls availability daily and stages swap alternatives before shortages become your problem.",
-[["Review staged swap","switchTab('hardware','agent')"],["Check lead times","toast('Lead times','Refreshing Octopart data…')"],["Export BOM","toast('Export','BOM exported to Excel.')"],["Send to manufacture","openModule('manufacture')"]],
-"BOM auto-updates whenever the LRB changes — add a sensor in Studio, it appears here in seconds.")}
-
-<!-- BOM TAB -->
+${mgb("hardware","<svg viewBox='0 0 16 16'><rect x='2' y='5' width='12' height='7' rx='2'/><path d='M5 5V3.5a2 2 0 014 0V5'/></svg>","Vanika Hardware — your URDF becomes a live costed BOM","Every sensor and actuator in your URDF is mapped to a real component with live Octopart pricing from Mouser, Digi-Key and RS. Lead times update every 4 hours. AI swap recommendations appear when a part is out of stock or over budget.",[["Review AI swap recommendations","openModule('bom-item-detail')"],["Check lead times","toast('Lead times','Refreshing Octopart data…')"],["Export BOM to Excel","toast('Export','BOM exported to Excel.')"],["Send to manufacture","openModule('manufacture')"]],"BOM auto-updates whenever the LRB sensor or actuator list changes — add a sensor in Studio, it appears here in seconds.")}
 <div class="tpanel" data-panel="bom">
 <div class="mod">
-  <!-- Hardware Agent strip -->
-  <div style="background:#FEF3C7;border:0.5px solid #FCD34D;border-left:3px solid var(--amber,#B45309);border-radius:var(--radius);padding:8px 11px;margin-bottom:11px;display:flex;align-items:center;gap:9px">
-    <span style="font-size:14px;color:var(--amber,#B45309)">⬡</span>
-    <div style="flex:1">
-      <div style="font-size:10px;font-weight:600;color:var(--amber,#B45309);margin-bottom:1px">Hardware Agent · acting</div>
-      <div style="font-size:11px;color:var(--ink3)">MPU-9250 backordered (6wk) · ICM-42688-P swap staged · Same spec, ₹520 cheaper, ships 3 days</div>
-    </div>
-    <button class="btn bg bsm" onclick="switchTab('hardware','agent')">Review →</button>
-  </div>
   <div class="sh"><div class="sh-l"><div class="sh-title">BOM · Kiran-3</div><div class="sh-sub">Derived from LRB v4.1 · 1 item needs attention</div></div><div class="sh-r"><span class="badge bg-a lrb-bom-total">₹1,22,450 total</span></div></div>
   <table class="tbl">
     <thead><tr><th>Component</th><th>Qty</th><th>Unit cost</th><th>Supplier</th><th>Status</th><th></th></tr></thead>
     <tbody class="lrb-bom-tbody"></tbody>
   </table>
-  <div style="margin-top:9px;background:var(--sage-tint);border:0.5px solid var(--sage-tint2);border-radius:var(--radius);padding:9px;font-size:11px;color:var(--sage3)"><strong>IMU backordered.</strong> Hardware Agent staged a compatible alternative — <a onclick="switchTab('hardware','agent')" style="cursor:pointer;text-decoration:underline">review swap →</a></div>
+  <div style="margin-top:9px;background:var(--sage-tint);border:0.5px solid var(--sage-tint2);border-radius:var(--radius);padding:9px;font-size:11px;color:var(--sage3)"><strong>IMU backordered.</strong> Vanika AI found 2 compatible alternatives — <a onclick="openModule('ai')" style="cursor:pointer;text-decoration:underline">view in AI →</a></div>
 </div>
 </div>
-
-<!-- HARDWARE AGENT TAB -->
-<div class="tpanel hidden" data-panel="agent">
-<div class="mod">
-  <div class="sh"><div class="sh-l"><div class="sh-title">Hardware Agent</div><div class="sh-sub">Availability monitoring · Staged swaps · Cost optimisation</div></div></div>
-
-  <!-- Staged swap -->
-  <div style="background:#FEF3C7;border:1.5px solid #FCD34D;border-radius:var(--radius-lg);padding:12px;margin-bottom:11px">
-    <div style="font-size:11px;font-weight:600;color:var(--amber,#B45309);margin-bottom:6px">⬡ T2 Staged Swap — Hardware Agent (unprompted)</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px">
-      ${[
-        {label:'Current (out of stock)',name:'MPU-9250 IMU',spec:'I2C/SPI · ±250–2000°/s gyro · ±2–16g accel · 3.3V',cost:'₹480',supplier:'Robu.in',status:'Out of stock — 6wk lead',sc:'red'},
-        {label:'Agent suggestion (in stock)',name:'ICM-42688-P IMU',spec:'Same I2C/SPI · Same register map · ±250–2000°/s · ±2–16g',cost:'₹-40 (cheaper)',supplier:'Amazon Industrial',status:'In stock · Ships 3 days',sc:'green'},
-      ].map(s=>`
-      <div style="background:var(--white);border:0.5px solid var(--border);border-radius:var(--radius);padding:9px">
-        <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink4);margin-bottom:5px">${s.label}</div>
-        <div style="font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:3px">${s.name}</div>
-        <div style="font-size:10px;color:var(--ink4);line-height:1.5;margin-bottom:5px">${s.spec}</div>
-        <div style="font-size:11px;font-weight:500;color:var(--ink2);margin-bottom:2px">${s.cost}</div>
-        <div style="font-size:10px;color:var(--ink4);margin-bottom:4px">${s.supplier}</div>
-        <span class="badge ${s.sc==='red'?'bg-r':'bg-g'}" style="font-size:10px">${s.status}</span>
-      </div>`).join('')}
-    </div>
-    <div style="font-size:10px;color:var(--ink3);margin-bottom:9px">✓ Drop-in compatible — same SPI/I2C interface, same register map (ICM-42688-P is a superset). No firmware changes required. Verified against Kiran-3 SRM sensor spec.</div>
-    <div style="display:flex;gap:6px">
-      <button class="btn bs bsm" onclick="toast('Swap approved','BOM updated: ICM-42688-P replaces MPU-9250')">Approve swap</button>
-      <button class="btn bg bsm" onclick="toast('Rejected','Swap dismissed')">Reject</button>
-      <button class="btn bg bsm" onclick="sendAI('Hardware Agent staged IMU swap MPU-9250 → ICM-42688-P. Show me a full spec comparison.')">Full spec compare</button>
-    </div>
-  </div>
-
-  <!-- Monitoring status -->
-  <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink4);margin-bottom:7px">Component Monitoring</div>
-  ${[
-    {name:'VLP-16 LiDAR',supplier:'Cytron',price:'₹6,200',status:'In stock',lead:'7 days',delta:''},
-    {name:'ICM-42688-P (staged)',supplier:'Amazon Industrial',price:'₹-40',status:'In stock',lead:'3 days',delta:'⬡ staged'},
-    {name:'T-Motor U8',supplier:'Robu.in',price:'₹2,800',status:'In stock',lead:'5 days',delta:''},
-    {name:'Raspberry Pi 5 8GB',supplier:'RS Components',price:'₹3,800',status:'In stock',lead:'10 days',delta:'↑ +₹200 this week'},
-  ].map(c=>`
-  <div style="display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:0.5px solid var(--border)">
-    <div style="width:6px;height:6px;border-radius:50%;background:var(--sage);flex-shrink:0"></div>
-    <div style="flex:1"><div style="font-size:11px;font-weight:500;color:var(--ink2)">${c.name}</div><div style="font-size:10px;color:var(--ink4)">${c.supplier} · Lead: ${c.lead}</div></div>
-    <div style="text-align:right">
-      <div style="font-size:11px;font-family:var(--mono);color:var(--ink2)">${c.price}</div>
-      <span class="badge bg-g" style="font-size:9px">${c.status}</span>
-      ${c.delta?`<div style="font-size:9px;color:var(--amber,#B45309);margin-top:1px">${c.delta}</div>`:''}
-    </div>
-  </div>`).join('')}
-
-  <!-- Cost optimisation -->
-  <div style="margin-top:11px">
-    <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink4);margin-bottom:7px">Cost Optimisation</div>
-    <div style="background:var(--white);border:0.5px solid var(--border);border-radius:var(--radius);padding:9px 11px;margin-bottom:6px">
-      <div style="font-size:11px;color:var(--ink2);margin-bottom:6px">Set a BOM cost target for Hardware Agent to optimise toward:</div>
-      <div style="display:flex;gap:6px">
-        <input class="inp f1" placeholder="e.g. ₹1,00,000 target BOM cost">
-        <button class="btn bs bsm" onclick="sendAI('Optimise the Kiran-3 BOM to hit a cost target while preserving all required sensor capabilities')">Optimise</button>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- SUPPLIERS TAB -->
 <div class="tpanel hidden" data-panel="suppliers">
 <div class="mod">
   <div class="sh"><div class="sh-l"><div class="sh-title">Supplier Directory</div></div></div>
-  ${[['Robu.in','Electronics & sensors · India','14 items'],['Cytron','Robotics components','3 items'],['Maxamps','Battery systems','1 item'],['Amazon Industrial','General hardware · Fast delivery','5 items']].map(([n,d,s])=>`
+  ${[['Robu.in','Electronics & sensors · India','14 items'],['Cytron','Robotics components','3 items'],['Maxamps','Battery systems','1 item'],['Amazon Industrial','General hardware','Fast delivery']].map(([n,d,s])=>`
   <div class="li cl" onclick="toast('Supplier','Opening ${n}…')"><div style="width:32px;height:32px;border-radius:7px;background:var(--pearl);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--ink3);flex-shrink:0">${n.slice(0,2).toUpperCase()}</div><div class="lib"><div class="lin">${n}</div><div class="lis">${d}</div></div><span style="font-size:10px;color:var(--ink4)">${s}</span></div>`).join('')}
 </div>
-</div>`
+</div>`;
+
 case 'fleet':return`
 <div class="wtabs">
   <div class="wt active" data-tab="live" onclick="switchTab('fleet','live')"><span class="bdot" style="background:var(--sage);display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px"></span>Live</div>
-  <div class="wt" data-tab="edge-agents" onclick="switchTab('fleet','edge-agents')">Edge Agents</div>
-  <div class="wt" data-tab="fleet-agent" onclick="switchTab('fleet','fleet-agent')">Fleet Agent</div>
   <div class="wt" onclick="openModule('fleet-missions')">Missions ↗</div>
   <div class="wt" onclick="openModule('fleet-ota')">OTA History ↗</div>
   <div class="wt" onclick="openModule('fleet-alerts')">Alerts <span class="tbadge">2</span></div>
 </div>
-${mgb("fleet","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='5'/><path d='M8 3v5l3 2'/></svg>","Vanika Fleet — deploy firmware and watch robots in the field","A Rust edge agent (<2MB) runs on each robot publishing two telemetry streams: operational health at 10Hz and environment data at 1Hz. Environment telemetry feeds back into Sim to calibrate physics models — closing the sim-to-real gap. The Fleet Agent watches all robots continuously and surfaces anomalies before they become failures.",
-[["Deploy firmware OTA","openModule('deploy-pipeline')"],["View live telemetry","openModule('fleet-robot')"],["View Fleet Agent status","switchTab('fleet','fleet-agent')"],["View Edge Agent status","switchTab('fleet','edge-agents')"]],
-"Fleet Agent monitors all 5 robots continuously. No anomalies detected in last 24 hours.")}
-
-<!-- LIVE TAB -->
+${mgb("fleet","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='5'/><path d='M8 3v5l3 2'/></svg>","Vanika Fleet — deploy firmware and monitor robots in the field","A Rust edge agent (<2MB) runs on each robot publishing two telemetry streams: operational health at 10Hz (CPU, battery, velocity, error logs) and environment data at 1Hz (LiDAR scans, floor classification, path deviation, near-miss events). Environment telemetry feeds back into Sim to calibrate physics models against real-world conditions — closing the sim-to-real loop.",[["Deploy firmware OTA","openModule('deploy-pipeline')"],["View live telemetry","openModule('fleet-robot')"],["Set alert rules","openModule('alert-rules')"],["Assign a mission","openModule('assign-mission')"]],"Fleet pulls the latest firmware build directly from the Code pipeline — one click from IDE to physical robot.")}
 <div class="tpanel" data-panel="live" style="flex-direction:row">
   <div style="flex:1;display:flex;flex-direction:column">
-    <!-- Fleet Agent strip -->
-    <div style="background:var(--sage-tint);border:0.5px solid var(--sage-tint2);border-left:3px solid var(--sage);border-radius:var(--radius);padding:7px 11px;margin:9px 9px 0;display:flex;align-items:center;gap:9px">
-      <span style="font-size:13px;color:var(--sage)">◉</span>
-      <div style="flex:1">
-        <div style="font-size:10px;font-weight:600;color:var(--sage3);margin-bottom:1px">Fleet Agent · observing · 5/5 healthy</div>
-        <div style="font-size:10px;color:var(--ink4)">K3-001 motor current trending +8% — tracking but within range · No T3 actions pending</div>
-      </div>
-      <button class="btn bg bsm" onclick="switchTab('fleet','fleet-agent')">Details →</button>
-    </div>
     <div class="fmap" style="flex:1;margin:9px 9px 0;min-height:180px">
       <div class="fbot" style="left:75px;top:55px" onclick="openModule('fleet-robot')" title="K3-001">01</div>
       <div class="fbot" style="left:168px;top:95px" onclick="openModule('fleet-robot')" title="K3-002">02</div>
@@ -6494,8 +5148,7 @@ ${mgb("fleet","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='5'/><path d='M8
       <div class="fbot" style="left:285px;top:148px" onclick="openModule('fleet-robot')" title="DA-013">13</div>
     </div>
     <div style="padding:7px 9px;border-top:0.5px solid var(--border);display:flex;gap:5px;flex-wrap:wrap">
-      <button class="btn bg bsm" onclick="toast('Refresh','Map refreshed.')">Refresh</button>
-      <button class="btn bg bsm" onclick="openModule('fleet-zone')">Zone editor</button>
+      <button class="btn bg bsm" onclick="toast('Refresh','Map refreshed.')">Refresh</button><button class="btn bg bsm" onclick="openModule('fleet-zone')">Zone editor</button>
       <button class="btn bg bsm" onclick="openModule('fleet-missions')">Assign mission</button>
       <div class="f1"></div>
       <button class="btn bd bsm" onclick="showModal('modal-estop')">E-Stop all</button>
@@ -6503,116 +5156,44 @@ ${mgb("fleet","<svg viewBox='0 0 16 16'><circle cx='8' cy='8' r='5'/><path d='M8
   </div>
   <div style="width:205px;flex-shrink:0;border-left:0.5px solid var(--border);overflow-y:auto;padding:9px 7px">
     <div class="sbsect">5 Online · 0 Offline</div>
+
+    <!-- Operational telemetry stream -->
     <div style="font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);padding:6px 0 3px;display:flex;align-items:center;gap:5px">
       <div style="width:5px;height:5px;border-radius:50%;background:var(--sage)"></div>Operational · 10Hz
     </div>
     <div class="lrb-fleet-topics" style="margin-bottom:6px;max-height:90px;overflow-y:auto"></div>
+
+    <!-- Environment telemetry stream (new — bible v2) -->
     <div style="font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);padding:6px 0 3px;display:flex;align-items:center;gap:5px">
-      <div style="width:5px;height:5px;border-radius:50%;background:var(--sage);animation:lrb-pulse 2.4s ease-in-out infinite"></div>Environment · 1Hz → Sim calibration
+      <div style="width:5px;height:5px;border-radius:50%;background:var(--sage);animation:lrb-pulse 2.4s ease-in-out infinite"></div>Environment · 1Hz
     </div>
     <div style="margin-bottom:6px">
-      ${[['floor_class','Surface classification → μ update'],['path_deviation','vs planned trajectory'],['near_miss_events','Obstacles <0.5m'],['env_hash','Environment fingerprint']].map(([f,d])=>`
+      ${[
+        ['/vanika/telemetry/{id}/env','scan_sample','LiDAR point cloud · 1Hz'],
+        ['/vanika/telemetry/{id}/env','floor_class','Surface classification'],
+        ['/vanika/telemetry/{id}/env','path_deviation','vs planned trajectory'],
+        ['/vanika/telemetry/{id}/env','near_miss_events','Obstacles < 0.5m'],
+        ['/vanika/telemetry/{id}/env','env_hash','Environment fingerprint'],
+      ].map(([topic,field,desc])=>`
       <div style="padding:3px 0;border-bottom:0.5px solid var(--border);font-size:10px">
         <div style="display:flex;align-items:center;gap:5px">
           <div style="width:5px;height:5px;border-radius:50%;background:var(--sage3);flex-shrink:0"></div>
-          <span style="font-family:var(--mono);color:var(--sage3);font-size:9px">${f}</span>
+          <span style="font-family:var(--mono);color:var(--sage3);font-size:9px">${field}</span>
         </div>
-        <div style="font-size:9px;color:var(--ink4);padding-left:10px">${d}</div>
+        <div style="font-size:9px;color:var(--ink4);padding-left:10px">${desc}</div>
       </div>`).join('')}
     </div>
-    <div style="font-size:9px;color:var(--ink4);padding:4px 0 6px;border-bottom:0.5px solid var(--border);margin-bottom:6px">↳ Calibrates Sim · <span style="color:var(--sage3);cursor:pointer" onclick="openModule('simulation')">847h warehouse data →</span></div>
+    <div style="font-size:9px;color:var(--ink4);padding:4px 0 6px;border-bottom:0.5px solid var(--border);margin-bottom:6px">
+      ↳ Feeds Sim calibration · <span style="color:var(--sage3);cursor:pointer" onclick="openModule('simulation')">847h warehouse data →</span>
+    </div>
+
+    <div class="sbsect lrb-fleet-topics-header" style="color:var(--ink4)">ROS2 topics · LRB v${lrb.version.toFixed(1)}</div>
     <div class="sbsect">Robots</div>
     ${[['K3-001','Navigating · Mission 14','g'],['K3-002','Idle · Docked','g'],['K3-003','Charging · 68%','g'],['DA-012','Low battery · 12%','a'],['DA-013','Navigating · Mission 15','g']].map(([id,s,c])=>`
     <div class="sbitem" onclick="openModule('fleet-robot')"><div style="width:6px;height:6px;border-radius:50%;background:${c==='g'?'var(--sage)':'var(--amber)'}"></div><div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:500;color:var(--ink)">${id}</div><div style="font-size:10px;color:var(--ink4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s}</div></div></div>`).join('')}
   </div>
-</div>
+</div>`;
 
-<!-- EDGE AGENTS TAB -->
-<div class="tpanel hidden" data-panel="edge-agents">
-<div class="mod">
-  <div class="sh"><div class="sh-l"><div class="sh-title">Edge Agents</div><div class="sh-sub">Rust binary <2MB · deployed on every robot · telemetry + OTA + learning</div></div></div>
-
-  <div style="background:var(--sage-tint);border:0.5px solid var(--sage-tint2);border-radius:var(--radius-lg);padding:10px 12px;margin-bottom:11px;font-size:11px;color:var(--ink3)">
-    The edge agent is Vanika's permanent presence on every deployed robot. It streams two telemetry channels: operational health (CPU, battery, motor current) to Fleet, and environment data (floor friction inference, sensor noise) anonymised back to the Vanika learning pipeline. <span style="color:var(--sage3);font-weight:500">847 hours of warehouse telemetry have already improved simulation accuracy by calibrating floor friction from 0.72 → 0.61.</span>
-  </div>
-
-  ${[
-    {id:'K3-001',robot:'Kiran-3',version:'v2.3.1',os:'Ubuntu 22.04 + ROS2 Humble',uptime:'14d 6h',telemetry:'10Hz',env:'1Hz → Warehouse profile',learning:true,status:'healthy'},
-    {id:'K3-002',robot:'Kiran-3',version:'v2.3.1',os:'Ubuntu 22.04 + ROS2 Humble',uptime:'14d 6h',telemetry:'10Hz',env:'1Hz → Warehouse profile',learning:true,status:'healthy'},
-    {id:'K3-003',robot:'Kiran-3',version:'v2.3.1',os:'Ubuntu 22.04 + ROS2 Humble',uptime:'11d 2h',telemetry:'10Hz',env:'1Hz → Warehouse profile',learning:true,status:'charging'},
-    {id:'DA-012',robot:'Kiran-3',version:'v2.3.0',os:'Ubuntu 22.04 + ROS2 Humble',uptime:'9d 18h',telemetry:'10Hz',env:'Disabled (enterprise)',learning:false,status:'low-battery'},
-    {id:'DA-013',robot:'Kiran-3',version:'v2.3.1',os:'Ubuntu 22.04 + ROS2 Humble',uptime:'9d 18h',telemetry:'10Hz',env:'1Hz → Warehouse profile',learning:true,status:'healthy'},
-  ].map(ea=>`
-  <div style="background:var(--white);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:11px 12px;margin-bottom:8px">
-    <div style="display:flex;align-items:center;gap:9px;margin-bottom:7px">
-      <div style="width:30px;height:30px;border-radius:7px;background:var(--sage-tint2);border:1.5px solid var(--sage);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--sage3);flex-shrink:0">${ea.id.split('-')[1]}</div>
-      <div style="flex:1">
-        <div style="font-size:12px;font-weight:600;color:var(--ink2)">${ea.id}</div>
-        <div style="font-size:10px;color:var(--ink4)">${ea.robot} · Agent ${ea.version} · Up ${ea.uptime}</div>
-      </div>
-      <span class="badge ${ea.status==='healthy'?'bg-g':ea.status==='charging'?'bg-a':'bg-r'}" style="font-size:10px">${ea.status}</span>
-      <button class="btn bg bsm" onclick="openModule('fleet-robot')">Telemetry →</button>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:10px">
-      <div style="background:var(--pearl);border:0.5px solid var(--border);border-radius:5px;padding:5px 8px">
-        <div style="color:var(--ink4);margin-bottom:1px">Operational</div>
-        <div style="color:var(--sage3);font-weight:500">${ea.telemetry}</div>
-      </div>
-      <div style="background:var(--pearl);border:0.5px solid var(--border);border-radius:5px;padding:5px 8px">
-        <div style="color:var(--ink4);margin-bottom:1px">Environment</div>
-        <div style="color:${ea.learning?'var(--sage3)':'var(--ink4)'};font-weight:500">${ea.env}</div>
-      </div>
-      <div style="background:${ea.learning?'var(--sage-tint)':'var(--pearl)'};border:0.5px solid ${ea.learning?'var(--sage-tint2)':'var(--border)'};border-radius:5px;padding:5px 8px">
-        <div style="color:var(--ink4);margin-bottom:1px">Learning</div>
-        <div style="color:${ea.learning?'var(--sage3)':'var(--ink4)'};font-weight:500">${ea.learning?'Enabled':'Disabled'}</div>
-      </div>
-    </div>
-  </div>`).join('')}
-
-  <div style="background:var(--pearl);border:0.5px solid var(--border);border-radius:var(--radius);padding:9px 11px;font-size:11px;color:var(--ink4);text-align:center">
-    4/5 robots contributing to Vanika learning pipeline · <strong style="color:var(--sage)">847h warehouse telemetry</strong> has improved simulation accuracy
-  </div>
-</div>
-</div>
-
-<!-- FLEET AGENT TAB -->
-<div class="tpanel hidden" data-panel="fleet-agent">
-<div class="mod">
-  <div class="sh"><div class="sh-l"><div class="sh-title">Fleet Agent</div><div class="sh-sub">Continuous monitoring · Anomaly detection · Deployment planning</div></div></div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:11px">
-    ${[['Robots monitored','5/5','var(--sage)'],['Anomaly score','Low · 0.12','var(--sage)'],['Last health scan','4m ago','var(--ink3)']].map(([l,v,c])=>`
-    <div style="background:var(--white);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:9px;text-align:center">
-      <div style="font-size:18px;font-weight:300;color:${c}">${v}</div>
-      <div style="font-size:10px;color:var(--ink4)">${l}</div>
-    </div>`).join('')}
-  </div>
-
-  <!-- Observations -->
-  <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink4);margin-bottom:7px">Active Observations · T1</div>
-  ${[
-    {robot:'K3-001',obs:'Motor current trending +8% over 72h. Within normal range. Tracking.',trend:'↑ trending',c:'var(--amber,#B45309)'},
-    {robot:'DA-012',obs:'Battery health degraded to 84% of original capacity. Normal wear at 9 days.',trend:'Normal wear',c:'var(--ink4)'},
-    {robot:'K3-003',obs:'2 near-miss events (obstacles <0.3m) in last 4 hours. Review mission route.',trend:'⚠ attention',c:'var(--amber,#B45309)'},
-  ].map(o=>`
-  <div style="background:var(--white);border:0.5px solid var(--border);border-left:3px solid ${o.c};border-radius:var(--radius);padding:9px 11px;margin-bottom:6px">
-    <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
-      <span style="font-size:11px;font-weight:600;color:var(--ink2)">${o.robot}</span>
-      <span style="font-size:9px;font-weight:600;color:${o.c};margin-left:auto">${o.trend}</span>
-    </div>
-    <div style="font-size:10px;color:var(--ink4)">${o.obs}</div>
-  </div>`).join('')}
-
-  <!-- Next planned deployment -->
-  <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink4);margin:11px 0 7px">Deployment Readiness</div>
-  <div style="background:var(--sage-tint);border:0.5px solid var(--sage-tint2);border-radius:var(--radius-lg);padding:11px">
-    <div style="font-size:11px;font-weight:500;color:var(--ink2);margin-bottom:6px">Current firmware: v2.3.1 · All 5 robots up to date</div>
-    <div style="font-size:11px;color:var(--ink4);margin-bottom:9px">Fleet Agent will draft a deployment plan automatically when a new build is approved. Plan will be presented as a T3 action for your review before any robot is touched.</div>
-    <button class="btn bs bsm" onclick="openModule('deploy-pipeline')">View deploy pipeline</button>
-    <button class="btn bg bsm" onclick="sendAI('Draft a deployment plan for firmware v2.3.2 across all 5 fleet robots with safe rollback criteria')">Ask Fleet Agent to draft plan</button>
-  </div>
-</div>
-</div>`
 case 'fleet-robot':return`
 <div class="wtabs">
   <div class="wt active" data-tab="tele" onclick="switchTab('fleet-robot','tele')">Telemetry</div>
@@ -6724,181 +5305,70 @@ ${mgb("analytics","<svg viewBox='0 0 16 16'><path d='M2 12l3-4 3 3 4-6 2 3'/></s
 </div>`;
 
 case 'ai':return`
-${mgb("ai","<svg viewBox='0 0 16 16'><path d='M8 2a6 6 0 100 12A6 6 0 008 2z'/><path d='M5 8.5c.8 1.5 4.2 1.5 5 0'/><circle cx='6' cy='6.5' r='1'/><circle cx='10' cy='6.5' r='1'/></svg>","Vanika AI Core — the intelligence engine","Six specialised agents run continuously — Studio, Code, Sim, Hardware, Fleet, and the Orchestrator that coordinates them all. Each agent observes its module, acts via registered tools, and surfaces results here for your review. Talk to one AI that coordinates six.",
-[["Review staged agent actions","sendAI('Review all pending agent actions and tell me what needs my attention most urgently.')"],["Set a project goal","sendAI('I want to get Kiran-3 ready for a 50-robot pilot batch in 6 weeks. What do I need to do?')"],["Design review now","sendAI('Do a complete design review of Kiran-3 and list every issue you find with severity ratings.')"],["What should I fix next?","sendAI('Given everything — LRB, sim results, BOM, fleet health — what should I work on next?')"]],"Agents work continuously without being asked. The Actions inbox shows what they have staged for your approval right now.")}
+${mgb("ai","<svg viewBox='0 0 16 16'><path d='M8 2a6 6 0 100 12A6 6 0 008 2z'/><path d='M5 8.5c.8 1.5 4.2 1.5 5 0'/><circle cx='6' cy='6.5' r='1'/><circle cx='10' cy='6.5' r='1'/></svg>","Vanika AI Core — intelligence across your entire robot project","Not a coding assistant. An engineering intelligence layer that reads Studio geometry, Sim results, Hardware BOM, Fleet telemetry and Code — all at once. It finds problems you haven't noticed, suggests optimisations across modules, and reasons about your robot as a whole system.",
+[["Why is my sim pass rate low?","sendAI('Why is my simulation pass rate low and what should I change?')"],["Review my full robot design","sendAI('Do a full design review of Kiran-3 and flag any issues')"],["Optimise my BOM for cost","sendAI('Review my hardware BOM and suggest cost optimisations')"],["What should I fix next?","sendAI('Given everything — LRB, sim results, BOM — what should I work on next?')"]],"Vanika AI reads from every module simultaneously. The Code IDE has its own copilot for writing firmware — this is for reasoning across your whole project.")}
 
 <div class="wtabs">
-  <div class="wt active" data-tab="intelligence" onclick="switchTab('ai','intelligence')">Intelligence</div>
-  <div class="wt" data-tab="actions" onclick="switchTab('ai','actions')">Actions <span class="tbadge">2</span></div>
-  <div class="wt" data-tab="orchestrator" onclick="switchTab('ai','orchestrator')">Orchestrator</div>
+  <div class="wt active">Intelligence</div>
   <div class="wt" onclick="openModule('ai-history')">History ↗</div>
+  <div class="wt" onclick="openModule('ai-settings')">Settings ↗</div>
 </div>
-
-<!-- INTELLIGENCE TAB -->
-<div class="studio-tab active" id="ai-tab-intelligence" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+<div style="flex:1;display:flex;overflow:hidden">
   <div id="vanika-key-banner" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#FFF8E7;border-bottom:0.5px solid #F0D060;flex-shrink:0">
     <svg viewBox="0 0 14 14" style="width:14px;height:14px;flex-shrink:0;fill:none;stroke:#B7791F;stroke-width:1.5"><circle cx="7" cy="7" r="5"/><path d="M7 4v3M7 9.5v.5"/></svg>
     <span style="font-size:11px;color:#744210;flex:1">AI running in demo mode. <a onclick="vanikaPromptKey()" style="color:#744210;cursor:pointer;font-weight:600;text-decoration:underline">Connect your Anthropic API key</a> to enable full intelligence.</span>
     <button onclick="vanikaPromptKey()" style="background:#2D6A4F;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-weight:500;flex-shrink:0">Connect →</button>
   </div>
-  <div style="flex:1;display:flex;overflow:hidden">
-    <div class="chatarea f1" id="ai-chat-area">${buildAIOpeningMsg()}</div>
-    <div style="width:175px;flex-shrink:0;border-left:0.5px solid var(--border);padding:9px 8px;overflow-y:auto;background:var(--pearl);display:flex;flex-direction:column;gap:0">
-      <div class="sbsect">Agent status</div>
-      ${[
-        {n:'Studio',icon:'△',c:'var(--sage)',s:'1 flag pending',mod:'studio'},
-        {n:'Code',icon:'◈',c:'var(--blue,#1E40AF)',s:'Fix staged — review',mod:'code'},
-        {n:'Sim',icon:'⬟',c:'var(--purple,#6D28D9)',s:'Re-run queued',mod:'simulation'},
-        {n:'Hardware',icon:'⬡',c:'var(--amber,#B45309)',s:'Swap staged — review',mod:'hardware'},
-        {n:'Fleet',icon:'◉',c:'var(--sage)',s:'5 robots healthy',mod:'fleet'},
-        {n:'Orchestrator',icon:'✦',c:'var(--sage)',s:'Goal active',mod:'ai'},
-      ].map(a=>`
-      <div style="padding:5px 4px;border-bottom:0.5px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:6px" onclick="openModule('${a.mod}')" onmouseover="this.style.background='var(--sage-tint)'" onmouseout="this.style.background=''">
-        <span style="font-size:13px;color:${a.c};flex-shrink:0">${a.icon}</span>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:11px;font-weight:500;color:var(--ink)">${a.n} Agent</div>
-          <div style="font-size:10px;color:var(--ink4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.s}</div>
-        </div>
-      </div>`).join('')}
-      <div class="sbsect" style="margin-top:10px">Quick asks</div>
-      ${[
-        ['Design review — flag issues','Do a complete design review of Kiran-3 and list every issue you find'],
-        ['Optimise BOM cost','Review my hardware BOM and find cost savings without compromising specs'],
-        ['IMU backordered fix?','The IMU MPU-9250 is backordered. What are my options?'],
-        ['Pilot batch ready?','Is Kiran-3 ready for a pilot manufacturing batch?'],
-        ['Suggest next 3 tasks','What are the 3 most important engineering tasks right now?'],
-        ['Fleet deployment risk?','What is the risk of deploying firmware to all 5 fleet robots?'],
-      ].map(([l,p])=>`<div class="sbitem" style="font-size:10px;line-height:1.45" onclick="sendAI('${p}')">${l}</div>`).join('')}
-      <div class="lrb-ai-context" style="margin-top:8px;font-size:10px;color:var(--ink4);padding:6px 4px;line-height:1.6;transition:background 0.4s;border-radius:6px;border-top:0.5px solid var(--border)">
-        <div style="font-weight:500;color:var(--ink3);margin-bottom:3px">Live context</div>
-      </div>
-    </div>
-  </div>
-  <div class="vanika-thinking" id="vanika-thinking">
-    <div class="vt-orb"><div class="vt-petal"></div><div class="vt-petal"></div><div class="vt-petal"></div><div class="vt-petal"></div></div>
-    <span class="vt-label">Vanika AI is thinking</span>
-    <div class="vt-dots"><div class="vt-dot"></div><div class="vt-dot"></div><div class="vt-dot"></div></div>
-  </div>
-  <div class="cirow">
-    <input class="inp f1" id="ai-inp" placeholder="Ask about your robot project — or set a goal for the Orchestrator…" onkeydown="if(event.key==='Enter')sendAI(this.value)">
-    <button class="btn bs bsm" onclick="sendAI(document.getElementById('ai-inp').value)">Ask</button>
-  </div>
-</div>
+  <div class="chatarea f1" id="ai-chat-area">${buildAIOpeningMsg()}</div>
 
-<!-- ACTIONS TAB — T2/T3 staged actions from all agents -->
-<div class="studio-tab" id="ai-tab-actions" style="display:none;flex:1;flex-direction:column;overflow-y:auto">
-<div class="mod">
-  <div class="sh"><div class="sh-l"><div class="sh-title">Actions Inbox</div><div class="sh-sub">Staged actions from agents — review and approve or reject</div></div></div>
+  <div style="width:175px;flex-shrink:0;border-left:0.5px solid var(--border);padding:9px 8px;overflow-y:auto;background:var(--pearl);display:flex;flex-direction:column;gap:0">
 
-  <div style="display:flex;gap:6px;margin-bottom:11px">
-    <div style="background:var(--sage-tint);border:0.5px solid var(--sage-tint2);border-radius:5px;padding:4px 10px;font-size:11px;color:var(--sage3)">2 pending</div>
-    <div style="background:var(--pearl);border:0.5px solid var(--border);border-radius:5px;padding:4px 10px;font-size:11px;color:var(--ink4)">Tier T1: advisory</div>
-    <div style="background:#FEF3C7;border:0.5px solid #F0D060;border-radius:5px;padding:4px 10px;font-size:11px;color:var(--amber,#B45309)">Tier T2: staged draft</div>
-    <div style="background:#FEE2E2;border:0.5px solid #FCA5A5;border-radius:5px;padding:4px 10px;font-size:11px;color:var(--red,#B91C1C)">Tier T3: real-world action</div>
-  </div>
-
-  ${[
-    {tier:'T2',agent:'Code Agent',icon:'◈',ac:'var(--blue,#1E40AF)',bg:'#EFF6FF',bc:'#BFDBFE',
-     title:'Staged code fix: velocity_controller.cpp',
-     sub:'Sim run #47 failed at velocity > 1.2 m/s. Code Agent traced failure to velocity clamping logic on line 47. Staged a fix that adds dynamic velocity scaling based on current payload estimate.',
-     diff:'+  const double payload_scale = 1.0 - (estimated_payload / max_payload_) * 0.3;\n+  cmd_vel.linear.x = std::min(target_vel * payload_scale, max_vel_);\n-  cmd_vel.linear.x = std::min(target_vel, max_vel_);',
-     actions:['Approve & merge','Reject','Ask Code Agent to revise']},
-    {tier:'T2',agent:'Hardware Agent',icon:'⬡',ac:'var(--amber,#B45309)',bg:'#FEF3C7',bc:'#FCD34D',
-     title:'Component swap staged: MPU-9250 → ICM-42688-P',
-     sub:'MPU-9250 IMU is backordered at Robu.in with 6-week lead time. Hardware Agent found ICM-42688-P as a drop-in replacement: same SPI/I2C interface, same register map, ₹520 cheaper, available in 3 days from Amazon Industrial.',
-     diff:'- MPU-9250 · Robu.in · ₹480 · Out of stock (6wk)\n+ ICM-42688-P · Amazon Industrial · ₹-40 · In stock · Ships 3d',
-     actions:['Approve swap','Reject','Compare specs']},
-  ].map(a=>`
-  <div style="background:${a.bg};border:1.5px solid ${a.bc};border-radius:var(--radius-lg);padding:13px;margin-bottom:11px">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-      <span style="font-size:16px;color:${a.ac}">${a.icon}</span>
-      <div style="flex:1">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-          <span style="font-size:10px;font-weight:700;background:${a.ac};color:#fff;padding:2px 7px;border-radius:3px">${a.tier}</span>
-          <span style="font-size:10px;color:var(--ink4)">${a.agent}</span>
-        </div>
-        <div style="font-size:12px;font-weight:600;color:var(--ink2)">${a.title}</div>
-      </div>
-    </div>
-    <div style="font-size:11px;color:var(--ink3);line-height:1.55;margin-bottom:9px">${a.sub}</div>
-    <div style="background:var(--ink);color:#52B788;font-family:var(--mono);font-size:10px;padding:9px 11px;border-radius:7px;line-height:1.7;margin-bottom:9px;white-space:pre">${a.diff}</div>
-    <div style="display:flex;gap:6px">
-      <button class="btn bs bsm" onclick="toast('Approved','${a.agent} action applied to project')" style="font-size:11px">${a.actions[0]}</button>
-      <button class="btn bg bsm" onclick="toast('Rejected','${a.agent} action dismissed')" style="font-size:11px">${a.actions[1]}</button>
-      <button class="btn bg bsm" onclick="sendAI('Re: ${a.title} — ${a.actions[2].toLowerCase()}')" style="font-size:11px">${a.actions[2]}</button>
-    </div>
-  </div>`).join('')}
-
-  <!-- T1 advisory notices -->
-  <div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink4);margin-bottom:7px">Advisory · T1 (no action required)</div>
-  ${[
-    ['Studio Agent','△','var(--sage)','CoM shifted 8mm forward after VLP-16 LiDAR was added. Currently within stability envelope but marginal — 3mm from boundary. Monitor if chassis dimensions change.'],
-    ['Sim Agent','⬟','var(--purple,#6D28D9)','3 existing scenarios are now stale after yesterday\'s sensor configuration change. 1 new scenario generated covering LiDAR-dependent navigation. Ready to run when next batch is scheduled.'],
-    ['Fleet Agent','◉','var(--sage)','K3-001 shows motor current trending 8% higher than baseline over last 72 hours. Within normal range but tracking. No action needed yet.'],
-  ].map(([agent,icon,c,msg])=>`
-  <div style="background:var(--white);border:0.5px solid var(--border);border-left:3px solid ${c};border-radius:var(--radius);padding:9px 11px;margin-bottom:6px;display:flex;gap:9px;align-items:flex-start">
-    <span style="font-size:14px;color:${c};flex-shrink:0">${icon}</span>
-    <div><div style="font-size:10px;font-weight:500;color:var(--ink3);margin-bottom:2px">${agent}</div><div style="font-size:11px;color:var(--ink4);line-height:1.5">${msg}</div></div>
-  </div>`).join('')}
-</div>
-</div>
-
-<!-- ORCHESTRATOR TAB -->
-<div class="studio-tab" id="ai-tab-orchestrator" style="display:none;flex:1;flex-direction:column;overflow-y:auto">
-<div class="mod">
-  <div class="sh"><div class="sh-l"><div class="sh-title">Orchestrator</div><div class="sh-sub">Set a goal · Orchestrator coordinates all six agents to achieve it</div></div></div>
-
-  <div style="background:var(--sage-tint);border:1.5px solid var(--sage-tint2);border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:14px">
-    <div style="font-size:11px;font-weight:600;color:var(--sage3);margin-bottom:3px">Active Goal</div>
-    <div style="font-size:13px;font-weight:500;color:var(--ink2);margin-bottom:8px">"Get Kiran-3 ready for a 50-robot pilot batch in 6 weeks"</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:9px">
-      ${[['Progress','60%'],['Blockers','2'],['Est. remaining','~18 days']].map(([l,v])=>`
-      <div style="background:var(--white);border:0.5px solid var(--border);border-radius:7px;padding:7px;text-align:center">
-        <div style="font-size:16px;font-weight:300;color:var(--sage)">${v}</div>
-        <div style="font-size:10px;color:var(--ink4)">${l}</div>
-      </div>`).join('')}
-    </div>
-    <div style="height:4px;background:var(--pearl);border-radius:2px;overflow:hidden;margin-bottom:8px">
-      <div style="height:100%;background:var(--sage);width:60%;border-radius:2px"></div>
-    </div>
-    <button class="btn bg bsm" onclick="toast('Goal cleared','Orchestrator goal cleared')">Clear goal</button>
-  </div>
-
-  <div style="margin-bottom:11px">
-    <div style="font-size:11px;font-weight:500;color:var(--ink3);margin-bottom:7px">Orchestrator Plan</div>
+    <div class="sbsect">Modules in context</div>
     ${[
-      {step:1,agent:'Studio Agent',title:'Design validation complete',status:'done',color:'var(--sage)'},
-      {step:2,agent:'Sim Agent',title:'Run 200-iteration stress test at max payload',status:'in-progress',color:'var(--sage)'},
-      {step:3,agent:'Code Agent',title:'Fix velocity controller failure (staged — awaiting review)',status:'blocked',color:'var(--amber,#B45309)'},
-      {step:4,agent:'Hardware Agent',title:'Resolve IMU backorder (swap staged — awaiting review)',status:'blocked',color:'var(--amber,#B45309)'},
-      {step:5,agent:'Sim Agent',title:'Re-run after code + hardware fixes',status:'pending',color:'var(--ink4)'},
-      {step:6,agent:'Fleet Agent',title:'Draft 50-robot deployment plan',status:'pending',color:'var(--ink4)'},
-    ].map(a=>`
-    <div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:0.5px solid var(--border)">
-      <div style="width:20px;height:20px;border-radius:50%;background:${a.status==='done'?'var(--sage)':a.status==='in-progress'?'var(--sage)':a.status==='blocked'?'var(--amber,#B45309)':'var(--pearl)'};border:${a.status==='pending'?'1.5px solid var(--border)':'none'};display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">
-        ${a.status==='done'?'<svg viewBox="0 0 10 10" style="width:8px;height:8px;stroke:#fff;fill:none;stroke-width:2"><path d="M2 5l2.5 2.5L8 2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':
-          a.status==='in-progress'?'<div style="width:6px;height:6px;border-radius:50%;background:#fff;animation:lrb-pulse 1.5s ease-in-out infinite"></div>':
-          a.status==='blocked'?'<svg viewBox="0 0 10 10" style="width:8px;height:8px;stroke:#fff;fill:none;stroke-width:2"><path d="M5 2v4M5 7.5v.5" stroke-linecap="round"/></svg>':
-          `<span style="font-size:8px;color:var(--ink4)">${a.step}</span>`}
+      ['Studio',  'studio',     'LRB v'+lrb.version.toFixed(1)+' · '+Object.keys(lrb.sensors).filter(k=>lrb.sensors[k].active).length+' sensors'],
+      ['Code',    'code',       'robot_sdk.py · ROS2 '+lrb.ros_distro],
+      ['Sim',     'simulation', 'Last run: 94% pass'],
+      ['Hardware','hardware',   '₹'+(Object.keys(lrb.sensors).filter(k=>lrb.sensors[k].active).reduce((s,k)=>s+lrb.sensors[k].price,18000+5600)).toLocaleString('en-IN')+' BOM'],
+      ['Fleet',   'fleet',      '5 robots online'],
+    ].map(([n,id,sub])=>`
+    <div style="padding:6px 4px;border-bottom:0.5px solid var(--border);cursor:pointer" onclick="openModule('${id}')"
+         onmouseover="this.style.background='var(--sage-tint)'" onmouseout="this.style.background=''">
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:1px">
+        <div style="width:5px;height:5px;border-radius:50%;background:var(--sage);flex-shrink:0"></div>
+        <span style="font-size:11px;font-weight:500;color:var(--ink)">${n}</span>
+        <svg viewBox="0 0 10 10" style="width:8px;height:8px;stroke:var(--ink4);fill:none;margin-left:auto"><path d="M2 5h6M6 3l2 2-2 2" stroke-width="1.2" stroke-linecap="round"/></svg>
       </div>
-      <div style="flex:1">
-        <div style="font-size:10px;color:var(--ink4);margin-bottom:1px">${a.agent}</div>
-        <div style="font-size:11px;font-weight:500;color:${a.status==='pending'?'var(--ink4)':'var(--ink2)'}">${a.title}</div>
-        ${a.status==='blocked'?'<div style="font-size:10px;color:var(--amber,#B45309);margin-top:2px">⚠ Awaiting your review in Actions tab</div>':''}
-      </div>
-      <span style="font-size:9px;font-weight:600;color:${a.status==='done'?'var(--sage)':a.status==='blocked'?'var(--amber,#B45309)':'var(--ink4)'};text-transform:uppercase;margin-top:3px">${a.status}</span>
+      <div style="font-size:10px;color:var(--ink4);padding-left:10px">${sub}</div>
     </div>`).join('')}
-  </div>
 
-  <div style="margin-bottom:9px">
-    <div style="font-size:11px;font-weight:500;color:var(--ink3);margin-bottom:6px">Set a new goal</div>
-    <div style="display:flex;gap:6px">
-      <input class="inp f1" id="orch-goal-inp" placeholder="e.g. Get Kiran-3 certified for hospital use…" onkeydown="if(event.key==='Enter')sendAI('Set Orchestrator goal: '+this.value)">
-      <button class="btn bs bsm" onclick="sendAI('Set a new Orchestrator goal: '+document.getElementById('orch-goal-inp').value)">Set goal</button>
+    <div class="sbsect" style="margin-top:10px">Ask about</div>
+    ${[
+      ['Why is sim pass rate 94%?',           'Why is my simulation pass rate 94% and what would improve it?'],
+      ['Design review — flag all issues',      'Do a complete design review of Kiran-3 and list every issue you find'],
+      ['Optimise BOM cost',                    'Review my hardware BOM and find cost savings without compromising specs'],
+      ['IMU backordered — what do I do?',      'The IMU MPU-9250 is backordered. What are my options and what breaks if I wait?'],
+      ['Is Kiran-3 ready for pilot batch?',    'Given the current state of the project, is Kiran-3 ready for a pilot manufacturing batch?'],
+      ['Compare active vs inactive sensors',   'What am I missing by not having GPS and Ultrasonic active on Kiran-3?'],
+      ['Suggest next 3 engineering tasks',     'Given the full project state, what are the 3 most important engineering tasks right now?'],
+      ['Fleet deployment risk?',               'What is the risk of deploying the current firmware to all 5 fleet robots?'],
+    ].map(([label, prompt])=>`
+    <div class="sbitem" style="font-size:10px;line-height:1.45" onclick="sendAI('${prompt}')">${label}</div>`).join('')}
+
+    <div class="lrb-ai-context" style="margin-top:8px;font-size:10px;color:var(--ink4);padding:6px 4px;line-height:1.6;transition:background 0.4s;border-radius:6px;border-top:0.5px solid var(--border)">
+      <div style="font-weight:500;color:var(--ink3);margin-bottom:3px">Live context</div>
     </div>
   </div>
 </div>
-</div>`
+<div class="vanika-thinking" id="vanika-thinking">
+  <div class="vt-orb"><div class="vt-petal"></div><div class="vt-petal"></div><div class="vt-petal"></div><div class="vt-petal"></div></div>
+  <span class="vt-label">Vanika AI is thinking</span>
+  <div class="vt-dots"><div class="vt-dot"></div><div class="vt-dot"></div><div class="vt-dot"></div></div>
+</div>
+<div class="cirow">
+  <input class="inp f1" id="ai-inp" placeholder="Ask about your robot project — design, sim, hardware, fleet…" onkeydown="if(event.key==='Enter')sendAI(this.value)">
+  <button class="btn bs bsm" onclick="sendAI(document.getElementById('ai-inp').value)">Ask</button>
+</div>`;
+
 case 'ai-history':return`
 <div class="sbar"><svg viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="4.5" stroke-width="1.3"/><path d="M10 10l3 3" stroke-width="1.3" stroke-linecap="round"/></svg><input placeholder="Search conversations…"></div>
 <div class="mod">
@@ -8410,50 +6880,10 @@ ${mgb("manufacture","<svg viewBox=\"0 0 16 16\"><rect x=\"1\" y=\"6\" width=\"14
 
 <div class="wtabs">
   <div class="wt active" data-tab="overview" onclick="switchTab('manufacture','overview')">Overview</div>
-  <div class="wt" data-tab="body-design" onclick="switchTab('manufacture','body-design')" style="color:var(--sage3);font-weight:600">✦ Body Design</div>
   <div class="wt" data-tab="materials" onclick="switchTab('manufacture','materials')">Materials</div>
   <div class="wt" data-tab="dfm" onclick="switchTab('manufacture','dfm')">DFM Check</div>
   <div class="wt" data-tab="rfq" onclick="switchTab('manufacture','rfq')">Get Quote</div>
   <div class="wt" onclick="openModule('rfq')">Suppliers ↗</div>
-</div>
-<div class="tpanel hidden" data-panel="body-design">
-<div class="mod">
-  <div class="sh"><div class="sh-l"><div class="sh-title">Outer Body Design</div><div class="sh-sub">Define the enclosure shape, curvature, material and fabrication concept</div></div></div>
-  <div style="background:var(--sage-tint);border-radius:8px;border:1px solid var(--sage);padding:12px;margin-bottom:14px;font-size:12px;color:var(--ink2)">
-    <b style="color:var(--sage3)">How it works:</b> Describe your enclosure in plain language. The Studio Agent generates the outer_body configuration and validates DFM constraints. On confirm, it writes to the SRM and updates the Manufacture module automatically.
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
-    ${[['rounded','🟤','Rounded','Smooth curves, injection-moulded ABS'],['angular','⬜','Angular','Sharp edges, sheet metal or CNC aluminium'],['custom','✏️','Custom','Describe exact geometry below']].map(function(s){return(
-      '<div onclick="document.querySelectorAll(\'.body-style-tile\').forEach(function(t){t.style.borderColor=\'var(--border)\';t.style.background=\'var(--white)\'});this.style.borderColor=\'var(--sage)\';this.style.background=\'var(--sage-tint)\';_outerBodyConfig.style=\''+s[0]+'\'" '+
-      'class="body-style-tile" style="border:1.5px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;text-align:center;background:var(--white);transition:.12s">'+
-      '<div style="font-size:20px;margin-bottom:4px">'+s[1]+'</div>'+
-      '<div style="font-size:11px;font-weight:600;color:var(--ink)">'+s[2]+'</div>'+
-      '<div style="font-size:10px;color:var(--ink4);margin-top:2px">'+s[3]+'</div></div>'
-    );}).join('')}
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-    <div>
-      <div style="font-size:11px;font-weight:600;color:var(--ink3);margin-bottom:6px">Corner radius (mm)</div>
-      <input type="range" min="0" max="40" value="8" oninput="_outerBodyConfig.corner_radius_mm=parseInt(this.value);document.getElementById('cr-val').textContent=this.value+'mm'" style="width:100%"/>
-      <div style="font-size:11px;color:var(--sage3);margin-top:2px" id="cr-val">8mm</div>
-    </div>
-    <div>
-      <div style="font-size:11px;font-weight:600;color:var(--ink3);margin-bottom:6px">Wall thickness (mm)</div>
-      <input type="range" min="1" max="8" value="3" oninput="_outerBodyConfig.wall_thickness_mm=parseInt(this.value);document.getElementById('wt-val').textContent=this.value+'mm'" style="width:100%"/>
-      <div style="font-size:11px;color:var(--sage3);margin-top:2px" id="wt-val">3mm</div>
-    </div>
-  </div>
-  <div style="font-size:11px;font-weight:600;color:var(--ink3);margin-bottom:6px">Describe the outer body</div>
-  <textarea id="outer-body-prompt" placeholder="e.g. sleek matte black enclosure with rounded front bumper, flat sensor mounting top plate, recessed wheel arches, IP52 rated. Designed for warehouse environments."
-    style="width:100%;border:1px solid var(--border2);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--ink1);background:var(--white);outline:none;resize:vertical;min-height:80px;font-family:var(--sans)"
-    onfocus="this.style.borderColor='var(--sage)'" onblur="this.style.borderColor='var(--border2)'"></textarea>
-  <div style="display:flex;gap:8px;margin-top:10px">
-    <button id="outer-body-btn" onclick="generateOuterBody()" style="background:var(--sage);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:12px;font-weight:600;cursor:pointer;transition:.15s">Design</button>
-    <button onclick="exportDoSTEP()" style="background:var(--white);color:var(--ink2);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-size:12px;cursor:pointer">Export STEP</button>
-    <button onclick="switchTab('manufacture','dfm')" style="background:var(--white);color:var(--ink2);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-size:12px;cursor:pointer">DFM Check</button>
-  </div>
-  <div id="outer-body-preview" style="margin-top:12px"></div>
-</div>
 </div>
 <div class="tpanel" data-panel="overview">
 <div class="mod">
@@ -8809,146 +7239,8 @@ if(window._POPOUT_MODULE){
     }, 300);
 
   })();
-} // end if(_POPOUT_MODULE)
-// ── Expose all global functions on window (for onclick compatibility) ──
-// ── Text-to-CAD type selector ─────────────────────────────────────
-var _ttcadType = 'AMR';
-function ttcadSelectType(el, type){
-  document.querySelectorAll('.ttcad-type-active').forEach(function(t){
-    t.classList.remove('ttcad-type-active');
-    t.style.borderColor='var(--border)';t.style.background='var(--white)';
-  });
-  el.classList.add('ttcad-type-active');
-  el.style.borderColor='var(--sage)';el.style.background='var(--sage-tint)';
-  _ttcadType = type;
-  var inp=document.getElementById('ttcad-input');
-  if(inp){var h={AMR:'e.g. warehouse AMR, 15kg, differential drive, VLP-16 LiDAR, ROS2 Humble',ARM:'e.g. 6-DOF arm, 5kg payload, pick-and-place, Robotiq gripper, floor mounted',DRONE:'e.g. inspection quadcopter, 3kg, X-frame, downward camera, GPS, 25min flight',HUMANOID:'e.g. 1.2m biped, 18-DOF, gesture recognition, modular torso'};inp.placeholder=h[type]||inp.placeholder;}
 }
-window.ttcadSelectType = ttcadSelectType;
 
-// ── Compute board selector ────────────────────────────────────────
-function selectComputeBoard(el, board){
-  document.querySelectorAll('.compute-active').forEach(function(t){t.classList.remove('compute-active');t.style.borderColor='var(--border)';t.style.background='var(--white)';});
-  el.classList.add('compute-active');el.style.borderColor='var(--sage)';el.style.background='var(--sage-tint)';
-  lrb.compute=lrb.compute||{};lrb.compute.model=board;
-  var info={'Jetson Orin NX':{ram:16,power:25,target:'aarch64-linux (CUDA)'},'Jetson AGX Orin':{ram:64,power:60,target:'aarch64-linux (CUDA)'},'Raspberry Pi 5':{ram:8,power:12,target:'aarch64-linux'},'Intel NUC 13 Pro':{ram:64,power:64,target:'x86_64-linux'},'Arduino Mega':{ram:0,power:0.25,target:'avr-gcc (rosserial)'},'Custom board':{ram:0,power:0,target:'specify manually'}}[board]||{};
-  lrb.compute.ram_gb=info.ram;lrb.compute.power_w=info.power;lrb.compute.build_target=info.target;lrb.compute.origin_xyz='0 0 0';
-  var sel=document.getElementById('compute-selected');
-  if(sel)sel.textContent='✓ '+board+' · '+info.ram+'GB · '+info.power+'W · '+info.target;
-  lrbSync('compute_board',false);
-  toast('Compute board set',board+' — position it in the 3D canvas after generation');
-}
-window.selectComputeBoard = selectComputeBoard;
-
-// ── Part lock / isolation ─────────────────────────────────────────
-var _lockedComponents=[];
-function toggleLockComponent(linkName,el){
-  var idx=_lockedComponents.indexOf(linkName);
-  if(idx>=0){_lockedComponents.splice(idx,1);if(el){el.textContent='🔓';el.style.color='var(--ink4)';}toast('Unlocked',linkName+' is now editable');}
-  else{_lockedComponents.push(linkName);if(el){el.textContent='🔒';el.style.color='var(--amber)';}toast('Locked',linkName+' — agents cannot modify this component');}
-  lrb.locked_components=_lockedComponents.slice();lrbSync('part_lock',false);
-}
-window.toggleLockComponent = toggleLockComponent;
-
-// ── Outer body design ─────────────────────────────────────────────
-var _outerBodyConfig={style:'rounded',material:'abs',finish:'matte',corner_radius_mm:8,wall_thickness_mm:3,prompt:''};
-function generateOuterBody(){
-  var inp=document.getElementById('outer-body-prompt');if(!inp)return;
-  var prompt=inp.value.trim();if(!prompt){toast('Describe the outer body','e.g. sleek rounded front bumper, flat top sensor plate');return;}
-  var btn=document.getElementById('outer-body-btn');if(btn){btn.disabled=true;btn.textContent='Generating...';}
-  _outerBodyConfig.prompt=prompt;
-  if(/round|curved|smooth/i.test(prompt))_outerBodyConfig.style='rounded';
-  else if(/angular|sharp|boxy/i.test(prompt))_outerBodyConfig.style='angular';
-  if(/alumin|metal/i.test(prompt))_outerBodyConfig.material='aluminium';
-  else if(/carbon|cf /i.test(prompt))_outerBodyConfig.material='carbon_fibre';
-  if(/gloss|shiny/i.test(prompt))_outerBodyConfig.finish='gloss';
-  var cr=prompt.match(/(\d+)\s*mm\s*corner/i);if(cr)_outerBodyConfig.corner_radius_mm=parseInt(cr[1]);
-  setTimeout(function(){
-    lrb.outer_body=Object.assign({},_outerBodyConfig);lrbSync('outer_body',true);
-    if(btn){btn.disabled=false;btn.textContent='Design';}
-    var preview=document.getElementById('outer-body-preview');
-    if(preview){preview.innerHTML='<div style="background:var(--sage-tint);border:1px solid var(--sage);border-radius:8px;padding:12px;font-size:11px;color:var(--ink2)">'+
-      '<div style="font-weight:600;color:var(--sage3);margin-bottom:6px">✓ Outer body configured</div>'+
-      '<div>Style: <b>'+_outerBodyConfig.style+'</b> · Material: <b>'+_outerBodyConfig.material.toUpperCase()+'</b> · Finish: <b>'+_outerBodyConfig.finish+'</b></div>'+
-      '<div style="margin-top:4px">Corner radius: <b>'+_outerBodyConfig.corner_radius_mm+'mm</b> · Wall: <b>'+_outerBodyConfig.wall_thickness_mm+'mm</b></div>'+
-      '<div style="margin-top:8px;display:flex;gap:8px">'+
-      '<button onclick="exportDoSTEP()" style="background:var(--sage);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer">Export STEP</button>'+
-      '<button onclick="toast(\'DFM\',\'Running DFM check on outer body geometry...\')" style="background:var(--white);color:var(--ink2);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer">DFM Check</button>'+
-      '</div></div>';}
-    toast('Outer body designed',_outerBodyConfig.style+' · '+_outerBodyConfig.material.toUpperCase()+' · DFM check ready');
-  },1800);
-}
-window.generateOuterBody = generateOuterBody;
-
-window.enterApp        = enterApp;
-window.openModule      = openModule;
-window.openInFocus     = openInFocus;
-window.showModal       = showModal;
-window.closeModal      = closeModal;
-window.createNewRobot  = createNewRobot;
-window.authTab         = authTab;
-window.switchTab       = switchTab;
-window.studioSwitchTab = studioSwitchTab;
-window.studioStartBlank= studioStartBlank;
-window.studioLoadTemplate=studioLoadTemplate;
-window.studioOpenRecent= studioOpenRecent;
-window.studioSaveDesign= studioSaveDesign;
-window.studioView      = studioView;
-window.studioRender    = studioRender;
-window.studioToggleSensor=studioToggleSensor;
-window.studioToggleSecondary=studioToggleSecondary;
-window.studioAddSensor = studioAddSensor;
-window.studioAddCustomSensor=studioAddCustomSensor;
-window.studioRemoveCustomSensor=studioRemoveCustomSensor;
-window.studioChangeSensorModel=studioChangeSensorModel;
-window.studioSwapSensorModel=studioSwapSensorModel;
-window.studioFilterSensorCat=studioFilterSensorCat;
-window.studioSetColor  = studioSetColor;
-window.studioRefreshDriveUI=studioRefreshDriveUI;
-window.switchRobotType = switchRobotType;
-window.updateChassisDim= updateChassisDim;
-window.sendAI          = sendAI;
-window.aiGenerateLRB   = aiGenerateLRB;
-window.aiGenSubmit     = aiGenSubmit;
-window.aiGenCancel     = aiGenCancel;
-window.lrbSync         = lrbSync;
-window.lrbSyncJoint    = lrbSyncJoint;
-window.exportLRBasURDF = exportLRBasURDF;
-window.exportDoPDF        = exportDoPDF;
-window.exportDoURDF       = exportDoURDF;
-window.exportDoJSON       = exportDoJSON;
-window.exportDoSTEP       = exportDoSTEP;
-window.exportDoSTL        = exportDoSTL;
-window.exportDoDXF        = exportDoDXF;
-window.exportDoGLB        = exportDoGLB;
-window.exportDoAllCAD     = exportDoAllCAD;
-window.textToCADGenerate  = textToCADGenerate;
-window.studioCopySource   = studioCopySource;
-window.studioCopyRef      = studioCopyRef;
-window.studioCADRefEdit   = studioCADRefEdit;
-window._closeExportModal=_closeExportModal;
-window.startStudioRender=startStudioRender;
-window.popOutModule    = popOutModule;
-window.popOutActive    = popOutActive;
-window.setViewMode     = setViewMode;
-window.ctxDo           = ctxDo;
-window.sbNav           = sbNav;
-window.applyTheme      = applyTheme;
-window.showLauncher    = showLauncher;
-window.hideLauncher    = hideLauncher;
-window.closeWin        = closeWin;
-window.toast           = toast;
-window.vanikaPromptKey = vanikaPromptKey;
-window.vanikaConfirmKey= vanikaConfirmKey;
-window.vanikaGetKey    = vanikaGetKey;
-window.vanikaSetKey    = vanikaSetKey;
-window.refreshHardwareBOM=refreshHardwareBOM;
-window.refreshCodeIDE  = refreshCodeIDE;
-window.rebuildRobotMesh= rebuildRobotMesh;
-window.updateSensorOverlay=updateSensorOverlay;
-window.updateDimReadout= updateDimReadout;
-window.buildStudio3DPage=buildStudio3DPage;
-window.getPage         = getPage;
 </script>
 </body>
 </html>
